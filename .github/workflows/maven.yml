@@ -30,18 +30,3 @@ jobs:
 
     - name: Build and Test with Maven
       run: mvn -B clean verify --file Service/pom.xml
-
-  assign-reviewers:
-    needs: build
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-    steps:
-    - name: Assign Reviewers
-      uses: kentaro-m/auto-assign-action@v1.2.1
-      with:
-        reviewers: |
-          code1word
-          dwr2118
-          sjimenez814
-          CarrilloMario831
-        team-reviewers: ''

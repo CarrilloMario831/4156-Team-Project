@@ -18,3 +18,5 @@ reservation management with 4 tables inside of it: Inventories, Inventory_Items,
 
 ### Tools used 🧰
 * Lombok
+* Spotless
+* PMD

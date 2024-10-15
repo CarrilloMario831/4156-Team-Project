@@ -28,5 +28,17 @@ jobs:
         distribution: 'temurin'
         cache: maven
 
-    - name: Build and Test with Maven
-      run: mvn -B clean verify --file Service/pom.xml
+    - name: Build with Maven
+      run: mvn -B package --file pom.xml
+    - name: Run JUnit tests with Maven
+      run: mvn verify && mvn test
+    - name: Run PMD Static Analysis
+      run: mvn pmd:check
+    - name: Run Checkstyle Analysis
+      run: mvn checkstyle:check
+    - name: Check for Checkstyle Warnings
+      run: |
+        if grep -q '<error .*severity="warning"' target/checkstyle-result.xml; then
+            echo "Checkstyle found warnings."
+            exit 1
+        fi

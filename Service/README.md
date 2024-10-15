@@ -14,3 +14,7 @@ reservation management with 4 tables inside of it: Inventories, Inventory_Items,
 9. Now, you should be able to open any of the tables and find some data in them to start playing around with. 
 
 * Note: I still need to figure out how to connect multiple items to a single inventory. 
+
+
+### Tools used 🧰
+* Lombok

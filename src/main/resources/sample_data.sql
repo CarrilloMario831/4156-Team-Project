@@ -24,3 +24,4 @@ INSERT INTO Inventory_Items (inventory_id, item_uuid)
 VALUES
     ('bf456378-a8b3-40b6-b1a1-654bc9de5f02', 'c56a4180-65aa-42ec-a945-5fd21dec0538'),
     ('bd123478-12ab-45f6-abc8-4456ac987654', 'a123b789-123b-48ec-923f-d9b8f06ba7aa');
+

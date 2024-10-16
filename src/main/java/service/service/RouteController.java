@@ -1,4 +1,4 @@
-package Service.Service;
+package service.service;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

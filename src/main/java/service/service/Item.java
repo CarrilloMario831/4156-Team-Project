@@ -1,4 +1,4 @@
-package Service.Service;
+package service.service;
 
 import java.time.Duration;
 import java.time.LocalDateTime;

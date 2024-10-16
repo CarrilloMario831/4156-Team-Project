@@ -212,10 +212,13 @@ public class ItemUnitTests {
    */
   @Test
   public void testToStringMethod() {
-    String expectedString = "\nItem: Toyota Forklift"
-            + "\nLocation: Garage"
-            + "\nQuantity: 2"
-            + "\nReservation Status: false";
+    String expectedString = "Item Details:\n"
+            + "UUID: " + testItem.getUuid() + "\n"
+            + "Name: Toyota Forklift\n"
+            + "Location: Garage\n"
+            + "Quantity: 2\n"
+            + "Price: $999.99\n"
+            + "Reservation Status: Available\n";
     assertEquals(expectedString, testItem.toString(), "toString() method output should match");
   }
 }

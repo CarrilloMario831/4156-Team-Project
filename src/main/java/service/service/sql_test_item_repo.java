@@ -2,7 +2,10 @@ package service.service;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+<<<<<<< HEAD
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+=======
+>>>>>>> 48c2e3e (Basic writing to local DB working)
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -37,7 +40,10 @@ public class sql_test_item_repo {
   /**
    * This is a test insert class for providing an insight into what
    * it looks like to insert items into the DB.
+<<<<<<< HEAD
    * @param item : Item object that you'd like to store within DB.
+=======
+>>>>>>> 48c2e3e (Basic writing to local DB working)
    */
   public void insert(sql_test_item item){
     // Create your insert SQL query with "?" as a placeholder for variable
@@ -64,6 +70,7 @@ public class sql_test_item_repo {
         item.getNextRestockDateTime()
         );
     
+<<<<<<< HEAD
     System.out.println(rows + "row/s inserted.");
   }
   
@@ -162,6 +169,9 @@ public class sql_test_item_repo {
     System.out.println(rows + " row/s deleted");
     
     return rows > 0;
+=======
+    System.out.println(rows + "row/s affected");
+>>>>>>> 48c2e3e (Basic writing to local DB working)
   }
   
 }

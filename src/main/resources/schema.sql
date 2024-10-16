@@ -63,6 +63,7 @@ ADD CONSTRAINT fk_user_inventory
     REFERENCES Users (user_key)
     ON DELETE CASCADE;
 
+<<<<<<< HEAD:src/main/resources/schema.sql
 -- Here we add the foreign key to connect the items to the Inventories they belong to
 ALTER TABLE Items
     ADD CONSTRAINT fk_item_inventory
@@ -83,3 +84,5 @@ BEGIN
 END;
 
 
+=======
+>>>>>>> 48c2e3e (Basic writing to local DB working):src/main/resources/sql_ddl.sql

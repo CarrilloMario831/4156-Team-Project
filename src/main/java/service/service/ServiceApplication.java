@@ -22,10 +22,13 @@ public class ServiceApplication {
     sql_test_item_repo repo = context.getBean(sql_test_item_repo.class);
     repo.insert(item);
     repo.insert(item2);
+<<<<<<< HEAD
     
     System.out.println(repo.select());
     System.out.println(repo.select("c56a4180-65aa-42ec-a945-5fd21dec0538"));
     repo.update("c56a4180-65aa-42ec-a945-5fd21dec0538", "NYC");
     repo.delete("c56a4180-65aa-42ec-a945-5fd21dec0538");
+=======
+>>>>>>> 48c2e3e (Basic writing to local DB working)
   }
 }

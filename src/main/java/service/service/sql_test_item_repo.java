@@ -78,6 +78,7 @@ public class sql_test_item_repo {
     // This stores the select query results from the DB
     RowMapper<sql_test_item> rowMapper = new RowMapper<sql_test_item>(){
       
+      @Override
       public sql_test_item mapRow(ResultSet rs, int rowNum) throws SQLException {
         
         sql_test_item item = new sql_test_item(

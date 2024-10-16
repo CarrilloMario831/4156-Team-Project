@@ -46,9 +46,9 @@ public class RouteController {
 //    }
 //  }
 
-  private ResponseEntity<?> handleException(Exception e) {
-    System.out.println(e.getMessage());
-    return new ResponseEntity<>("An error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
-  }
+//  private ResponseEntity<?> handleException(Exception e) {
+//    System.out.println(e.getMessage());
+//    return new ResponseEntity<>("An error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
+//  }
 
 }

@@ -1,4 +1,5 @@
 USE reservation_management;
+
 -- Sample insert for Users
 INSERT INTO Users (user_key, username, role)
 VALUES

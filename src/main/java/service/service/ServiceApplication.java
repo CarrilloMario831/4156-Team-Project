@@ -8,7 +8,7 @@ import org.springframework.context.ApplicationContext;
 /** Sample JavaDoc to pass checkstyle. */
 @SpringBootApplication
 public class ServiceApplication {
-
+  
   public static void main(String[] args) {
     ApplicationContext context = SpringApplication.run(ServiceApplication.class, args);
     
@@ -22,5 +22,7 @@ public class ServiceApplication {
     sql_test_item_repo repo = context.getBean(sql_test_item_repo.class);
     repo.insert(item);
     repo.insert(item2);
+    
+    System.out.println(repo.select());
   }
 }

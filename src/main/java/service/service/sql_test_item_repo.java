@@ -2,6 +2,7 @@ package service.service;
 
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -63,6 +64,37 @@ public class sql_test_item_repo {
         );
     
     System.out.println(rows + "row/s affected");
+  }
+  
+  /**
+   * This is a test select method for providing insight into what
+   * it looks like to read items from the DB.
+   */
+  public List<sql_test_item> select(){
+    
+    // define the sql query
+    String sql = "select * from Items";
+    
+    // This stores the select query results from the DB
+    RowMapper<sql_test_item> rowMapper = new RowMapper<sql_test_item>(){
+      
+      public sql_test_item mapRow(ResultSet rs, int rowNum) throws SQLException {
+        
+        sql_test_item item = new sql_test_item(
+            rs.getString("item_name"),
+            rs.getInt("quantity"),
+            rs.getString("location"),
+            rs.getDouble("price")
+        );
+        
+        item.setReservationStatus(rs.getBoolean("reserved_status"));
+        
+        return item;
+      }
+    };
+    
+    // Store the results within an indexable array
+    return jdbcTemplate.query(sql, rowMapper);
   }
   
 }

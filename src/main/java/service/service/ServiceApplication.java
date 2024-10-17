@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ApplicationContext;
-import service.handler.SQLDatabaseHandler;
+import service.handler.ItemsTableSQLHelper;
 import service.models.Item;
 
 /** Sample JavaDoc to pass checkstyle. */
@@ -43,7 +43,7 @@ public class ServiceApplication {
             .build();
 
     // reference to the repository defining how to query our DB
-    SQLDatabaseHandler repo = context.getBean(SQLDatabaseHandler.class);
+    ItemsTableSQLHelper repo = context.getBean(ItemsTableSQLHelper.class);
     repo.insert(item1);
     repo.insert(item2);
 

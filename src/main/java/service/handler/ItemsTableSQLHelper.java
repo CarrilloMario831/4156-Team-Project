@@ -20,7 +20,7 @@ import service.models.Item;
  */
 @Getter
 @Repository
-public class SQLDatabaseHandler {
+public class ItemsTableSQLHelper {
 
   private JdbcTemplate jdbcTemplate;
   private final DateTimeFormatter formatter =

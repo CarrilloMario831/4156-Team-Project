@@ -1,5 +1,6 @@
 package Service.Service;
 
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -9,13 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
-/* This class contains all the API routes for the service. */
+/**
+ * This class contains all the API routes for the service.
+ */
 @RestController
 public class RouteController {
 
-  // THIS IS WIP, Kinda need the Inventory Class
 //  @PostMapping(value = "/addItemToInventory", produces = MediaType.APPLICATION_JSON_VALUE)
 //  public ResponseEntity<?> addItemToInventory(
 //          @RequestParam("adminId") String adminId, @RequestParam("inventoryId") String inventoryId,
@@ -35,7 +35,7 @@ public class RouteController {
 //      return new ResponseEntity<>("An Error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);
 //    }
 //  }
-
+//
 //  @PatchMapping(value = "/setItemQuantity", produces = MediaType.APPLICATION_JSON_VALUE)
 //  public ResponseEntity<?> setItemQuantity(
 //          @RequestParam("adminId") String adminId, @RequestParam("inventoryId") String inventoryId,
@@ -46,7 +46,7 @@ public class RouteController {
 //      handleException(e);
 //    }
 //  }
-
+//
 //  private ResponseEntity<?> handleException(Exception e) {
 //    System.out.println(e.getMessage());
 //    return new ResponseEntity<>("An error has occurred", HttpStatus.INTERNAL_SERVER_ERROR);

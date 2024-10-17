@@ -2,6 +2,8 @@ package service.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import service.models.Inventory;
+import service.models.Item;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -72,7 +74,11 @@ public class InventoryUnitTests {
    */
   @Test
   public void testAddItem() {
-    Item item = new Item("Laptop", 10, "Warehouse A", 999.99);
+    Item item = Item.builder()
+            .itemName("Laptop")
+            .quantity(10)
+            .location("Warehouse A")
+            .price(999.99).build();
     inventory.addItem(item);
 
     assertEquals(1, inventory.getAllItems().size(),
@@ -86,9 +92,13 @@ public class InventoryUnitTests {
    */
   @Test
   public void testRemoveItem() {
-    Item item = new Item("Smartphone", 5, "Warehouse B", 499.99);
+    Item item = Item.builder()
+            .itemName("Smartphone")
+            .quantity(5)
+            .location("Warehouse B")
+            .price(499.99).build();
     inventory.addItem(item);
-    UUID itemId = item.getId();
+    UUID itemId = item.getItemId();
 
     inventory.removeItem(itemId);
 
@@ -103,14 +113,18 @@ public class InventoryUnitTests {
    */
   @Test
   public void testGetItem() {
-    Item item = new Item("Headphones", 15, "Warehouse C", 199.99);
+    Item item = Item.builder()
+            .itemName("Headphones")
+            .quantity(15)
+            .location("Warehouse C")
+            .price(199.99).build();
     inventory.addItem(item);
-    UUID itemId = item.getId();
+    UUID itemId = item.getItemId();
 
     Item retrievedItem = inventory.getItem(itemId);
 
     assertNotNull(retrievedItem, "Retrieved item should not be null.");
-    assertEquals(itemId, retrievedItem.getId(),
+    assertEquals(itemId, retrievedItem.getItemId(),
             "Retrieved item should have the same ID as the added item.");
   }
 
@@ -119,8 +133,16 @@ public class InventoryUnitTests {
    */
   @Test
   public void testGetAllItems() {
-    Item item1 = new Item("Monitor", 7, "Warehouse D", 299.99);
-    Item item2 = new Item("Keyboard", 12, "Warehouse E", 49.99);
+    Item item1 = Item.builder()
+            .itemName("Monitor")
+            .quantity(7)
+            .location("Warehouse D")
+            .price(299.99).build();
+    Item item2 = Item.builder()
+            .itemName("Keyboard")
+            .quantity(12)
+            .location("Warehouse E")
+            .price(49.99).build();
 
     inventory.addItem(item1);
     inventory.addItem(item2);
@@ -165,7 +187,11 @@ public class InventoryUnitTests {
    */
   @Test
   public void testToString() {
-    Item item = new Item("Tablet", 8, "Warehouse G", 399.99);
+    Item item = Item.builder()
+            .itemName("Tablet")
+            .quantity(8)
+            .location("Warehouse G")
+            .price(399.99).build();
     inventory.addItem(item);
 
     String inventoryString = inventory.toString();
@@ -206,7 +232,11 @@ public class InventoryUnitTests {
    */
   @Test
   public void testAddDuplicateItem() {
-    Item item = new Item("Tablet", 8, "Warehouse G", 399.99);
+    Item item = Item.builder()
+            .itemName("Tablet")
+            .quantity(8)
+            .location("Warehouse G")
+            .price(399.99).build();
     inventory.addItem(item);
     inventory.addItem(item); // Attempt to add the same item again
 
@@ -219,8 +249,16 @@ public class InventoryUnitTests {
    */
   @Test
   public void testMultipleItemsWithSameName() {
-    Item item1 = new Item("Chair", 10, "Warehouse H", 59.99);
-    Item item2 = new Item("Chair", 5, "Warehouse I", 49.99);
+    Item item1 = Item.builder()
+            .itemName("Chair")
+            .quantity(10)
+            .location("Warehouse H")
+            .price(59.99).build();
+    Item item2 = Item.builder()
+            .itemName("Chair")
+            .quantity(5)
+            .location("Warehouse I")
+            .price(49.99).build();
 
     inventory.addItem(item1);
     inventory.addItem(item2);

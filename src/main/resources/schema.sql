@@ -1,7 +1,7 @@
 -- Create the database if it doesn't exist
-DROP DATABASE IF EXISTS reservation_management;
-CREATE DATABASE IF NOT EXISTS reservation_management;
-USE reservation_management;
+DROP DATABASE IF EXISTS `reservation_management`;
+CREATE DATABASE IF NOT EXISTS `reservation_management`;
+USE `reservation_management`;
 
 -- Create Item Table
 CREATE TABLE IF NOT EXISTS Items (

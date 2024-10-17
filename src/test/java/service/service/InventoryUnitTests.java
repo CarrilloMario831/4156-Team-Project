@@ -1,19 +1,17 @@
 package service.service;
 
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import service.models.Inventory;
-import service.models.Item;
 
 /**
  * Unit tests for the Inventory class.
@@ -29,11 +27,7 @@ public class InventoryUnitTests {
   @BeforeEach
   public void setUp() {
     adminId = UUID.randomUUID();
-    inventory = Inventory.builder()
-            .adminId(adminId)
-            .inventoryName("Test Inventory")
-            .items(new HashMap<>())
-            .build();
+    inventory = new Inventory(adminId, "Test Inventory", new HashMap<>());
   }
 
   /**
@@ -41,10 +35,9 @@ public class InventoryUnitTests {
    */
   @Test
   public void testConstructor() {
-    assertNotNull(inventory.getInventoryId(), "Inventory ID should not be null.");
-    assertEquals("Test Inventory", inventory.getInventoryName(),
-            "Inventory name should be set correctly.");
-    assertEquals(adminId.toString(), inventory.getAdminId().toString(), "Admin ID should be set correctly.");
+    assertNotNull(inventory.getId(), "Inventory ID should not be null.");
+    assertEquals("Test Inventory", inventory.getInventoryName(), "Inventory name should be set correctly.");
+    assertEquals(adminId.toString(), inventory.getAdminId(), "Admin ID should be set correctly.");
     assertTrue(inventory.getAllItems().isEmpty(), "Items map should be initialized and empty.");
   }
 
@@ -55,8 +48,7 @@ public class InventoryUnitTests {
   public void testCreateItem() {
     inventory.createItem("Mouse", 20, "Warehouse F", 29.99);
 
-    assertEquals(1, inventory.getAllItems().size(),
-            "Inventory should have one item after creation.");
+    assertEquals(1, inventory.getAllItems().size(), "Inventory should have one item after creation.");
     Item item = inventory.getAllItems().iterator().next();
     assertEquals("Mouse", item.getItemName(), "Item name should be 'Mouse'.");
     assertEquals(20, item.getQuantity(), "Item quantity should be 20.");
@@ -69,7 +61,7 @@ public class InventoryUnitTests {
    */
   @Test
   public void testGetId() {
-    UUID inventoryId = inventory.getInventoryId();
+    UUID inventoryId = inventory.getId();
     assertNotNull(inventoryId, "Inventory ID should not be null.");
   }
 
@@ -78,17 +70,11 @@ public class InventoryUnitTests {
    */
   @Test
   public void testAddItem() {
-    Item item = Item.builder()
-            .itemName("Laptop")
-            .quantity(10)
-            .location("Warehouse A")
-            .price(999.99).build();
+    Item item = new Item("Laptop", 10, "Warehouse A", 999.99);
     inventory.addItem(item);
 
-    assertEquals(1, inventory.getAllItems().size(),
-            "Inventory should have one item after addition.");
-    assertTrue(inventory.getAllItems().contains(item),
-            "Inventory should contain the added item.");
+    assertEquals(1, inventory.getAllItems().size(), "Inventory should have one item after addition.");
+    assertTrue(inventory.getAllItems().contains(item), "Inventory should contain the added item.");
   }
 
   /**
@@ -96,20 +82,14 @@ public class InventoryUnitTests {
    */
   @Test
   public void testRemoveItem() {
-    Item item = Item.builder()
-            .itemName("Smartphone")
-            .quantity(5)
-            .location("Warehouse B")
-            .price(499.99).build();
+    Item item = new Item("Smartphone", 5, "Warehouse B", 499.99);
     inventory.addItem(item);
-    UUID itemId = item.getItemId();
+    UUID itemId = item.getId();
 
     inventory.removeItem(itemId);
 
-    assertEquals(0, inventory.getAllItems().size(),
-            "Inventory should be empty after item removal.");
-    assertFalse(inventory.getAllItems().contains(item),
-            "Inventory should not contain the removed item.");
+    assertEquals(0, inventory.getAllItems().size(), "Inventory should be empty after item removal.");
+    assertFalse(inventory.getAllItems().contains(item), "Inventory should not contain the removed item.");
   }
 
   /**
@@ -117,19 +97,14 @@ public class InventoryUnitTests {
    */
   @Test
   public void testGetItem() {
-    Item item = Item.builder()
-            .itemName("Headphones")
-            .quantity(15)
-            .location("Warehouse C")
-            .price(199.99).build();
+    Item item = new Item("Headphones", 15, "Warehouse C", 199.99);
     inventory.addItem(item);
-    UUID itemId = item.getItemId();
+    UUID itemId = item.getId();
 
     Item retrievedItem = inventory.getItem(itemId);
 
     assertNotNull(retrievedItem, "Retrieved item should not be null.");
-    assertEquals(itemId, retrievedItem.getItemId(),
-            "Retrieved item should have the same ID as the added item.");
+    assertEquals(itemId, retrievedItem.getId(), "Retrieved item should have the same ID as the added item.");
   }
 
   /**
@@ -137,16 +112,8 @@ public class InventoryUnitTests {
    */
   @Test
   public void testGetAllItems() {
-    Item item1 = Item.builder()
-            .itemName("Monitor")
-            .quantity(7)
-            .location("Warehouse D")
-            .price(299.99).build();
-    Item item2 = Item.builder()
-            .itemName("Keyboard")
-            .quantity(12)
-            .location("Warehouse E")
-            .price(49.99).build();
+    Item item1 = new Item("Monitor", 7, "Warehouse D", 299.99);
+    Item item2 = new Item("Keyboard", 12, "Warehouse E", 49.99);
 
     inventory.addItem(item1);
     inventory.addItem(item2);
@@ -163,8 +130,7 @@ public class InventoryUnitTests {
    */
   @Test
   public void testGetInventoryName() {
-    assertEquals("Test Inventory", inventory.getInventoryName(),
-            "Inventory name should be 'Test Inventory'.");
+    assertEquals("Test Inventory", inventory.getInventoryName(), "Inventory name should be 'Test Inventory'.");
   }
 
   /**
@@ -173,8 +139,7 @@ public class InventoryUnitTests {
   @Test
   public void testSetInventoryName() {
     inventory.setInventoryName("Updated Inventory Name");
-    assertEquals("Updated Inventory Name", inventory.getInventoryName(),
-            "Inventory name should be updated.");
+    assertEquals("Updated Inventory Name", inventory.getInventoryName(), "Inventory name should be updated.");
   }
 
   /**
@@ -182,8 +147,7 @@ public class InventoryUnitTests {
    */
   @Test
   public void testGetAdminId() {
-    assertEquals(adminId.toString(), inventory.getAdminId().toString(),
-            "Admin ID should match the one provided during initialization.");
+    assertEquals(adminId.toString(), inventory.getAdminId(), "Admin ID should match the one provided during initialization.");
   }
 
   /**
@@ -191,21 +155,14 @@ public class InventoryUnitTests {
    */
   @Test
   public void testToString() {
-    Item item = Item.builder()
-            .itemName("Tablet")
-            .quantity(8)
-            .location("Warehouse G")
-            .price(399.99).build();
+    Item item = new Item("Tablet", 8, "Warehouse G", 399.99);
     inventory.addItem(item);
 
     String inventoryString = inventory.toString();
 
-    assertTrue(inventoryString.contains("Test Inventory"),
-            "toString should contain inventory name.");
-    assertTrue(inventoryString.contains(item.getItemName()),
-            "toString should contain item name.");
-    assertTrue(inventoryString.contains(String.valueOf(item.getQuantity())),
-            "toString should contain item quantity.");
+    assertTrue(inventoryString.contains("Test Inventory"), "toString should contain inventory name.");
+    assertTrue(inventoryString.contains(item.getItemName()), "toString should contain item name.");
+    assertTrue(inventoryString.contains(String.valueOf(item.getQuantity())), "toString should contain item quantity.");
   }
 
   /**
@@ -216,8 +173,7 @@ public class InventoryUnitTests {
     UUID randomId = UUID.randomUUID();
     inventory.removeItem(randomId);
 
-    assertEquals(0, inventory.getAllItems().size(),
-            "Inventory should remain unchanged after attempting to remove a non-existent item.");
+    assertEquals(0, inventory.getAllItems().size(), "Inventory should remain unchanged after attempting to remove a non-existent item.");
   }
 
   /**
@@ -236,16 +192,11 @@ public class InventoryUnitTests {
    */
   @Test
   public void testAddDuplicateItem() {
-    Item item = Item.builder()
-            .itemName("Tablet")
-            .quantity(8)
-            .location("Warehouse G")
-            .price(399.99).build();
+    Item item = new Item("Tablet", 8, "Warehouse G", 399.99);
     inventory.addItem(item);
     inventory.addItem(item); // Attempt to add the same item again
 
-    assertEquals(1, inventory.getAllItems().size(),
-            "Inventory should not contain duplicate items.");
+    assertEquals(1, inventory.getAllItems().size(), "Inventory should not contain duplicate items.");
   }
 
   /**
@@ -253,21 +204,12 @@ public class InventoryUnitTests {
    */
   @Test
   public void testMultipleItemsWithSameName() {
-    Item item1 = Item.builder()
-            .itemName("Chair")
-            .quantity(10)
-            .location("Warehouse H")
-            .price(59.99).build();
-    Item item2 = Item.builder()
-            .itemName("Chair")
-            .quantity(5)
-            .location("Warehouse I")
-            .price(49.99).build();
+    Item item1 = new Item("Chair", 10, "Warehouse H", 59.99);
+    Item item2 = new Item("Chair", 5, "Warehouse I", 49.99);
 
     inventory.addItem(item1);
     inventory.addItem(item2);
 
-    assertEquals(2, inventory.getAllItems().size(),
-            "Inventory should handle items with the same name but different IDs.");
+    assertEquals(2, inventory.getAllItems().size(), "Inventory should handle items with the same name but different IDs.");
   }
 }

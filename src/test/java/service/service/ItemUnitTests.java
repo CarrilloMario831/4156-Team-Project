@@ -34,7 +34,7 @@ public class ItemUnitTests {
    */
   @Test
   public void testItemConstructor() {
-    assertNotNull(testItem.getUuid(), "UUID should not be null");
+    assertNotNull(testItem.getId(), "UUID should not be null");
     assertEquals("Toyota Forklift", testItem.getItemName(), "Item name should match");
     assertEquals(2, testItem.getQuantity(), "Quantity should be initialized to 2");
     assertEquals("Garage", testItem.getLocation(), "Location should match");
@@ -213,7 +213,7 @@ public class ItemUnitTests {
   @Test
   public void testToStringMethod() {
     String expectedString = "Item Details:\n"
-            + "UUID: " + testItem.getUuid() + "\n"
+            + "UUID: " + testItem.getId() + "\n"
             + "Name: Toyota Forklift\n"
             + "Location: Garage\n"
             + "Quantity: 2\n"

@@ -83,7 +83,7 @@ public class ServiceApplication {
 
     System.out.println(usersTableSqlHelper.select());
     System.out.println(usersTableSqlHelper.select(userId1.toString()));
-    usersTableSqlHelper.update(userId1.toString(), "c56a4180-65aa-42ec-a945-5fd21dec0538");
+    usersTableSqlHelper.update(userId1.toString(), "daKing827");
     usersTableSqlHelper.delete(userId2.toString());
   }
 }

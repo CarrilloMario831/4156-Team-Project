@@ -71,22 +71,8 @@ public class UsersTableSqlHelper {
     // define the sql query
     String sql = "select * from Users";
 
-    // This stores the select query results from the DB
-    RowMapper<User> rowMapper =
-        (rs, rowNum) ->
-            User.builder()
-                .userId(UUID.fromString(rs.getString("user_id")))
-                .username(rs.getString("username"))
-                .role(UserRoles.valueOf(rs.getString("role")))
-                .lastAccess(LocalDateTime.parse(rs.getString("last_access"), formatter))
-                .inventoryAccess(
-                    rs.getString("inventory_access") != null
-                        ? UUID.fromString(rs.getString("inventory_access"))
-                        : null)
-                .build();
-
     // Store the results within an indexable array
-    return jdbcTemplate.query(sql, rowMapper);
+    return jdbcTemplate.query(sql, getRowMapper());
   }
 
   /**
@@ -100,23 +86,8 @@ public class UsersTableSqlHelper {
     // define the sql query
     String sql = "select * from Users where user_id = " + "'" + userId + "'";
 
-    // This stores the select query results from the DB
-    RowMapper<User> rowMapper =
-        (rs, rowNum) -> {
-          return User.builder()
-              .userId(UUID.fromString(rs.getString("user_id")))
-              .username(rs.getString("username"))
-              .role(UserRoles.valueOf(rs.getString("role")))
-              .lastAccess(LocalDateTime.parse(rs.getString("last_access"), formatter))
-              .inventoryAccess(
-                  rs.getString("inventory_access") != null
-                      ? UUID.fromString(rs.getString("inventory_access"))
-                      : null)
-              .build();
-        };
-
     // Store the results within an indexable array
-    List<User> results = jdbcTemplate.query(sql, rowMapper);
+    List<User> results = jdbcTemplate.query(sql, getRowMapper());
 
     if (results.isEmpty()) {
       return null;
@@ -133,12 +104,12 @@ public class UsersTableSqlHelper {
    * representing the success of the query.
    *
    * @param userId Unique identifier for the user within the DB.
-   * @param inventoryId Unique identifier for the Inventory that the user can access.
+   * @param username username of user.
    * @return boolean
    */
-  public boolean update(String userId, String inventoryId) {
-    String sql = "update Users set inventory_access = ? where user_id = ?";
-    int rows = jdbcTemplate.update(sql, inventoryId, userId);
+  public boolean update(String userId, String username) {
+    String sql = "update Users set username = ? where user_id = ?";
+    int rows = jdbcTemplate.update(sql, username, userId);
 
     System.out.println(rows + " row/s updated");
     return rows == 1;
@@ -157,5 +128,19 @@ public class UsersTableSqlHelper {
     System.out.println(rows + " row/s deleted");
 
     return rows == 1;
+  }
+
+  private RowMapper<User> getRowMapper() {
+    return (rs, rowNum) ->
+        User.builder()
+            .userId(UUID.fromString(rs.getString("user_id")))
+            .username(rs.getString("username"))
+            .role(UserRoles.valueOf(rs.getString("role")))
+            .lastAccess(LocalDateTime.parse(rs.getString("last_access"), formatter))
+            .inventoryAccess(
+                rs.getString("inventory_access") != null
+                    ? UUID.fromString(rs.getString("inventory_access"))
+                    : null)
+            .build();
   }
 }

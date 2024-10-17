@@ -87,13 +87,27 @@ public class Item {
    */
   @Override
   public String toString() {
-    return "\nItem: "
-        + itemName
-        + "\nLocation: "
-        + location
-        + "\nQuantity: "
-        + quantity
-        + "\nReservation Status: "
-        + reservationStatus;
+    StringBuilder sb = new StringBuilder();
+    sb.append("Item Details:\n");
+    sb.append("UUID: ").append(itemId.toString()).append("\n");
+    sb.append("Name: ").append(itemName).append("\n");
+    sb.append("Location: ").append(location).append("\n");
+    sb.append("Quantity: ").append(quantity).append("\n");
+    sb.append("Price: $").append(price).append("\n");
+    sb.append("Reservation Status: ")
+            .append(reservationStatus ? "Reserved" : "Available")
+            .append("\n");
+
+    if (reservationStatus) {
+      sb.append("Reservation Duration: ").append(reservationDuration.toMinutes())
+              .append(" minutes\n");
+      sb.append("Reservation Time: ").append(reservationTime.toString()).append("\n");
+    }
+
+    if (nextRestockDateTime != null) {
+      sb.append("Next Restock Date: ").append(nextRestockDateTime.toString()).append("\n");
+    }
+
+    return sb.toString();
   }
 }

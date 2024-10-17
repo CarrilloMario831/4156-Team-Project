@@ -20,11 +20,10 @@ import service.models.Item;
  */
 @Getter
 @Repository
-public class ItemsTableSQLHelper {
+public class ItemsTableSqlHelper {
 
   private JdbcTemplate jdbcTemplate;
-  private final DateTimeFormatter formatter =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
   /**
    * This method allows for Spring Boot to auto-manage the beans needed to connect to the SQL DB.
@@ -38,7 +37,7 @@ public class ItemsTableSQLHelper {
    * This is a test insert class for providing an insight into what it looks like to insert items
    * into the DB.
    *
-   * @param item : Item object that you'd like to store within DB.
+   * @param item Item object that you'd like to store within DB.
    */
   public void insert(Item item) {
     // Create your insert SQL query with "?" as a placeholder for variable
@@ -79,32 +78,7 @@ public class ItemsTableSQLHelper {
     String sql = "select * from Items";
 
     // This stores the select query results from the DB
-    RowMapper<Item> rowMapper =
-        new RowMapper<Item>() {
-
-          @Override
-          public Item mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-            Item item =
-                Item.builder()
-                    .itemId(UUID.fromString(rs.getString("uuid")))
-                    .timeOfAddition(
-                        LocalDateTime.parse(rs.getString("time_of_addition"), formatter))
-                    .itemName(rs.getString("item_name"))
-                    .quantity(rs.getInt("quantity"))
-                    .location(rs.getString("location"))
-                    .price(rs.getDouble("price"))
-                    .reservationDurationInMillis(rs.getLong("reservation_duration"))
-                    .reservationStatus(rs.getBoolean("reserved_status"))
-                    .reservationTime(
-                        LocalDateTime.parse(rs.getString("reservation_time"), formatter))
-                    .nextRestockDateTime(
-                        LocalDateTime.parse(rs.getString("next_restock"), formatter))
-                    .build();
-
-            return item;
-          }
-        };
+    RowMapper<Item> rowMapper = (rs, rowNum) -> getItemFromTable(rs);
 
     // Store the results within an indexable array
     return jdbcTemplate.query(sql, rowMapper);
@@ -114,7 +88,7 @@ public class ItemsTableSQLHelper {
    * This is a test select method for providing insight into what it looks like to read items from
    * the DB.
    *
-   * @param uuid : Unique identifier for the item you'd like to search for in the DB.
+   * @param uuid Unique identifier for the item you'd like to search for in the DB.
    */
   public List<Item> select(String uuid) {
 
@@ -122,42 +96,33 @@ public class ItemsTableSQLHelper {
     String sql = "select * from Items where uuid = " + "'" + uuid + "'";
 
     // This stores the select query results from the DB
-    RowMapper<Item> rowMapper =
-        new RowMapper<Item>() {
-
-          @Override
-          public Item mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-            Item item =
-                Item.builder()
-                    .itemId(UUID.fromString(rs.getString("uuid")))
-                    .timeOfAddition(
-                        LocalDateTime.parse(rs.getString("time_of_addition"), formatter))
-                    .itemName(rs.getString("item_name"))
-                    .quantity(rs.getInt("quantity"))
-                    .location(rs.getString("location"))
-                    .price(rs.getDouble("price"))
-                    .reservationDurationInMillis(rs.getLong("reservation_duration"))
-                    .reservationStatus(rs.getBoolean("reserved_status"))
-                    .reservationTime(
-                        LocalDateTime.parse(rs.getString("reservation_time"), formatter))
-                    .nextRestockDateTime(
-                        LocalDateTime.parse(rs.getString("next_restock"), formatter))
-                    .build();
-            return item;
-          }
-        };
+    RowMapper<Item> rowMapper = (rs, rowNum) -> getItemFromTable(rs);
 
     // Store the results within an indexable array
     return jdbcTemplate.query(sql, rowMapper);
+  }
+
+  private Item getItemFromTable(ResultSet rs) throws SQLException {
+    return Item.builder()
+        .itemId(UUID.fromString(rs.getString("uuid")))
+        .timeOfAddition(LocalDateTime.parse(rs.getString("time_of_addition"), formatter))
+        .itemName(rs.getString("item_name"))
+        .quantity(rs.getInt("quantity"))
+        .location(rs.getString("location"))
+        .price(rs.getDouble("price"))
+        .reservationDurationInMillis(rs.getLong("reservation_duration"))
+        .reservationStatus(rs.getBoolean("reserved_status"))
+        .reservationTime(LocalDateTime.parse(rs.getString("reservation_time"), formatter))
+        .nextRestockDateTime(LocalDateTime.parse(rs.getString("next_restock"), formatter))
+        .build();
   }
 
   /**
    * This method will change the location column for an item and returns a boolean representing the
    * success of the query.
    *
-   * @param uuid: Unique identifier for the item within the DB.
-   * @param location: String representation of the new location where the item is stored
+   * @param uuid Unique identifier for the item within the DB.
+   * @param location String representation of the new location where the item is stored
    * @return boolean
    */
   public boolean update(String uuid, String location) {
@@ -172,9 +137,9 @@ public class ItemsTableSQLHelper {
   }
 
   /**
-   * This method will simply delete
+   * This method will simply delete item from the DB.
    *
-   * @param uuid: Unique identifier for the item within the DB we'd like to delete
+   * @param uuid Unique identifier for the item within the DB we'd like to delete
    * @return boolean representing the number of rows deleted.
    */
   public boolean delete(String uuid) {

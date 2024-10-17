@@ -18,18 +18,13 @@ import lombok.Setter;
 @Builder
 public class Inventory {
 
-  @NonNull
-  private final UUID inventoryId = UUID.randomUUID();
+  @NonNull private final UUID inventoryId = UUID.randomUUID();
 
-  @NonNull
-  @Setter
-  private String inventoryName;
+  @NonNull @Setter private String inventoryName;
 
-  @NonNull
-  private Map<UUID, Item> items;
+  @NonNull private Map<UUID, Item> items;
 
-  @NonNull
-  private final UUID adminId;
+  @NonNull private final UUID adminId;
 
   /**
    * Creates a new item and adds it to the inventory.
@@ -37,19 +32,20 @@ public class Inventory {
    * @param itemName the name of the item
    * @param quantity the quantity of the item
    * @param location the location of the item
-   * @param price    the price of the item
+   * @param price the price of the item
    */
   public void createItem(String itemName, int quantity, String location, double price) {
     // Check if item name is empty or quantity is negative
     if (itemName == null || itemName.isEmpty() || quantity <= 0 || price < 0) {
       throw new IllegalArgumentException("Invalid item data.");
     }
-    Item item = Item.builder()
-        .itemName(itemName)
-        .quantity(quantity)
-        .location(location)
-        .price(price)
-        .build();
+    Item item =
+        Item.builder()
+            .itemName(itemName)
+            .quantity(quantity)
+            .location(location)
+            .price(price)
+            .build();
     addItem(item);
   }
 
@@ -57,24 +53,28 @@ public class Inventory {
    * Adds a new item to the inventory.
    *
    * @param item the item to be added
+   * @return true if the item was added successfully, false if the item already exists
    */
-  public void addItem(Item item) {
-    // if (items.containsKey(item.getItemId())) {
-    // throw new IllegalArgumentException("Item already exists in the inventory.");
-    // }
+  public boolean addItem(Item item) {
+    if (items.containsKey(item.getItemId())) {
+      return false;
+    }
     items.put(item.getItemId(), item);
+    return true;
   }
 
   /**
-   * Removes an item from the inventory by its UUID.
+   * Removes an item from the inventory if it exists.
    *
-   * @param itemId the UUID of the item to be removed
+   * @param itemId the UUID of the item to be deleted
+   * @return true if the item was found and deleted, false otherwise
    */
-  public void removeItem(UUID itemId) {
-    // if (!items.containsKey(itemId)) {
-    // throw new NoSuchElementException("Item not found.");
-    // }
-    items.remove(itemId);
+  public boolean removeItem(UUID itemId) {
+    if (items.containsKey(itemId)) {
+      items.remove(itemId);
+      return true;
+    }
+    return false;
   }
 
   /**
@@ -102,7 +102,7 @@ public class Inventory {
   /**
    * Updates the price of an item in the inventory.
    *
-   * @param itemId   the UUID of the item
+   * @param itemId the UUID of the item
    * @param newPrice the new price to set
    */
   public void updateItemPrice(UUID itemId, double newPrice) {
@@ -117,7 +117,7 @@ public class Inventory {
   /**
    * Updates the location of an item in the inventory.
    *
-   * @param itemId      the UUID of the item
+   * @param itemId the UUID of the item
    * @param newLocation the new location of the item
    */
   public void updateItemLocation(UUID itemId, String newLocation) {
@@ -132,7 +132,7 @@ public class Inventory {
   /**
    * Updates an item's quantity in the inventory.
    *
-   * @param itemId      the UUID of the item
+   * @param itemId the UUID of the item
    * @param newQuantity the new quantity to set
    */
   public void updateItemQuantity(UUID itemId, int newQuantity) {
@@ -142,20 +142,6 @@ public class Inventory {
     } else {
       throw new IllegalArgumentException("Invalid quantity or item not found.");
     }
-  }
-
-  /**
-   * Deletes an item from the inventory if it exists.
-   *
-   * @param itemId the UUID of the item to be deleted
-   * @return true if the item was found and deleted, false otherwise
-   */
-  public boolean deleteItem(UUID itemId) {
-    if (items.containsKey(itemId)) {
-      items.remove(itemId);
-      return true;
-    }
-    return false;
   }
 
   /**
@@ -172,7 +158,7 @@ public class Inventory {
   /**
    * Adds stock to an item in the inventory.
    *
-   * @param itemId             the UUID of the item
+   * @param itemId the UUID of the item
    * @param additionalQuantity the amount of stock to add
    */
   public void restockItem(UUID itemId, int additionalQuantity) {
@@ -187,7 +173,7 @@ public class Inventory {
   /**
    * Reserves an item for a specific duration if it's available.
    *
-   * @param itemId              the UUID of the item
+   * @param itemId the UUID of the item
    * @param reservationDuration the duration for the reservation
    */
   public void reserveItem(UUID itemId, Duration reservationDuration) {
@@ -232,8 +218,7 @@ public class Inventory {
    * Searches for items by a partial name match.
    *
    * @param partialName the partial name of the item to search for
-   * @return a list of items whose names contain the partialName
-   *         (case-insensitive)
+   * @return a list of items whose names contain the partialName (case-insensitive)
    */
   public List<Item> searchItemsByName(String partialName) {
     List<Item> matchingItems = new ArrayList<>();

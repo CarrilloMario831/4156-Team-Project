@@ -262,10 +262,13 @@ public class Item {
     sb.append("Location: ").append(location).append("\n");
     sb.append("Quantity: ").append(quantity).append("\n");
     sb.append("Price: $").append(price).append("\n");
-    sb.append("Reservation Status: ").append(reservationStatus ? "Reserved" : "Available").append("\n");
+    sb.append("Reservation Status: ")
+            .append(reservationStatus ? "Reserved" : "Available")
+            .append("\n");
 
     if (reservationStatus) {
-      sb.append("Reservation Duration: ").append(reservationDuration.toMinutes()).append(" minutes\n");
+      sb.append("Reservation Duration: ").append(reservationDuration.toMinutes())
+              .append(" minutes\n");
       sb.append("Reservation Time: ").append(reservationTime.toString()).append("\n");
     }
 

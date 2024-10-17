@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,7 +29,11 @@ public class InventoryUnitTests {
   @BeforeEach
   public void setUp() {
     adminId = UUID.randomUUID();
-    inventory = new Inventory(adminId, "Test Inventory", new HashMap<>());
+    inventory = Inventory.builder()
+            .adminId(adminId)
+            .inventoryName("Test Inventory")
+            .items(new HashMap<>())
+            .build();
   }
 
   /**
@@ -36,10 +41,10 @@ public class InventoryUnitTests {
    */
   @Test
   public void testConstructor() {
-    assertNotNull(inventory.getId(), "Inventory ID should not be null.");
+    assertNotNull(inventory.getInventoryId(), "Inventory ID should not be null.");
     assertEquals("Test Inventory", inventory.getInventoryName(),
             "Inventory name should be set correctly.");
-    assertEquals(adminId.toString(), inventory.getAdminId(), "Admin ID should be set correctly.");
+    assertEquals(adminId.toString(), inventory.getAdminId().toString(), "Admin ID should be set correctly.");
     assertTrue(inventory.getAllItems().isEmpty(), "Items map should be initialized and empty.");
   }
 
@@ -64,7 +69,7 @@ public class InventoryUnitTests {
    */
   @Test
   public void testGetId() {
-    UUID inventoryId = inventory.getId();
+    UUID inventoryId = inventory.getInventoryId();
     assertNotNull(inventoryId, "Inventory ID should not be null.");
   }
 
@@ -177,7 +182,7 @@ public class InventoryUnitTests {
    */
   @Test
   public void testGetAdminId() {
-    assertEquals(adminId.toString(), inventory.getAdminId(),
+    assertEquals(adminId.toString(), inventory.getAdminId().toString(),
             "Admin ID should match the one provided during initialization.");
   }
 

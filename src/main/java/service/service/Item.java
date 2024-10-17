@@ -244,7 +244,7 @@ public class Item {
    *
    * @return the UUID of the item
    */
-  public UUID getUuid() {
+  public UUID getId() {
     return uuid;
   }
 

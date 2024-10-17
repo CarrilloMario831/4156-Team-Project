@@ -1,13 +1,17 @@
-package service.service;
+package service.handler;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
+import service.models.Item;
 
 /**
  * This class handles the translation from java objects to SQL queries into the local MySQL database
@@ -16,9 +20,11 @@ import org.springframework.stereotype.Repository;
  */
 @Getter
 @Repository
-public class sql_test_item_repo {
+public class SQLDatabaseHandler {
 
   private JdbcTemplate jdbcTemplate;
+  private final DateTimeFormatter formatter =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
   /**
    * This method allows for Spring Boot to auto-manage the beans needed to connect to the SQL DB.
@@ -34,7 +40,7 @@ public class sql_test_item_repo {
    *
    * @param item : Item object that you'd like to store within DB.
    */
-  public void insert(sql_test_item item) {
+  public void insert(Item item) {
     // Create your insert SQL query with "?" as a placeholder for variable
     // values
 
@@ -42,9 +48,9 @@ public class sql_test_item_repo {
     String sql =
         "insert into Items ("
             + "item_name, time_of_addition, quantity, "
-            + "reserved_status, reservation_time, "
+            + "reserved_status, reservation_time, reservation_duration, "
             + "location, price, next_restock) "
-            + "values (?,?,?,?,?,?,?,?)";
+            + "values (?,?,?,?,?,?,?,?,?)";
 
     // JDBC template provides many methods and query() is synomous with select
     // update() is for the SQL insert, update, deletes
@@ -56,6 +62,7 @@ public class sql_test_item_repo {
             item.getQuantity(),
             item.isReservationStatus(),
             item.getReservationTime(),
+            item.getReservationDurationInMillis(),
             item.getLocation(),
             item.getPrice(),
             item.getNextRestockDateTime());
@@ -66,26 +73,34 @@ public class sql_test_item_repo {
    * This is a test select method for providing insight into what it looks like to read items from
    * the DB.
    */
-  public List<sql_test_item> select() {
+  public List<Item> select() {
 
     // define the sql query
     String sql = "select * from Items";
 
     // This stores the select query results from the DB
-    RowMapper<sql_test_item> rowMapper =
-        new RowMapper<sql_test_item>() {
+    RowMapper<Item> rowMapper =
+        new RowMapper<Item>() {
 
           @Override
-          public sql_test_item mapRow(ResultSet rs, int rowNum) throws SQLException {
+          public Item mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-            sql_test_item item =
-                new sql_test_item(
-                    rs.getString("item_name"),
-                    rs.getInt("quantity"),
-                    rs.getString("location"),
-                    rs.getDouble("price"));
-
-            item.setReservationStatus(rs.getBoolean("reserved_status"));
+            Item item =
+                Item.builder()
+                    .itemId(UUID.fromString(rs.getString("uuid")))
+                    .timeOfAddition(
+                        LocalDateTime.parse(rs.getString("time_of_addition"), formatter))
+                    .itemName(rs.getString("item_name"))
+                    .quantity(rs.getInt("quantity"))
+                    .location(rs.getString("location"))
+                    .price(rs.getDouble("price"))
+                    .reservationDurationInMillis(rs.getLong("reservation_duration"))
+                    .reservationStatus(rs.getBoolean("reserved_status"))
+                    .reservationTime(
+                        LocalDateTime.parse(rs.getString("reservation_time"), formatter))
+                    .nextRestockDateTime(
+                        LocalDateTime.parse(rs.getString("next_restock"), formatter))
+                    .build();
 
             return item;
           }
@@ -101,28 +116,34 @@ public class sql_test_item_repo {
    *
    * @param uuid : Unique identifier for the item you'd like to search for in the DB.
    */
-  public List<sql_test_item> select(String uuid) {
+  public List<Item> select(String uuid) {
 
     // define the sql query
     String sql = "select * from Items where uuid = " + "'" + uuid + "'";
 
     // This stores the select query results from the DB
-    RowMapper<sql_test_item> rowMapper =
-        new RowMapper<sql_test_item>() {
+    RowMapper<Item> rowMapper =
+        new RowMapper<Item>() {
 
           @Override
-          public sql_test_item mapRow(ResultSet rs, int rowNum) throws SQLException {
+          public Item mapRow(ResultSet rs, int rowNum) throws SQLException {
 
-            sql_test_item item =
-                new sql_test_item(
-                    rs.getString("item_name"),
-                    rs.getInt("quantity"),
-                    rs.getString("location"),
-                    rs.getDouble("price"));
-
-            item.setReservationStatus(rs.getBoolean("reserved_status"));
-            // System.out.println("Retrieved item with uuid: "+ rs.getString("uuid"));
-
+            Item item =
+                Item.builder()
+                    .itemId(UUID.fromString(rs.getString("uuid")))
+                    .timeOfAddition(
+                        LocalDateTime.parse(rs.getString("time_of_addition"), formatter))
+                    .itemName(rs.getString("item_name"))
+                    .quantity(rs.getInt("quantity"))
+                    .location(rs.getString("location"))
+                    .price(rs.getDouble("price"))
+                    .reservationDurationInMillis(rs.getLong("reservation_duration"))
+                    .reservationStatus(rs.getBoolean("reserved_status"))
+                    .reservationTime(
+                        LocalDateTime.parse(rs.getString("reservation_time"), formatter))
+                    .nextRestockDateTime(
+                        LocalDateTime.parse(rs.getString("next_restock"), formatter))
+                    .build();
             return item;
           }
         };

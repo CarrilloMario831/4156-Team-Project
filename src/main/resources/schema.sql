@@ -63,10 +63,6 @@ ADD CONSTRAINT fk_user_inventory
     REFERENCES Users (user_key)
     ON DELETE CASCADE;
 
-<<<<<<< HEAD
-<<<<<<< HEAD:src/main/resources/schema.sql
-=======
->>>>>>> d3a7c15 (Edited DB schema to create a default inventory for each user created)
 -- Here we add the foreign key to connect the items to the Inventories they belong to
 ALTER TABLE Items
     ADD CONSTRAINT fk_item_inventory
@@ -85,10 +81,3 @@ BEGIN
     INSERT INTO Inventories (inventory_id, inventory_name, user_key)
     VALUES (new_inventory_id, CONCAT(NEW.username, "'s Default Inventory"), NEW.user_key);
 END;
-
-
-<<<<<<< HEAD
-=======
->>>>>>> 48c2e3e (Basic writing to local DB working):src/main/resources/sql_ddl.sql
-=======
->>>>>>> d3a7c15 (Edited DB schema to create a default inventory for each user created)

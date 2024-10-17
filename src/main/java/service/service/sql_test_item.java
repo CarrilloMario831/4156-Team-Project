@@ -4,11 +4,11 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public class sql_test_item{
-  
+public class sql_test_item {
+
   // Unique identifier (primary key within SQL DB)
   private final UUID uuid;
-  
+
   // Item details
   private String itemName;
   private LocalDateTime timeOfAddition;
@@ -16,10 +16,10 @@ public class sql_test_item{
   private boolean reservationStatus;
   private Duration reservationDuration;
   private LocalDateTime reservationTime;
-  private String location;         // General location or specific address
+  private String location; // General location or specific address
   private double price;
   private LocalDateTime nextRestockDateTime;
-  
+
   public sql_test_item(String itemName, int quantity, String location, double price) {
     this.uuid = UUID.randomUUID();
     this.itemName = itemName;
@@ -32,9 +32,9 @@ public class sql_test_item{
     this.price = price;
     this.nextRestockDateTime = null;
   }
-  
+
   // Getters and setters (except for unique identifiers like UUID)
-  
+
   /**
    * Returns the name of the item.
    *
@@ -43,7 +43,7 @@ public class sql_test_item{
   public String getItemName() {
     return itemName;
   }
-  
+
   /**
    * Sets the name of the item.
    *
@@ -52,7 +52,7 @@ public class sql_test_item{
   public void setItemName(String itemName) {
     this.itemName = itemName;
   }
-  
+
   /**
    * Returns the time when the item was added.
    *
@@ -61,7 +61,7 @@ public class sql_test_item{
   public LocalDateTime getTimeOfAddition() {
     return timeOfAddition;
   }
-  
+
   /**
    * Sets the time when the item was added.
    *
@@ -70,7 +70,7 @@ public class sql_test_item{
   public void setTimeOfAddition(LocalDateTime timeOfAddition) {
     this.timeOfAddition = timeOfAddition;
   }
-  
+
   /**
    * Returns the current quantity of the item.
    *
@@ -79,10 +79,10 @@ public class sql_test_item{
   public int getQuantity() {
     return quantity;
   }
-  
+
   /**
-   * Adjusts the quantity of the item by the specified amount.
-   * Positive values increase the quantity, negative values decrease it.
+   * Adjusts the quantity of the item by the specified amount. Positive values increase the
+   * quantity, negative values decrease it.
    *
    * @param adjustment the amount to adjust the quantity by
    */
@@ -92,7 +92,7 @@ public class sql_test_item{
       this.quantity = 0; // Ensures quantity doesn't go negative
     }
   }
-  
+
   /**
    * Adds the specified number of items to the current quantity.
    *
@@ -101,7 +101,7 @@ public class sql_test_item{
   public void addItemQuantity(int numberOfItems) {
     adjustQuantity(numberOfItems);
   }
-  
+
   /**
    * Sets the quantity of the item.
    *
@@ -110,7 +110,7 @@ public class sql_test_item{
   public void setItemQuantity(int quantity) {
     this.quantity = Math.max(quantity, 0);
   }
-  
+
   /**
    * Removes the specified number of items from the current quantity.
    *
@@ -119,7 +119,7 @@ public class sql_test_item{
   public void removeItems(int numberOfItems) {
     adjustQuantity(-numberOfItems);
   }
-  
+
   /**
    * Returns the reservation status of the item.
    *
@@ -128,7 +128,7 @@ public class sql_test_item{
   public boolean isReservationStatus() {
     return reservationStatus;
   }
-  
+
   /**
    * Sets the reservation status of the item.
    *
@@ -137,7 +137,7 @@ public class sql_test_item{
   public void setReservationStatus(boolean reservationStatus) {
     this.reservationStatus = reservationStatus;
   }
-  
+
   /**
    * Returns the duration of the reservation.
    *
@@ -146,7 +146,7 @@ public class sql_test_item{
   public Duration getReservationDuration() {
     return reservationDuration;
   }
-  
+
   /**
    * Sets the duration for which the item is reserved.
    *
@@ -155,7 +155,7 @@ public class sql_test_item{
   public void setReservationDuration(Duration reservationDuration) {
     this.reservationDuration = reservationDuration;
   }
-  
+
   /**
    * Returns the time when the item was reserved.
    *
@@ -164,7 +164,7 @@ public class sql_test_item{
   public LocalDateTime getReservationTime() {
     return reservationTime;
   }
-  
+
   /**
    * Sets the time when the item was reserved.
    *
@@ -173,7 +173,7 @@ public class sql_test_item{
   public void setReservationTime(LocalDateTime reservationTime) {
     this.reservationTime = reservationTime;
   }
-  
+
   /**
    * Returns the general location of the item.
    *
@@ -182,7 +182,7 @@ public class sql_test_item{
   public String getLocation() {
     return location;
   }
-  
+
   /**
    * Sets the general location of the item.
    *
@@ -191,7 +191,7 @@ public class sql_test_item{
   public void setLocation(String location) {
     this.location = location;
   }
-  
+
   /**
    * Returns the price of the item.
    *
@@ -200,7 +200,7 @@ public class sql_test_item{
   public double getPrice() {
     return price;
   }
-  
+
   /**
    * Sets the price of the item.
    *
@@ -209,7 +209,7 @@ public class sql_test_item{
   public void setPrice(double price) {
     this.price = price;
   }
-  
+
   /**
    * Returns the next restock date and time.
    *
@@ -218,7 +218,7 @@ public class sql_test_item{
   public LocalDateTime getNextRestockDateTime() {
     return nextRestockDateTime;
   }
-  
+
   /**
    * Sets the next restock date and time.
    *
@@ -227,7 +227,7 @@ public class sql_test_item{
   public void setNextRestockDateTime(LocalDateTime nextRestockDateTime) {
     this.nextRestockDateTime = nextRestockDateTime;
   }
-  
+
   /**
    * Returns the unique identifier (UUID) of the item.
    *
@@ -236,7 +236,7 @@ public class sql_test_item{
   public UUID getUuid() {
     return uuid;
   }
-  
+
   /**
    * Returns a string representation of the item.
    *
@@ -245,15 +245,15 @@ public class sql_test_item{
   @Override
   public String toString() {
     return "\nItem: "
-           + itemName
-           + "\nLocation: "
-           + location
-           + "\nQuantity: "
-           + quantity
-           + "\nReservation Status: "
-           + reservationStatus;
+        + itemName
+        + "\nLocation: "
+        + location
+        + "\nQuantity: "
+        + quantity
+        + "\nReservation Status: "
+        + reservationStatus;
   }
-  
+
   // Additional methods can be added as needed
-  
+
 }

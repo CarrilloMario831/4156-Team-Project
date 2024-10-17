@@ -8,10 +8,10 @@ VALUES
 
 
 -- Sample inserts for Items
-INSERT INTO Items (uuid, item_name, time_of_addition, quantity, reserved_status, price)
+INSERT INTO Items (uuid, item_name, time_of_addition, reservation_time, quantity, reserved_status, price, location)
 VALUES
-    ('c56a4180-65aa-42ec-a945-5fd21dec0538', 'Laptop', '2024-10-17 12:03:33.550874', 50, FALSE, 1200.00),
-    ('a123b789-123b-48ec-923f-d9b8f06ba7aa', 'Mouse', '2024-10-17 12:03:33.550874', 200, TRUE, 25.99);
+    ('c56a4180-65aa-42ec-a945-5fd21dec0538', 'Laptop', '2024-10-17 12:03:33.550874', '2024-10-17 12:03:33.550874', 50, FALSE, 1200.00, 'CheeseCake Factory'),
+    ('a123b789-123b-48ec-923f-d9b8f06ba7aa', 'Mouse', '2024-10-17 12:03:33.550874', '2024-10-17 12:03:33.550874', 200, TRUE, 25.99, 'Crumbl Cookie');
 
 -- Sample inserts for Inventories
 INSERT INTO Inventories (inventory_id, inventory_name, user_key)

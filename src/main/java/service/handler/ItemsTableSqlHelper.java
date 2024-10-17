@@ -1,11 +1,6 @@
 package service.handler;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.UUID;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -16,15 +11,13 @@ import service.models.Item;
 /**
  * This class handles the translation from java objects to SQL queries into the local MySQL database
  * titled reservation_management. This is only for testing and providing some boilerplate code on
- * how to write JDBC template based queries
+ * how to write JDBC template based queries.
  */
 @Getter
 @Repository
-public class ItemsTableSQLHelper {
+public class ItemsTableSqlHelper {
 
   private JdbcTemplate jdbcTemplate;
-  private final DateTimeFormatter formatter =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
 
   /**
    * This method allows for Spring Boot to auto-manage the beans needed to connect to the SQL DB.
@@ -38,7 +31,7 @@ public class ItemsTableSQLHelper {
    * This is a test insert class for providing an insight into what it looks like to insert items
    * into the DB.
    *
-   * @param item : Item object that you'd like to store within DB.
+   * @param item Item object that you'd like to store within DB.
    */
   public void insert(Item item) {
     // Create your insert SQL query with "?" as a placeholder for variable
@@ -52,7 +45,7 @@ public class ItemsTableSQLHelper {
             + "location, price, next_restock) "
             + "values (?,?,?,?,?,?,?,?,?)";
 
-    // JDBC template provides many methods and query() is synomous with select
+    // JDBC template provides many methods and query() is synonymous with select
     // update() is for the SQL insert, update, deletes
     int rows =
         jdbcTemplate.update(
@@ -79,32 +72,7 @@ public class ItemsTableSQLHelper {
     String sql = "select * from Items";
 
     // This stores the select query results from the DB
-    RowMapper<Item> rowMapper =
-        new RowMapper<Item>() {
-
-          @Override
-          public Item mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-            Item item =
-                Item.builder()
-                    .itemId(UUID.fromString(rs.getString("uuid")))
-                    .timeOfAddition(
-                        LocalDateTime.parse(rs.getString("time_of_addition"), formatter))
-                    .itemName(rs.getString("item_name"))
-                    .quantity(rs.getInt("quantity"))
-                    .location(rs.getString("location"))
-                    .price(rs.getDouble("price"))
-                    .reservationDurationInMillis(rs.getLong("reservation_duration"))
-                    .reservationStatus(rs.getBoolean("reserved_status"))
-                    .reservationTime(
-                        LocalDateTime.parse(rs.getString("reservation_time"), formatter))
-                    .nextRestockDateTime(
-                        LocalDateTime.parse(rs.getString("next_restock"), formatter))
-                    .build();
-
-            return item;
-          }
-        };
+    RowMapper<Item> rowMapper = new ItemRowMapper();
 
     // Store the results within an indexable array
     return jdbcTemplate.query(sql, rowMapper);
@@ -114,7 +82,7 @@ public class ItemsTableSQLHelper {
    * This is a test select method for providing insight into what it looks like to read items from
    * the DB.
    *
-   * @param uuid : Unique identifier for the item you'd like to search for in the DB.
+   * @param uuid Unique identifier for the item you'd like to search for in the DB.
    */
   public List<Item> select(String uuid) {
 
@@ -122,31 +90,7 @@ public class ItemsTableSQLHelper {
     String sql = "select * from Items where uuid = " + "'" + uuid + "'";
 
     // This stores the select query results from the DB
-    RowMapper<Item> rowMapper =
-        new RowMapper<Item>() {
-
-          @Override
-          public Item mapRow(ResultSet rs, int rowNum) throws SQLException {
-
-            Item item =
-                Item.builder()
-                    .itemId(UUID.fromString(rs.getString("uuid")))
-                    .timeOfAddition(
-                        LocalDateTime.parse(rs.getString("time_of_addition"), formatter))
-                    .itemName(rs.getString("item_name"))
-                    .quantity(rs.getInt("quantity"))
-                    .location(rs.getString("location"))
-                    .price(rs.getDouble("price"))
-                    .reservationDurationInMillis(rs.getLong("reservation_duration"))
-                    .reservationStatus(rs.getBoolean("reserved_status"))
-                    .reservationTime(
-                        LocalDateTime.parse(rs.getString("reservation_time"), formatter))
-                    .nextRestockDateTime(
-                        LocalDateTime.parse(rs.getString("next_restock"), formatter))
-                    .build();
-            return item;
-          }
-        };
+    RowMapper<Item> rowMapper = new ItemRowMapper();
 
     // Store the results within an indexable array
     return jdbcTemplate.query(sql, rowMapper);
@@ -156,9 +100,9 @@ public class ItemsTableSQLHelper {
    * This method will change the location column for an item and returns a boolean representing the
    * success of the query.
    *
-   * @param uuid: Unique identifier for the item within the DB.
-   * @param location: String representation of the new location where the item is stored
-   * @return boolean
+   * @param uuid Unique identifier for the item within the DB.
+   * @param location String representation of the new location where the item is stored
+   * @return Return true or false whether the update was done.
    */
   public boolean update(String uuid, String location) {
 
@@ -172,9 +116,9 @@ public class ItemsTableSQLHelper {
   }
 
   /**
-   * This method will simply delete
+   * This method will simply delete.
    *
-   * @param uuid: Unique identifier for the item within the DB we'd like to delete
+   * @param uuid Unique identifier for the item within the DB we'd like to delete
    * @return boolean representing the number of rows deleted.
    */
   public boolean delete(String uuid) {

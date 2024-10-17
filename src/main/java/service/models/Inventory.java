@@ -13,13 +13,13 @@ import lombok.Setter;
 @Builder
 public class Inventory {
 
-  @NonNull private final UUID inventoryId = UUID.randomUUID();
+  @NonNull @Setter private UUID inventoryId = UUID.randomUUID();
 
   @NonNull @Setter private String inventoryName;
 
   @NonNull private Map<UUID, Item> items;
 
-  @NonNull private final UUID adminId;
+  @NonNull @Setter private UUID adminId;
 
   /**
    * Creates a new item and adds it to the inventory.

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.UUID;
 
+/* This class contains all the API routes for the service. */
 @RestController
 public class RouteController {
 

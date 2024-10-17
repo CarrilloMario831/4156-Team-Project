@@ -183,8 +183,11 @@ public class ItemUnitTests {
   /** Tests the toString method of the Item class. */
   @Test
   public void testToStringMethod() {
-    String expectedString = "Item Details:\n"
-            + "UUID: " + testItem.getItemId() + "\n"
+    String expectedString =
+        "Item Details:\n"
+            + "UUID: "
+            + testItem.getItemId()
+            + "\n"
             + "Name: Toyota Forklift\n"
             + "Location: Garage\n"
             + "Quantity: 2\n"

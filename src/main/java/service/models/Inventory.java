@@ -11,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Builder
 public class Inventory {
-  
+
   @NonNull @Setter private UUID inventoryId;
 
   @NonNull @Setter private String inventoryName;

@@ -24,7 +24,7 @@ public class Item {
   @Setter private UUID inventoryId;
 
   private int quantity;
-  
+
   private boolean reservationStatus;
   private long reservationDurationInMillis;
   private LocalDateTime reservationTime;

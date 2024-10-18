@@ -102,9 +102,8 @@ public class InventoryTableSqlHelper {
   }
 
   /**
-<<<<<<< HEAD
-   * This method will change the admin user column for an inventory and returns a boolean
-   * representing the success of the query.
+   * <<<<<<< HEAD This method will change the admin user column for an inventory and returns a
+   * boolean representing the success of the query.
    *
    * @param inventoryId Unique identifier for the inventory within the DB.
    * @param adminId Unique identifier for the admin who'd we like to change the inventory's access
@@ -122,9 +121,7 @@ public class InventoryTableSqlHelper {
   }
 
   /**
-=======
->>>>>>> sql-connect
-   * This method will simply delete.
+   * ======= >>>>>>> sql-connect This method will simply delete.
    *
    * @param inventoryId Unique identifier for the inventory within the DB we'd like to delete.
    * @return boolean representing the number of rows deleted.

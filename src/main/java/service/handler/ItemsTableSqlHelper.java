@@ -147,6 +147,37 @@ public class ItemsTableSqlHelper {
   }
 
   /**
+   * This method will change the location column for an item and returns a boolean representing the
+   * success of the query.
+   *
+   * @param itemId Unique identifier for the item within the DB.
+   * @param newPrice the new price of the item
+   * @return Return true or false whether the update was done.
+   */
+  public boolean updateItemPrice(String itemId, double newPrice) {
+    String sql = "update Items set price = ? where item_id = ?";
+    int rows = jdbcTemplate.update(sql, newPrice, itemId);
+    System.out.println(rows + " row/s updated");
+    return rows == 1;
+  }
+
+  /**
+   * This method will change the quantity column for an item and returns a boolean representing the
+   * success of the query.
+   *
+   * @param itemId Unique identifier for the item within the DB.
+   * @param newQuantity int of new quantity to change
+   * @return Return true or false whether the update was done.
+   */
+  public boolean updateItemQuantity(String itemId, int newQuantity) {
+    String sql = "update Items set quantity = ? where item_id = ?";
+    int rows = jdbcTemplate.update(sql, newQuantity, itemId);
+
+    System.out.println(rows + " row/s updated");
+    return rows == 1;
+  }
+
+  /**
    * This method will simply delete item from the DB.
    *
    * @param itemId Unique identifier for the item within the DB we'd like to delete
@@ -161,7 +192,7 @@ public class ItemsTableSqlHelper {
     return rows == 1;
   }
 
-  /** pass checstykle. */
+  /** pass checkstyle. */
   public boolean updateItemName(String itemId, String newItemName) {
     String sql = "update Items set item_name = ? where item_id = ?";
     int rows = jdbcTemplate.update(sql, newItemName, itemId);

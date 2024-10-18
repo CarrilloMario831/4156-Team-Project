@@ -22,7 +22,7 @@ import org.springframework.jdbc.core.RowMapper;
 import service.models.User;
 import service.util.UserRoles;
 
-/** Sample javadoc to pass checkstyle. */
+/** Unit tests for the UsersTableSqlHelper class. */
 @SpringBootTest
 public class UsersTableSqlHelperTests {
 
@@ -34,51 +34,73 @@ public class UsersTableSqlHelperTests {
 
   private User testUser;
 
-  /** Sample javadoc to pass checkstyle. */
+  /** Sets up a test user before each test. */
   @BeforeEach
   public void setup() {
     testUser =
-        User.builder()
-            .username("sjimenez814")
-            .userId(UUID.fromString("9cdd2cec-d003-4964-b55c-cb336c51b809"))
-            .lastAccess(now)
-            .role(UserRoles.USER)
-            .build();
+            User.builder()
+                    .username("sjimenez814")
+                    .userId(UUID.fromString("9cdd2cec-d003-4964-b55c-cb336c51b809"))
+                    .lastAccess(now)
+                    .role(UserRoles.USER)
+                    .inventoryAccess(UUID.fromString("bf456378-a8b3-40b6-b1a1-654bc9de5f02"))
+                    .build();
   }
 
+  /** Tests inserting a user into the database. */
   @Test
   public void testInsertUser() {
     // Test successful insert
     when(jdbcTemplate.update(any(), any(), any(), any(), any(), any())).thenReturn(1);
-    assertTrue(usersTableSqlHelper.insertUser(testUser));
+    assertTrue(
+            usersTableSqlHelper.insertUser(testUser),
+            "Insert should return true when successful.");
 
     // Test unsuccessful insert
     when(jdbcTemplate.update(any(), any(), any(), any(), any(), any())).thenReturn(0);
-    assertFalse(usersTableSqlHelper.insertUser(testUser));
+    assertFalse(
+            usersTableSqlHelper.insertUser(testUser),
+            "Insert should return false when no rows are affected.");
 
-    // Test error thrown
+    // Test exception thrown
     when(jdbcTemplate.update(any(), any(), any(), any(), any(), any()))
-        .thenThrow(RuntimeException.class);
-    assertThrows(RuntimeException.class, () -> usersTableSqlHelper.insertUser(testUser));
+            .thenThrow(RuntimeException.class);
+    assertThrows(
+            RuntimeException.class,
+            () -> usersTableSqlHelper.insertUser(testUser),
+            "Insert should propagate exceptions.");
   }
 
+  /** Tests retrieving all users from the database. */
   @Test
   public void testGetAllUsers() {
-    // Test successful
+    // Test successful retrieval
     ArrayList<User> users = new ArrayList<>();
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(users);
-    assertEquals(users, usersTableSqlHelper.getAllUsers());
+    assertEquals(
+            users,
+            usersTableSqlHelper.getAllUsers(),
+            "Should return the list of all users.");
 
-    // Test error thrown
-    when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenThrow(RuntimeException.class);
-    assertThrows(RuntimeException.class, () -> usersTableSqlHelper.getAllUsers());
+    // Test exception thrown
+    when(jdbcTemplate.query(anyString(), any(RowMapper.class)))
+            .thenThrow(RuntimeException.class);
+    assertThrows(
+            RuntimeException.class,
+            () -> usersTableSqlHelper.getAllUsers(),
+            "Should propagate exceptions.");
   }
 
+  /** Tests retrieving a user by user ID. */
   @Test
   public void testGetUserWithUserId() {
     // Test empty list
-    when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(new ArrayList<>());
-    assertEquals(null, usersTableSqlHelper.getUserWithUserId(String.valueOf(testUser.getUserId())));
+    when(jdbcTemplate.query(anyString(), any(RowMapper.class)))
+            .thenReturn(new ArrayList<>());
+    assertEquals(
+            null,
+            usersTableSqlHelper.getUserWithUserId(testUser.getUserId().toString()),
+            "Should return null when user is not found.");
 
     // Test more than one user
     ArrayList<User> users = new ArrayList<>();
@@ -86,146 +108,179 @@ public class UsersTableSqlHelperTests {
     users.add(testUser);
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(users);
     assertThrows(
-        IllegalStateException.class,
-        () -> usersTableSqlHelper.getUserWithUserId(String.valueOf(testUser.getUserId())));
+            IllegalStateException.class,
+            () -> usersTableSqlHelper.getUserWithUserId(testUser.getUserId().toString()),
+            "Should throw IllegalStateException when multiple users are found.");
 
-    // Test successful retrieve user
-    users.remove(0);
-    when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(users);
-    User actualUser = usersTableSqlHelper.getUserWithUserId(String.valueOf(testUser.getUserId()));
-    assertEquals(testUser, actualUser);
-  }
-
-  @Test
-  public void testGetUserWithUsername() {
-    // Test empty list
-    when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(new ArrayList<>());
-    assertEquals(null, usersTableSqlHelper.getUserWithUsername(testUser.getUsername()));
-
-    // Test more than one user
-    ArrayList<User> users = new ArrayList<>();
-    users.add(testUser);
-    users.add(testUser);
-    when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(users);
-    assertThrows(
-        IllegalStateException.class,
-        () -> usersTableSqlHelper.getUserWithUsername(testUser.getUsername()));
-
-    // Test successful retrieve user
+    // Test successful retrieval
     users.remove(0);
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(users);
     User actualUser =
-        usersTableSqlHelper.getUserWithUsername(String.valueOf(testUser.getUsername()));
-    assertEquals(testUser, actualUser);
+            usersTableSqlHelper.getUserWithUserId(testUser.getUserId().toString());
+    assertEquals(testUser, actualUser, "Should return the correct user.");
   }
 
+  /** Tests retrieving a user by username. */
+  @Test
+  public void testGetUserWithUsername() {
+    // Test empty list
+    when(jdbcTemplate.query(anyString(), any(RowMapper.class)))
+            .thenReturn(new ArrayList<>());
+    assertEquals(
+            null,
+            usersTableSqlHelper.getUserWithUsername(testUser.getUsername()),
+            "Should return null when user is not found.");
+
+    // Test more than one user
+    ArrayList<User> users = new ArrayList<>();
+    users.add(testUser);
+    users.add(testUser);
+    when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(users);
+    assertThrows(
+            IllegalStateException.class,
+            () -> usersTableSqlHelper.getUserWithUsername(testUser.getUsername()),
+            "Should throw IllegalStateException when multiple users are found.");
+
+    // Test successful retrieval
+    users.remove(0);
+    when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(users);
+    User actualUser =
+            usersTableSqlHelper.getUserWithUsername(testUser.getUsername());
+    assertEquals(testUser, actualUser, "Should return the correct user.");
+  }
+
+  /** Tests updating a user's username. */
   @Test
   public void testUpdateUsername() {
-    // Test successful username update
+    // Test successful update
     when(jdbcTemplate.update(any(), anyString(), anyString())).thenReturn(1);
     assertTrue(
-        usersTableSqlHelper.updateUsername(
-            String.valueOf(testUser.getUserId()), testUser.getUsername()));
+            usersTableSqlHelper.updateUsername(
+                    testUser.getUserId().toString(), testUser.getUsername()),
+            "Update should return true when successful.");
 
-    // Test unsuccessful username update
+    // Test unsuccessful update
     when(jdbcTemplate.update(any(), anyString(), anyString())).thenReturn(0);
     assertFalse(
-        usersTableSqlHelper.updateUsername(
-            String.valueOf(testUser.getUserId()), testUser.getUsername()));
-
-    // Test error thrown
-    when(jdbcTemplate.update(any(), anyString(), anyString())).thenThrow(RuntimeException.class);
-    assertThrows(
-        RuntimeException.class,
-        () ->
             usersTableSqlHelper.updateUsername(
-                String.valueOf(testUser.getUserId()), testUser.getUsername()));
+                    testUser.getUserId().toString(), testUser.getUsername()),
+            "Update should return false when no rows are affected.");
+
+    // Test exception thrown
+    when(jdbcTemplate.update(any(), anyString(), anyString()))
+            .thenThrow(RuntimeException.class);
+    assertThrows(
+            RuntimeException.class,
+            () ->
+                    usersTableSqlHelper.updateUsername(
+                            testUser.getUserId().toString(), testUser.getUsername()),
+            "Update should propagate exceptions.");
   }
 
+  /** Tests updating a user's role. */
   @Test
   public void testUpdateRole() {
-    // Test successful role update
+    // Test successful update
     when(jdbcTemplate.update(any(), anyString(), anyString())).thenReturn(1);
     assertTrue(
-        usersTableSqlHelper.updateRole(
-            String.valueOf(testUser.getUserId()), String.valueOf(testUser.getRole())));
+            usersTableSqlHelper.updateRole(
+                    testUser.getUserId().toString(), testUser.getRole().toString()),
+            "Update should return true when successful.");
 
-    // Test unsuccessful role update
+    // Test unsuccessful update
     when(jdbcTemplate.update(any(), anyString(), anyString())).thenReturn(0);
     assertFalse(
-        usersTableSqlHelper.updateRole(
-            String.valueOf(testUser.getUserId()), String.valueOf(testUser.getRole())));
-
-    // Test error thrown
-    when(jdbcTemplate.update(any(), anyString(), anyString())).thenThrow(RuntimeException.class);
-    assertThrows(
-        RuntimeException.class,
-        () ->
             usersTableSqlHelper.updateRole(
-                String.valueOf(testUser.getUserId()), String.valueOf(testUser.getRole())));
+                    testUser.getUserId().toString(), testUser.getRole().toString()),
+            "Update should return false when no rows are affected.");
+
+    // Test exception thrown
+    when(jdbcTemplate.update(any(), anyString(), anyString()))
+            .thenThrow(RuntimeException.class);
+    assertThrows(
+            RuntimeException.class,
+            () ->
+                    usersTableSqlHelper.updateRole(
+                            testUser.getUserId().toString(), testUser.getRole().toString()),
+            "Update should propagate exceptions.");
   }
 
+  /** Tests updating a user's last access time. */
   @Test
   public void testUpdateLastAccess() {
-    // Test successful last access update
+    // Test successful update
     when(jdbcTemplate.update(any(), any(), anyString())).thenReturn(1);
     assertTrue(
-        usersTableSqlHelper.updateLastAccess(
-            String.valueOf(testUser.getUserId()), testUser.getLastAccess()));
+            usersTableSqlHelper.updateLastAccess(
+                    testUser.getUserId().toString(), testUser.getLastAccess()),
+            "Update should return true when successful.");
 
-    // Test unsuccessful last access update
+    // Test unsuccessful update
     when(jdbcTemplate.update(any(), any(), anyString())).thenReturn(0);
     assertFalse(
-        usersTableSqlHelper.updateLastAccess(
-            String.valueOf(testUser.getUserId()), testUser.getLastAccess()));
-
-    // Test error thrown
-    when(jdbcTemplate.update(any(), any(), anyString())).thenThrow(RuntimeException.class);
-    assertThrows(
-        RuntimeException.class,
-        () ->
             usersTableSqlHelper.updateLastAccess(
-                String.valueOf(testUser.getUserId()), testUser.getLastAccess()));
+                    testUser.getUserId().toString(), testUser.getLastAccess()),
+            "Update should return false when no rows are affected.");
+
+    // Test exception thrown
+    when(jdbcTemplate.update(any(), any(), anyString()))
+            .thenThrow(RuntimeException.class);
+    assertThrows(
+            RuntimeException.class,
+            () ->
+                    usersTableSqlHelper.updateLastAccess(
+                            testUser.getUserId().toString(), testUser.getLastAccess()),
+            "Update should propagate exceptions.");
   }
 
+  /** Tests updating a user's inventory access. */
   @Test
   public void testUpdateInventoryAccess() {
-    // Test successful last access update
+    // Test successful update
     when(jdbcTemplate.update(any(), any(), anyString())).thenReturn(1);
     assertTrue(
-        usersTableSqlHelper.updateInventoryAccess(
-            String.valueOf(testUser.getUserId()), String.valueOf(testUser.getInventoryAccess())));
+            usersTableSqlHelper.updateInventoryAccess(
+                    testUser.getUserId().toString(), testUser.getInventoryAccess().toString()),
+            "Update should return true when successful.");
 
-    // Test unsuccessful last access update
+    // Test unsuccessful update
     when(jdbcTemplate.update(any(), any(), anyString())).thenReturn(0);
     assertFalse(
-        usersTableSqlHelper.updateInventoryAccess(
-            String.valueOf(testUser.getUserId()), String.valueOf(testUser.getInventoryAccess())));
-
-    // Test error thrown
-    when(jdbcTemplate.update(any(), any(), anyString())).thenThrow(RuntimeException.class);
-    assertThrows(
-        RuntimeException.class,
-        () ->
             usersTableSqlHelper.updateInventoryAccess(
-                String.valueOf(testUser.getUserId()),
-                String.valueOf(testUser.getInventoryAccess())));
+                    testUser.getUserId().toString(), testUser.getInventoryAccess().toString()),
+            "Update should return false when no rows are affected.");
+
+    // Test exception thrown
+    when(jdbcTemplate.update(any(), any(), anyString()))
+            .thenThrow(RuntimeException.class);
+    assertThrows(
+            RuntimeException.class,
+            () ->
+                    usersTableSqlHelper.updateInventoryAccess(
+                            testUser.getUserId().toString(), testUser.getInventoryAccess().toString()),
+            "Update should propagate exceptions.");
   }
 
+  /** Tests deleting a user from the database. */
   @Test
   public void testDelete() {
-    // Test successful last access update
+    // Test successful delete
     when(jdbcTemplate.update(any(), anyString())).thenReturn(1);
-    assertTrue(usersTableSqlHelper.delete(String.valueOf(testUser.getUserId())));
+    assertTrue(
+            usersTableSqlHelper.delete(testUser.getUserId().toString()),
+            "Delete should return true when successful.");
 
-    // Test unsuccessful last access update
+    // Test unsuccessful delete
     when(jdbcTemplate.update(any(), anyString())).thenReturn(0);
-    assertFalse(usersTableSqlHelper.delete(String.valueOf(testUser.getUserId())));
+    assertFalse(
+            usersTableSqlHelper.delete(testUser.getUserId().toString()),
+            "Delete should return false when no rows are affected.");
 
-    // Test error thrown
+    // Test exception thrown
     when(jdbcTemplate.update(any(), anyString())).thenThrow(RuntimeException.class);
     assertThrows(
-        RuntimeException.class,
-        () -> usersTableSqlHelper.delete(String.valueOf(testUser.getUserId())));
+            RuntimeException.class,
+            () -> usersTableSqlHelper.delete(testUser.getUserId().toString()),
+            "Delete should propagate exceptions.");
   }
 }

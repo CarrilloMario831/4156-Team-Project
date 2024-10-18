@@ -127,7 +127,6 @@ public class ItemsTableSqlHelper {
     // '0b1ee0b0-8bf0-11ef-9fd0-343c922917f9'
     String sql = "update Items set location = ? where item_id = ?";
     int rows = jdbcTemplate.update(sql, location, itemId);
-
     System.out.println(rows + " row/s updated");
     return rows == 1;
   }

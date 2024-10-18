@@ -292,7 +292,6 @@ public class ItemsRouteController {
     if (newItemName == null || newItemName.isEmpty()) {
       return new ResponseEntity<>("Item name cannot be empty.", HttpStatus.BAD_REQUEST);
     }
-
     List<Item> itemList;
     try {
       itemList = itemsTableSqlHelper.getItem(itemId);

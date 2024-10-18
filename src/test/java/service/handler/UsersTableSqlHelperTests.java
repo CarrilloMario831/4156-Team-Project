@@ -78,7 +78,8 @@ public class UsersTableSqlHelperTests {
   public void testGetUserWithUserId() {
     // Test empty list
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(new ArrayList<>());
-    assertEquals(null, usersTableSqlHelper.getUserWithUserId(String.valueOf(testUser.getUserId())));
+    assertEquals(null, usersTableSqlHelper
+            .getUserWithUserId(String.valueOf(testUser.getUserId())));
 
     // Test more than one user
     ArrayList<User> users = new ArrayList<>();

@@ -40,7 +40,7 @@ public class UserRouteController {
       }
       String username = user.getUsername();
       if (username == null || username.isEmpty()) {
-        return new ResponseEntity<>("User " + userId + " has no username. ", HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>("User " + userId + " has no username.", HttpStatus.NO_CONTENT);
       }
       return new ResponseEntity<>(username, HttpStatus.OK);
     } catch (Exception e) {

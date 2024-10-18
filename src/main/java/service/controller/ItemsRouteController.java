@@ -390,4 +390,162 @@ public class ItemsRouteController {
         "Item with itemID: " + item.getItemId() + " could not be deleted.",
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
+
+  /** Sample javadoc to pass checkstyle. */
+  @PatchMapping(value = "/updateItemQuantity", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> updateItemQuantity(
+      @RequestParam(value = "itemId") String itemId,
+      @RequestParam(value = "newQuantity") int newQuantity) {
+    if (itemId == null || itemId.isEmpty()) {
+      return new ResponseEntity<>("itemId needed to udpate quantity.", HttpStatus.BAD_REQUEST);
+    }
+    if (newQuantity < 0) {
+      return new ResponseEntity<>("Quantity cannot be a negative number.", HttpStatus.BAD_REQUEST);
+    }
+    try {
+      List<Item> itemList = itemsTableSqlHelper.getItem(itemId);
+      if (itemList == null || itemList.isEmpty()) {
+        return new ResponseEntity<>(
+            "Item with itemId: " + itemId + " was not found", HttpStatus.NOT_FOUND);
+      }
+      Item item = itemList.get(0);
+
+      if (item == null) {
+        return new ResponseEntity<>("No item found for itemID: " + itemId, HttpStatus.NOT_FOUND);
+      }
+      int oldQuantity = item.getQuantity();
+      if (oldQuantity == newQuantity) {
+        return new ResponseEntity<>(
+            "Item \"" + item.getItemName() + "\" already has a quantity of " + oldQuantity,
+            HttpStatus.CONFLICT);
+      }
+      boolean isSuccess = itemsTableSqlHelper.updateItemQuantity(itemId, newQuantity);
+
+      if (!isSuccess) {
+        return new ResponseEntity<>(
+            "Could not update quantity for item: " + itemId, HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+
+      return new ResponseEntity<>(
+          "Item: "
+              + item.getItemId()
+              + "\nName: "
+              + item.getItemName()
+              + "\nQuantity was successfully updated. \n"
+              + oldQuantity
+              + " --> "
+              + newQuantity,
+          HttpStatus.OK);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /** Sample javadoc to pass checkstyle. */
+  @PatchMapping(value = "/updateItemLocation", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> updateItemLocation(
+      @RequestParam(value = "itemId") String itemId,
+      @RequestParam(value = "newLocation") String newLocation) {
+    if (itemId == null || itemId.isEmpty()) {
+      return new ResponseEntity<>("itemId needed to update quantity.", HttpStatus.BAD_REQUEST);
+    }
+    if (newLocation == null || newLocation.isEmpty()) {
+      return new ResponseEntity<>("Location cannot be empty.", HttpStatus.BAD_REQUEST);
+    }
+    try {
+      List<Item> itemList = itemsTableSqlHelper.getItem(itemId);
+      if (itemList == null || itemList.isEmpty()) {
+        return new ResponseEntity<>(
+            "Item with itemId: " + itemId + " was not found", HttpStatus.NOT_FOUND);
+      }
+      Item item = itemList.get(0);
+      if (item == null) {
+        return new ResponseEntity<>("No item found for itemID: " + itemId, HttpStatus.NOT_FOUND);
+      }
+      String oldLocation = item.getLocation();
+      if (oldLocation.equals(newLocation)) {
+        return new ResponseEntity<>(
+            "Item \""
+                + item.getItemName()
+                + "\" already has a location of: \""
+                + oldLocation
+                + "\"",
+            HttpStatus.CONFLICT);
+      }
+      boolean isSuccess = itemsTableSqlHelper.updateItemLocation(itemId, newLocation);
+
+      if (!isSuccess) {
+        return new ResponseEntity<>(
+            "Could not update location for item: \"" + item.getItemName() + "\"",
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+
+      return new ResponseEntity<>(
+          "Item: "
+              + item.getItemId()
+              + "\nName: "
+              + item.getItemName()
+              + "\nLocation was successfully updated. \n\""
+              + oldLocation
+              + "\" --> \""
+              + newLocation
+              + "\"",
+          HttpStatus.OK);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /** Sample javadoc to pass checkstyle. */
+  @PatchMapping(value = "/updateItemPrice", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> updateItemPrice(
+      @RequestParam(value = "itemId") String itemId,
+      @RequestParam(value = "newPrice") double newPrice) {
+    if (itemId == null || itemId.isEmpty()) {
+      return new ResponseEntity<>("itemId needed to update quantity.", HttpStatus.BAD_REQUEST);
+    }
+    if (newPrice < 0) {
+      return new ResponseEntity<>("Item price cannot be negative.", HttpStatus.BAD_REQUEST);
+    }
+    try {
+      List<Item> itemList = itemsTableSqlHelper.getItem(itemId);
+      if (itemList == null || itemList.isEmpty()) {
+        return new ResponseEntity<>(
+            "Item with itemId: " + itemId + " was not found", HttpStatus.NOT_FOUND);
+      }
+      Item item = itemList.get(0);
+      if (item == null) {
+        return new ResponseEntity<>("No item found for itemID: " + itemId, HttpStatus.NOT_FOUND);
+      }
+      double oldPrice = item.getPrice();
+      if (oldPrice == newPrice) {
+        return new ResponseEntity<>(
+            "Item \"" + item.getItemName() + "\" already has a price of: " + oldPrice,
+            HttpStatus.CONFLICT);
+      }
+      boolean isSuccess = itemsTableSqlHelper.updateItemPrice(itemId, newPrice);
+
+      if (!isSuccess) {
+        return new ResponseEntity<>(
+            "Could not update price for item: \"" + item.getItemName() + "\"",
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+
+      return new ResponseEntity<>(
+          "Item: "
+              + item.getItemId()
+              + "\nName: "
+              + item.getItemName()
+              + "\nPrice was successfully updated. \n"
+              + oldPrice
+              + " --> "
+              + newPrice,
+          HttpStatus.OK);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

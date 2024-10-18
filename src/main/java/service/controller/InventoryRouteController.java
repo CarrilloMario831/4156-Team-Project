@@ -113,7 +113,7 @@ public class InventoryRouteController {
       }
 
       // TODO: Change this to be a SQL query wrapper where you pass in a list of conditions
-      List<Item> itemList = itemsTableSqlHelper.select();
+      List<Item> itemList = itemsTableSqlHelper.getAllItems();
       StringBuilder returnList = new StringBuilder();
       returnList.append("Inventory contains:\n");
 

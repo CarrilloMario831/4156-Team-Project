@@ -109,7 +109,7 @@ public class UserRouteController {
     try {
       if (usersTableSqlHelper.getUserWithUsername(username) != null) {
         return new ResponseEntity<>(
-            "Username " + username + "already taken. Try a different username.",
+            "Username " + username + " already taken. Try a different username.",
             HttpStatus.CONFLICT);
       }
       User newUser =
@@ -132,30 +132,47 @@ public class UserRouteController {
   @PatchMapping(value = "/updateUsername", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> updateUsername(
       @RequestParam(value = "userId") String userId,
+      @RequestParam(value = "currentUsername") String currentUsername,
       @RequestParam(value = "newUsername") String newUsername) {
 
-    // TODO: Add oldUsername as a param and check if the userId and username match
-
+    if (userId == null || userId.isEmpty()) {
+      return new ResponseEntity<>("UserID cannot be empty.", HttpStatus.BAD_REQUEST);
+    }
+    if (currentUsername == null || currentUsername.isEmpty()) {
+      return new ResponseEntity<>("Current username cannot be empty.", HttpStatus.BAD_REQUEST);
+    }
     if (newUsername == null || newUsername.isEmpty()) {
-      return new ResponseEntity<>("New username cannot be empty", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("New username cannot be empty.", HttpStatus.BAD_REQUEST);
+    }
+    if (currentUsername.equals(newUsername)) {
+      return new ResponseEntity<>(
+          "New username is the same as current username. Please enter a different username.",
+          HttpStatus.BAD_REQUEST);
     }
     try {
-      if (usersTableSqlHelper.getUserWithUserId(userId) != null) {
+      // Check if the new username is taken
+      if (usersTableSqlHelper.getUserWithUsername(newUsername) != null) {
         return new ResponseEntity<>(
-            "Username " + newUsername + "already taken. Try a different username.",
+            "Username " + newUsername + " already taken. \nTry a different username.",
             HttpStatus.CONFLICT);
       }
       User user = usersTableSqlHelper.getUserWithUserId(userId);
 
+      // Check if the user even exists
       if (user == null) {
         return new ResponseEntity<>(
             "User with userId: " + userId + " was not found", HttpStatus.NOT_FOUND);
       }
-      String oldUsername = user.getUsername();
 
-      if (oldUsername.equals(newUsername)) {
-        return new ResponseEntity<>("Username is already " + oldUsername, HttpStatus.BAD_REQUEST);
+      // Check if the current username is accurate
+      if (!user.getUsername().equals(currentUsername)) {
+        return new ResponseEntity<>(
+            "Current username is wrong for userID: "
+                + userId
+                + "\nPlease enter the correct current username.",
+            HttpStatus.BAD_REQUEST);
       }
+
       boolean updateSuccess = usersTableSqlHelper.updateUsername(userId, newUsername);
 
       if (!updateSuccess) {
@@ -163,13 +180,18 @@ public class UserRouteController {
             "User with \nuserId: "
                 + userId
                 + " \nusername: "
-                + oldUsername
+                + currentUsername
                 + "\ncould not be updated.",
             HttpStatus.INTERNAL_SERVER_ERROR);
       }
 
       return new ResponseEntity<>(
-          "Username was successfully changed from: \n" + oldUsername + " --> " + newUsername,
+          "Username for userID: "
+              + userId
+              + " successfully changed from: \n"
+              + currentUsername
+              + " --> "
+              + newUsername,
           HttpStatus.OK);
     } catch (Exception e) {
       System.out.println(e.getMessage());
@@ -182,19 +204,22 @@ public class UserRouteController {
   public ResponseEntity<?> updateRole(
       @RequestParam(value = "userId") String userId,
       @RequestParam(value = "newRole") String newRole) {
+    if (userId == null || userId.isEmpty()) {
+      return new ResponseEntity<>("UserID cannot be empty.", HttpStatus.BAD_REQUEST);
+    }
+
+    if (newRole == null
+        || newRole.isEmpty()
+        || !(newRole.equals(UserRoles.ADMIN.toString())
+            || newRole.equals(UserRoles.USER.toString()))) {
+      return new ResponseEntity<>(
+          "Role is invalid. Must be ADMIN or USER.", HttpStatus.BAD_REQUEST);
+    }
     try {
-
-      if (newRole == null
-          || !(newRole.equals(UserRoles.ADMIN.toString())
-              || newRole.equals(UserRoles.USER.toString()))) {
-        return new ResponseEntity<>(
-            "Role is invalid. Must be ADMIN or USER.", HttpStatus.BAD_REQUEST);
-      }
       User user = usersTableSqlHelper.getUserWithUserId(userId);
-
       if (user == null) {
         return new ResponseEntity<>(
-            "User with userId: " + userId + " was not found", HttpStatus.NOT_FOUND);
+            "User with userId: " + userId + " was not found.", HttpStatus.NOT_FOUND);
       }
       UserRoles oldRole = user.getRole();
       String username = user.getUsername();

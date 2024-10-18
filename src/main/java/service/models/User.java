@@ -17,7 +17,7 @@ import service.util.UserRoles;
 public class User {
   private final UUID userId;
   private final String username;
-  private final Enum<UserRoles> role;
+  private final UserRoles role;
   private LocalDateTime lastAccess;
 
   @Nullable private final UUID inventoryAccess;

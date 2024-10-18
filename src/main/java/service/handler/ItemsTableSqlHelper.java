@@ -39,7 +39,7 @@ public class ItemsTableSqlHelper {
    *
    * @param item Item object that you'd like to store within DB.
    */
-  public void insert(Item item) {
+  public boolean insertItem(Item item) {
     // Create your insert SQL query with "?" as a placeholder for variable
     // values
 
@@ -66,13 +66,14 @@ public class ItemsTableSqlHelper {
             item.getPrice(),
             item.getNextRestockDateTime());
     System.out.println(rows + "row/s inserted.");
+    return rows == 1;
   }
 
   /**
    * This is a test select method for providing insight into what it looks like to read items from
    * the DB.
    */
-  public List<Item> select() {
+  public List<Item> getAllItems() {
 
     // define the sql query
     String sql = "select * from Items";
@@ -89,15 +90,14 @@ public class ItemsTableSqlHelper {
    * This is a test select method for providing insight into what it looks like to read items from
    * the DB.
    *
-   * @param uuid Unique identifier for the item you'd like to search for in the DB.
+   * @param itemId Unique identifier for the item you'd like to search for in the DB.
    */
-  public List<Item> select(String uuid) {
+  public List<Item> getItem(String itemId) {
 
     // define the sql query
-    String sql = "select * from Items where uuid = " + "'" + uuid + "'";
+    String sql = "select * from Items where uuid = " + "'" + itemId + "'";
 
     // This stores the select query results from the DB
-    // RowMapper<Item> rowMapper = new ItemRowMapper();
     RowMapper<Item> rowMapper = (rs, rowNum) -> getItemFromTable(rs);
 
     // Store the results within an indexable array
@@ -130,7 +130,7 @@ public class ItemsTableSqlHelper {
    * @param location String representation of the new location where the item is stored
    * @return Return true or false whether the update was done.
    */
-  public boolean update(String uuid, String location) {
+  public boolean updateItemLocation(String uuid, String location) {
 
     // UPDATE Items SET item_name = 'Cheese Nuggets' where uuid =
     // '0b1ee0b0-8bf0-11ef-9fd0-343c922917f9'
@@ -147,7 +147,7 @@ public class ItemsTableSqlHelper {
    * @param uuid Unique identifier for the item within the DB we'd like to delete
    * @return boolean representing the number of rows deleted.
    */
-  public boolean delete(String uuid) {
+  public boolean deleteItem(String uuid) {
     String sql = "delete from Items where uuid = ?";
 
     int rows = jdbcTemplate.update(sql, uuid);

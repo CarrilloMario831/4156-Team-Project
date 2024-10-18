@@ -13,13 +13,13 @@ import lombok.Setter;
 @Builder
 public class Inventory {
 
-  @NonNull private final UUID inventoryId = UUID.randomUUID();
+  @NonNull @Setter private UUID inventoryId = UUID.randomUUID();
 
   @NonNull @Setter private String inventoryName;
 
-  @NonNull private Map<UUID, Item> items;
+  private Map<UUID, Item> items;
 
-  @NonNull private final UUID adminId;
+  @NonNull @Setter private UUID adminId;
 
   /**
    * Creates a new item and adds it to the inventory.
@@ -86,6 +86,9 @@ public class Inventory {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(inventoryName).append(" (").append(inventoryId).append("):\n");
+    if (this.items == null) {
+      return sb.toString();
+    }
     for (Map.Entry<UUID, Item> entry : items.entrySet()) {
       Item value = entry.getValue();
       sb.append("Item Name: ")

@@ -29,6 +29,7 @@ public class InventoryUnitTests {
             .adminId(adminId)
             .inventoryName("Test Inventory")
             .items(new HashMap<>())
+            .inventoryId(UUID.randomUUID())
             .build();
   }
 

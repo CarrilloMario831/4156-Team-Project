@@ -17,7 +17,7 @@ import service.models.Item;
 /**
  * This class handles the translation from java objects to SQL queries into the local MySQL database
  * titled reservation_management. This is only for testing and providing some boilerplate code on
- * how to write JDBC template based queries
+ * how to write JDBC template based queries.
  */
 @Getter
 @Repository
@@ -51,7 +51,7 @@ public class ItemsTableSqlHelper {
             + "location, price, next_restock) "
             + "values (?,?,?,?,?,?,?,?,?)";
 
-    // JDBC template provides many methods and query() is synomous with select
+    // JDBC template provides many methods and query() is synonymous with select
     // update() is for the SQL insert, update, deletes
     int rows =
         jdbcTemplate.update(
@@ -78,6 +78,7 @@ public class ItemsTableSqlHelper {
     String sql = "select * from Items";
 
     // This stores the select query results from the DB
+    // RowMapper<Item> rowMapper = new ItemRowMapper();
     RowMapper<Item> rowMapper = (rs, rowNum) -> getItemFromTable(rs);
 
     // Store the results within an indexable array
@@ -96,6 +97,7 @@ public class ItemsTableSqlHelper {
     String sql = "select * from Items where uuid = " + "'" + uuid + "'";
 
     // This stores the select query results from the DB
+    // RowMapper<Item> rowMapper = new ItemRowMapper();
     RowMapper<Item> rowMapper = (rs, rowNum) -> getItemFromTable(rs);
 
     // Store the results within an indexable array
@@ -113,7 +115,10 @@ public class ItemsTableSqlHelper {
         .reservationDurationInMillis(rs.getLong("reservation_duration"))
         .reservationStatus(rs.getBoolean("reserved_status"))
         .reservationTime(LocalDateTime.parse(rs.getString("reservation_time"), FORMATTER))
-        .nextRestockDateTime(LocalDateTime.parse(rs.getString("next_restock"), FORMATTER))
+        .nextRestockDateTime(
+            rs.getString("next_restock") != null
+                ? LocalDateTime.parse(rs.getString("next_restock"), FORMATTER)
+                : null)
         .build();
   }
 
@@ -123,7 +128,7 @@ public class ItemsTableSqlHelper {
    *
    * @param uuid Unique identifier for the item within the DB.
    * @param location String representation of the new location where the item is stored
-   * @return boolean
+   * @return Return true or false whether the update was done.
    */
   public boolean update(String uuid, String location) {
 

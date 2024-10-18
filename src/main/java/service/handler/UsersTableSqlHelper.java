@@ -62,7 +62,7 @@ public class UsersTableSqlHelper {
    * This is a test select method for providing insight into what it looks like to read users from
    * the DB.
    */
-  public List<User> select() {
+  public List<User> getUserWithUserId() {
     String sql = "select * from Users";
     return jdbcTemplate.query(sql, getRowMapper());
   }
@@ -73,7 +73,7 @@ public class UsersTableSqlHelper {
    *
    * @param userId Unique identifier for the user you'd like to search for in the DB.
    */
-  public User select(String userId) {
+  public User getUserWithUserId(String userId) {
     String sql = "select * from Users where user_id = " + "'" + userId + "'";
     List<User> results = jdbcTemplate.query(sql, getRowMapper());
     if (results.isEmpty()) {
@@ -87,16 +87,80 @@ public class UsersTableSqlHelper {
   }
 
   /**
-   * This method will change the inventory access column for a user and returns a boolean
-   * representing the success of the query.
+   * This is a test select method for providing insight into what it looks like to read users from
+   * the DB.
+   *
+   * @param username Unique identifier for the user you'd like to search for in the DB.
+   */
+  public User getUserWithUsername(String username) {
+    String sql = "select * from Users where username = " + "'" + username + "'";
+    List<User> results = jdbcTemplate.query(sql, getRowMapper());
+    if (results.isEmpty()) {
+      return null;
+    } else if (results.size() > 1) {
+      // throw error multiple users of the same userID
+      throw new IllegalStateException("More than one user found for username: " + username);
+    } else {
+      return results.get(0);
+    }
+  }
+
+  /**
+   * This method will change the username column for a user and returns a boolean representing the
+   * success of the query.
    *
    * @param userId Unique identifier for the user within the DB.
    * @param username username of user.
    * @return boolean
    */
-  public boolean update(String userId, String username) {
+  public boolean updateUsername(String userId, String username) {
     String sql = "update Users set username = ? where user_id = ?";
     int rows = jdbcTemplate.update(sql, username, userId);
+    System.out.println(rows + " row/s updated");
+    return rows == 1;
+  }
+
+  /**
+   * This method will change the role column for a user and returns a boolean representing the
+   * success of the query.
+   *
+   * @param userId Unique identifier for the user within the DB.
+   * @param userRole role of user.
+   * @return boolean
+   */
+  public boolean updateRole(String userId, String userRole) {
+    String sql = "update Users set role = ? where user_id = ?";
+    int rows = jdbcTemplate.update(sql, userRole, userId);
+    System.out.println(rows + " row/s updated");
+    return rows == 1;
+  }
+
+  /**
+   * This method will change the last access column for a user and returns a boolean representing
+   * the success of the query.
+   *
+   * @param userId Unique identifier for the user within the DB.
+   * @param lastAccess lastAccess of user.
+   * @return boolean
+   */
+  public boolean updateLastAccess(String userId, LocalDateTime lastAccess) {
+    String sql = "update Users set last_access = ? where user_id = ?";
+    int rows = jdbcTemplate.update(sql, lastAccess, userId);
+    System.out.println(rows + " row/s updated");
+    return rows == 1;
+  }
+
+  /**
+   * This method will change the inventory access column for a user and returns a boolean
+   * representing the success of the query.
+   *
+   * @param userId Unique identifier for the user within the DB.
+   * @param inventoryAccess lastAccess of user.
+   * @return boolean
+   */
+  public boolean updateInventoryAccess(String userId, String inventoryAccess) {
+    String sql = "update Users set inventory_access = ? where user_id = ?";
+    int rows = jdbcTemplate.update(sql, inventoryAccess, userId);
     System.out.println(rows + " row/s updated");
     return rows == 1;
   }

@@ -72,7 +72,8 @@ public class ItemsTableSqlHelper {
     String sql = "select * from Items";
 
     // This stores the select query results from the DB
-    RowMapper<Item> rowMapper = new ItemRowMapper();
+    // RowMapper<Item> rowMapper = new ItemRowMapper();
+    RowMapper<Item> rowMapper = (rs, rowNum) -> getItemFromTable(rs);
 
     // Store the results within an indexable array
     return jdbcTemplate.query(sql, rowMapper);
@@ -90,10 +91,26 @@ public class ItemsTableSqlHelper {
     String sql = "select * from Items where uuid = " + "'" + uuid + "'";
 
     // This stores the select query results from the DB
-    RowMapper<Item> rowMapper = new ItemRowMapper();
+    // RowMapper<Item> rowMapper = new ItemRowMapper();
+    RowMapper<Item> rowMapper = (rs, rowNum) -> getItemFromTable(rs);
 
     // Store the results within an indexable array
     return jdbcTemplate.query(sql, rowMapper);
+  }
+
+  private Item getItemFromTable(ResultSet rs) throws SQLException {
+    return Item.builder()
+        .itemId(UUID.fromString(rs.getString("uuid")))
+        .timeOfAddition(LocalDateTime.parse(rs.getString("time_of_addition"), formatter))
+        .itemName(rs.getString("item_name"))
+        .quantity(rs.getInt("quantity"))
+        .location(rs.getString("location"))
+        .price(rs.getDouble("price"))
+        .reservationDurationInMillis(rs.getLong("reservation_duration"))
+        .reservationStatus(rs.getBoolean("reserved_status"))
+        .reservationTime(LocalDateTime.parse(rs.getString("reservation_time"), formatter))
+        .nextRestockDateTime(LocalDateTime.parse(rs.getString("next_restock"), formatter))
+        .build();
   }
 
   /**
@@ -116,7 +133,7 @@ public class ItemsTableSqlHelper {
   }
 
   /**
-   * This method will simply delete.
+   * This method will simply delete item from the DB.
    *
    * @param uuid Unique identifier for the item within the DB we'd like to delete
    * @return boolean representing the number of rows deleted.

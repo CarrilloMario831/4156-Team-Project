@@ -1,10 +1,10 @@
 USE reservation_management;
 
 -- Sample insert for Users
-INSERT INTO Users (user_key, username, role, last_access)
+INSERT INTO Users (user_id, username, role, last_access)
 VALUES
-    ('f1234567-abcd-4d5e-9999-abcdef012345', 'admin1', 'Admin', '2024-10-17 12:03:33'),
-    ('f89f6789-abcd-4d5e-8888-abcdef876543', 'secretary1', 'Secretary', '2024-10-17 12:03:33');
+    ('u1234567-abcd-4d5e-9999-abcdef012345', 'admin1', 'ADMIN', '2024-10-17 12:03:33.550874'),
+    ('u89f6789-abcd-4d5e-8888-abcdef876543', 'secretary1', 'USER', '2024-10-17 12:03:33.550874');
 
 
 -- Sample inserts for Items
@@ -14,7 +14,7 @@ VALUES
     ('a123b789-123b-48ec-923f-d9b8f06ba7aa', 'Mouse', '2024-10-17 12:03:33', '2024-10-17 12:03:33', 200, TRUE, 25.99, 'Crumbl Cookie');
 
 -- Sample inserts for Inventories
-INSERT INTO Inventories (inventory_id, inventory_name, user_key)
+INSERT INTO Inventories (inventory_id, inventory_name, user_id)
 VALUES
     ('bf456378-a8b3-40b6-b1a1-654bc9de5f02', 'Electronics Inventory', 'f1234567-abcd-4d5e-9999-abcdef012345'),
     ('bd123478-12ab-45f6-abc8-4456ac987654', 'Office Supplies Inventory', 'f89f6789-abcd-4d5e-8888-abcdef876543');

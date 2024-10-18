@@ -46,16 +46,17 @@ public class ItemsTableSqlHelper {
     // Items is the table within the MySQL DB
     String sql =
         "insert into Items ("
-            + "item_name, time_of_addition, quantity, "
+            + "item_id, item_name, time_of_addition, quantity, "
             + "reserved_status, reservation_time, reservation_duration, "
-            + "location, price, next_restock) "
-            + "values (?,?,?,?,?,?,?,?,?)";
+            + "location, price, next_restock, inventory_id) "
+            + "values (?,?,?,?,?,?,?,?,?,?, ?)";
 
     // JDBC template provides many methods and query() is synonymous with select
     // update() is for the SQL insert, update, deletes
     int rows =
         jdbcTemplate.update(
             sql,
+            item.getItemId().toString(),
             item.getItemName(),
             item.getTimeOfAddition(),
             item.getQuantity(),
@@ -64,7 +65,8 @@ public class ItemsTableSqlHelper {
             item.getReservationDurationInMillis(),
             item.getLocation(),
             item.getPrice(),
-            item.getNextRestockDateTime());
+            item.getNextRestockDateTime(),
+            item.getInventoryId() != null ? item.getInventoryId().toString() : null);
     System.out.println(rows + "row/s inserted.");
     return rows == 1;
   }
@@ -95,7 +97,7 @@ public class ItemsTableSqlHelper {
   public List<Item> getItem(String itemId) {
 
     // define the sql query
-    String sql = "select * from Items where uuid = " + "'" + itemId + "'";
+    String sql = "select * from Items where item_id = " + "'" + itemId + "'";
 
     // This stores the select query results from the DB
     RowMapper<Item> rowMapper = (rs, rowNum) -> getItemFromTable(rs);
@@ -106,7 +108,7 @@ public class ItemsTableSqlHelper {
 
   private Item getItemFromTable(ResultSet rs) throws SQLException {
     return Item.builder()
-        .itemId(UUID.fromString(rs.getString("uuid")))
+        .itemId(UUID.fromString(rs.getString("item_id")))
         .timeOfAddition(LocalDateTime.parse(rs.getString("time_of_addition"), FORMATTER))
         .itemName(rs.getString("item_name"))
         .quantity(rs.getInt("quantity"))
@@ -114,7 +116,10 @@ public class ItemsTableSqlHelper {
         .price(rs.getDouble("price"))
         .reservationDurationInMillis(rs.getLong("reservation_duration"))
         .reservationStatus(rs.getBoolean("reserved_status"))
-        .reservationTime(LocalDateTime.parse(rs.getString("reservation_time"), FORMATTER))
+        .reservationTime(
+            (rs.getString("reservation_time") != null
+                ? LocalDateTime.parse(rs.getString("reservation_time"), FORMATTER)
+                : null))
         .nextRestockDateTime(
             rs.getString("next_restock") != null
                 ? LocalDateTime.parse(rs.getString("next_restock"), FORMATTER)
@@ -126,33 +131,41 @@ public class ItemsTableSqlHelper {
    * This method will change the location column for an item and returns a boolean representing the
    * success of the query.
    *
-   * @param uuid Unique identifier for the item within the DB.
+   * @param itemId Unique identifier for the item within the DB.
    * @param location String representation of the new location where the item is stored
    * @return Return true or false whether the update was done.
    */
-  public boolean updateItemLocation(String uuid, String location) {
+  public boolean updateItemLocation(String itemId, String location) {
 
-    // UPDATE Items SET item_name = 'Cheese Nuggets' where uuid =
+    // UPDATE Items SET item_name = 'Cheese Nuggets' where item_id =
     // '0b1ee0b0-8bf0-11ef-9fd0-343c922917f9'
-    String sql = "update Items set location = ? where uuid = ?";
-    int rows = jdbcTemplate.update(sql, location, uuid);
+    String sql = "update Items set location = ? where item_id = ?";
+    int rows = jdbcTemplate.update(sql, location, itemId);
 
     System.out.println(rows + " row/s updated");
-    return rows > 0;
+    return rows == 1;
   }
 
   /**
    * This method will simply delete item from the DB.
    *
-   * @param uuid Unique identifier for the item within the DB we'd like to delete
+   * @param itemId Unique identifier for the item within the DB we'd like to delete
    * @return boolean representing the number of rows deleted.
    */
-  public boolean deleteItem(String uuid) {
-    String sql = "delete from Items where uuid = ?";
+  public boolean deleteItem(String itemId) {
+    String sql = "delete from Items where item_id = ?";
 
-    int rows = jdbcTemplate.update(sql, uuid);
+    int rows = jdbcTemplate.update(sql, itemId);
     System.out.println(rows + " row/s deleted");
 
-    return rows > 0;
+    return rows == 1;
+  }
+
+  /** pass checstykle. */
+  public boolean updateItemName(String itemId, String newItemName) {
+    String sql = "update Items set item_name = ? where item_id = ?";
+    int rows = jdbcTemplate.update(sql, newItemName, itemId);
+    System.out.println(rows + " row/s updated");
+    return rows == 1;
   }
 }

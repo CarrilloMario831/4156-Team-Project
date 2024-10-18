@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -276,5 +278,116 @@ public class ItemsRouteController {
       System.out.println(e.getMessage());
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+
+  /** pass chestyle. */
+  @PatchMapping(value = "/updateItemName", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> updateItemName(
+      @RequestParam(value = "itemId") String itemId,
+      @RequestParam(value = "newItemName") String newItemName) {
+    if (itemId == null || itemId.isEmpty()) {
+      return new ResponseEntity<>("itemId is needed to update item name.", HttpStatus.BAD_REQUEST);
+    }
+
+    List<Item> itemList;
+    try {
+      itemList = itemsTableSqlHelper.getItem(itemId);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    if (itemList == null || itemList.isEmpty()) {
+      return new ResponseEntity<>(
+          "Item with item id: " + itemId + " does not exist.", HttpStatus.NOT_FOUND);
+    }
+
+    if (itemList.size() > 1) {
+      return new ResponseEntity<>(
+          "There are multiple items with itemID: " + itemId, HttpStatus.CONFLICT);
+    }
+
+    Item item = itemList.get(0);
+    if (item == null) {
+      return new ResponseEntity<>("No item found for itemID: " + itemId, HttpStatus.NOT_FOUND);
+    }
+
+    if (item.getItemName().equals(newItemName)) {
+      return new ResponseEntity<>(
+          "Item itemID: " + itemId + "\nalready has the name: " + newItemName,
+          HttpStatus.BAD_REQUEST);
+    }
+    boolean isSuccessful;
+    try {
+      isSuccessful = itemsTableSqlHelper.updateItemName(itemId, newItemName);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    if (isSuccessful) {
+      return new ResponseEntity<>(
+          "Item: "
+              + item.getItemId()
+              + "\nwas successfully renamed. \n"
+              + item.getItemName()
+              + " --> "
+              + newItemName,
+          HttpStatus.OK);
+    }
+
+    return new ResponseEntity<>(
+        "Item with itemID: " + item.getItemId() + " could not be updated.",
+        HttpStatus.INTERNAL_SERVER_ERROR);
+  }
+
+  /** pass checkstyle. */
+  @DeleteMapping(value = "/deleteItem", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> deleteItem(@RequestParam(value = "itemId") String itemId) {
+    if (itemId == null || itemId.isEmpty()) {
+      return new ResponseEntity<>("itemId needed to get item name.", HttpStatus.BAD_REQUEST);
+    }
+    List<Item> itemList;
+    try {
+      itemList = itemsTableSqlHelper.getItem(itemId);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    if (itemList == null || itemList.isEmpty()) {
+      return new ResponseEntity<>(
+          "Item with item id: " + itemId + " does not exist.", HttpStatus.NOT_FOUND);
+    }
+
+    if (itemList.size() > 1) {
+      return new ResponseEntity<>(
+          "There are multiple items with itemID: " + itemId, HttpStatus.CONFLICT);
+    }
+
+    Item item = itemList.get(0);
+    if (item == null) {
+      return new ResponseEntity<>("No item found for itemID: " + itemId, HttpStatus.NOT_FOUND);
+    }
+    boolean isSuccessful;
+    try {
+      isSuccessful = itemsTableSqlHelper.deleteItem(itemId);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    if (isSuccessful) {
+      return new ResponseEntity<>(
+          "ItemID: "
+              + item.getItemId()
+              + "\n\""
+              + item.getItemName()
+              + "\" was successfully deleted.",
+          HttpStatus.OK);
+    }
+
+    return new ResponseEntity<>(
+        "Item with itemID: " + item.getItemId() + " could not be deleted.",
+        HttpStatus.INTERNAL_SERVER_ERROR);
   }
 }

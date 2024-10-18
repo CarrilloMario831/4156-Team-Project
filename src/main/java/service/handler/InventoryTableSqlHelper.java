@@ -102,6 +102,7 @@ public class InventoryTableSqlHelper {
   }
 
   /**
+<<<<<<< HEAD
    * This method will change the admin user column for an inventory and returns a boolean
    * representing the success of the query.
    *
@@ -121,6 +122,8 @@ public class InventoryTableSqlHelper {
   }
 
   /**
+=======
+>>>>>>> sql-connect
    * This method will simply delete.
    *
    * @param inventoryId Unique identifier for the inventory within the DB we'd like to delete.

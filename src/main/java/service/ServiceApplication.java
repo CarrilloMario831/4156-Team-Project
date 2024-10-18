@@ -30,6 +30,7 @@ public class ServiceApplication {
     // create a sql_test_item object to test inserting & updating within the DB
     Item item1 =
         Item.builder()
+            .itemId(UUID.randomUUID())
             .price(2.99)
             .timeOfAddition(now)
             .location("Ya Grandma's House")
@@ -43,6 +44,7 @@ public class ServiceApplication {
 
     Item item2 =
         Item.builder()
+            .itemId(UUID.randomUUID())
             .price(17.38)
             .timeOfAddition(now)
             .location("Ya Motha's House")
@@ -56,15 +58,16 @@ public class ServiceApplication {
 
     // reference to the repository defining how to query our DB
     ItemsTableSqlHelper itemsTableSqlHelper = context.getBean(ItemsTableSqlHelper.class);
-    itemsTableSqlHelper.insert(item1);
-    itemsTableSqlHelper.insert(item2);
+    itemsTableSqlHelper.insertItem(item1);
+    itemsTableSqlHelper.insertItem(item2);
 
-    System.out.println(itemsTableSqlHelper.select());
-    System.out.println(itemsTableSqlHelper.select("c56a4180-65aa-42ec-a945-5fd21dec0538"));
-    itemsTableSqlHelper.update("c56a4180-65aa-42ec-a945-5fd21dec0538", "NYC");
-    //    itemsTableSqlHelper.delete("c56a4180-65aa-42ec-a945-5fd21dec0538");
+    System.out.println(itemsTableSqlHelper.getAllItems());
+    System.out.println(itemsTableSqlHelper.getItem("c56a4180-65aa-42ec-a945-5fd21dec0538"));
+    itemsTableSqlHelper.updateItemLocation("c56a4180-65aa-42ec-a945-5fd21dec0538", "NYC");
+    itemsTableSqlHelper.deleteItem("c56a4180-65aa-42ec-a945-5fd21dec0538");
 
-    List<Item> itemsList = itemsTableSqlHelper.select("c56a4180-65aa-42ec-a945-5fd21dec0538");
+    List<Item> itemsList = itemsTableSqlHelper.getItem("c56a4180-65aa-42ec-a945-5fd21dec0538");
+
     // Populating the hashmap some with some sample items
     Map<UUID, Item> itemsMap = new HashMap<>();
     for (Item item : itemsList) {

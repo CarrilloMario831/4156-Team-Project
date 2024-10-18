@@ -17,7 +17,7 @@ public class Inventory {
 
   @NonNull @Setter private String inventoryName;
 
-  @NonNull private Map<UUID, Item> items;
+  private Map<UUID, Item> items;
 
   @NonNull @Setter private UUID adminId;
 
@@ -86,6 +86,9 @@ public class Inventory {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(inventoryName).append(" (").append(inventoryId).append("):\n");
+    if (this.items == null) {
+      return sb.toString();
+    }
     for (Map.Entry<UUID, Item> entry : items.entrySet()) {
       Item value = entry.getValue();
       sb.append("Item Name: ")

@@ -13,8 +13,7 @@ import service.models.Item;
  */
 public class ItemRowMapper extends BaseRowMapper<Item> {
 
-  private final DateTimeFormatter formatter =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS");
+  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
   /**
    * This method will format the SQL response into an Item object that gets returned.
@@ -36,7 +35,10 @@ public class ItemRowMapper extends BaseRowMapper<Item> {
         .reservationDurationInMillis(rs.getLong("reservation_duration"))
         .reservationStatus(rs.getBoolean("reserved_status"))
         .reservationTime(LocalDateTime.parse(rs.getString("reservation_time"), formatter))
-        .nextRestockDateTime(LocalDateTime.parse(rs.getString("next_restock"), formatter))
+        .nextRestockDateTime(
+            rs.getString("next_restock") != null
+                ? LocalDateTime.parse(rs.getString("next_restrock"), formatter)
+                : null)
         .build();
   }
 }

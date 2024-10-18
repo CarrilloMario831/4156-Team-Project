@@ -78,5 +78,5 @@ BEGIN
     SET new_inventory_id = UUID();
     -- Create a default inventory for the user
     INSERT INTO Inventories (inventory_id, inventory_name, user_key)
-    VALUES (new_inventory_id, CONCAT(NEW.username, "'s Default Inventory"), NEW.user_key);
+    VALUES (new_inventory_id, CONCAT(NEW.username, '`s Default Inventory'), NEW.user_key);
 END;

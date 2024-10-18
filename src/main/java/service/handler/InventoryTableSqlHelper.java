@@ -42,7 +42,8 @@ public class InventoryTableSqlHelper {
     // JDBC template provides many methods and query() is synonymous with select
     // update() is for the SQL insert, update, deletes
     int rows =
-        jdbcTemplate.update(sql, inventory.getInventoryId(), inventory.getInventoryName(), userKey);
+        jdbcTemplate.update(
+            sql, inventory.getInventoryId().toString(), inventory.getInventoryName(), userKey);
     System.out.println(rows + "Inventory row/s inserted.");
   }
 

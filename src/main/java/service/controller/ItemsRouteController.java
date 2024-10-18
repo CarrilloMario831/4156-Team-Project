@@ -77,7 +77,7 @@ public class ItemsRouteController {
       List<Item> item = itemsTableSqlHelper.getItem(itemId);
       if (item == null || item.isEmpty()) {
         return new ResponseEntity<>(
-            "Item with itemId: " + itemId + " was not found", HttpStatus.NOT_FOUND);
+            "Item with itemId: " + itemId + " was not found.", HttpStatus.NOT_FOUND);
       }
       String itemName = item.get(0).getItemName();
       if (itemName.isEmpty()) {
@@ -280,7 +280,7 @@ public class ItemsRouteController {
     }
   }
 
-  /** pass chestyle. */
+  /** pass checkstyle. */
   @PatchMapping(value = "/updateItemName", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> updateItemName(
       @RequestParam(value = "itemId") String itemId,
@@ -289,6 +289,9 @@ public class ItemsRouteController {
       return new ResponseEntity<>("itemId is needed to update item name.", HttpStatus.BAD_REQUEST);
     }
 
+    if (newItemName == null || newItemName.isEmpty()) {
+      return new ResponseEntity<>("Item name cannot be empty.", HttpStatus.BAD_REQUEST);
+    }
     List<Item> itemList;
     try {
       itemList = itemsTableSqlHelper.getItem(itemId);
@@ -299,7 +302,7 @@ public class ItemsRouteController {
 
     if (itemList == null || itemList.isEmpty()) {
       return new ResponseEntity<>(
-          "Item with item id: " + itemId + " does not exist.", HttpStatus.NOT_FOUND);
+          "Item with itemId: " + itemId + " was not found.", HttpStatus.NOT_FOUND);
     }
 
     if (itemList.size() > 1) {

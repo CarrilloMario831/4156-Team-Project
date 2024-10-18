@@ -40,19 +40,12 @@ public class ItemsTableSqlHelper {
    * @param item Item object that you'd like to store within DB.
    */
   public boolean insertItem(Item item) {
-    // Create your insert SQL query with "?" as a placeholder for variable
-    // values
-
-    // Items is the table within the MySQL DB
     String sql =
         "insert into Items ("
             + "item_id, item_name, time_of_addition, quantity, "
             + "reserved_status, reservation_time, reservation_duration, "
             + "location, price, next_restock, inventory_id) "
             + "values (?,?,?,?,?,?,?,?,?,?, ?)";
-
-    // JDBC template provides many methods and query() is synonymous with select
-    // update() is for the SQL insert, update, deletes
     int rows =
         jdbcTemplate.update(
             sql,
@@ -76,15 +69,8 @@ public class ItemsTableSqlHelper {
    * the DB.
    */
   public List<Item> getAllItems() {
-
-    // define the sql query
     String sql = "select * from Items";
-
-    // This stores the select query results from the DB
-    // RowMapper<Item> rowMapper = new ItemRowMapper();
     RowMapper<Item> rowMapper = (rs, rowNum) -> getItemFromTable(rs);
-
-    // Store the results within an indexable array
     return jdbcTemplate.query(sql, rowMapper);
   }
 
@@ -141,7 +127,6 @@ public class ItemsTableSqlHelper {
     // '0b1ee0b0-8bf0-11ef-9fd0-343c922917f9'
     String sql = "update Items set location = ? where item_id = ?";
     int rows = jdbcTemplate.update(sql, location, itemId);
-
     System.out.println(rows + " row/s updated");
     return rows == 1;
   }

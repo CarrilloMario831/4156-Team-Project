@@ -107,6 +107,10 @@ public class ItemsTableSqlHelper {
   private Item getItemFromTable(ResultSet rs) throws SQLException {
     return Item.builder()
         .itemId(UUID.fromString(rs.getString("uuid")))
+        .inventoryId(
+            rs.getString("inventory_id") != null
+                ? UUID.fromString(rs.getString("inventory_id"))
+                : null)
         .timeOfAddition(LocalDateTime.parse(rs.getString("time_of_addition"), FORMATTER))
         .itemName(rs.getString("item_name"))
         .quantity(rs.getInt("quantity"))

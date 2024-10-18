@@ -62,7 +62,7 @@ public class ServiceApplication {
     System.out.println(itemsTableSqlHelper.select());
     System.out.println(itemsTableSqlHelper.select("c56a4180-65aa-42ec-a945-5fd21dec0538"));
     itemsTableSqlHelper.update("c56a4180-65aa-42ec-a945-5fd21dec0538", "NYC");
-    itemsTableSqlHelper.delete("c56a4180-65aa-42ec-a945-5fd21dec0538");
+    //    itemsTableSqlHelper.delete("c56a4180-65aa-42ec-a945-5fd21dec0538");
 
     List<Item> itemsList = itemsTableSqlHelper.select("c56a4180-65aa-42ec-a945-5fd21dec0538");
     // Populating the hashmap some with some sample items
@@ -70,7 +70,7 @@ public class ServiceApplication {
     for (Item item : itemsList) {
       itemsMap.put(item.getItemId(), item);
     }
-    
+
     // reference to the helper to test User operations
     UsersTableSqlHelper usersTableSqlHelper = context.getBean(UsersTableSqlHelper.class);
 
@@ -97,22 +97,22 @@ public class ServiceApplication {
     System.out.println(usersTableSqlHelper.getUserWithUserId(userId1.toString()));
     usersTableSqlHelper.updateUsername(userId1.toString(), "daKing827");
     usersTableSqlHelper.delete(userId2.toString());
-    
+
     // converting admin1's ID to a UUID
     String admin1Id = "f1234567-abcd-4d5e-9999-abcdef012345";
     UUID admin1Uuid = UUID.fromString(admin1Id);
     UUID inventoryUuid = UUID.randomUUID();
-    
+
     // Testing the inventory
     InventoryTableSqlHelper inventoryRepo = context.getBean(InventoryTableSqlHelper.class);
     Inventory production =
         Inventory.builder()
-                 .inventoryId(inventoryUuid)
-                 .inventoryName("prod inventory")
-                 .items(itemsMap)
-                 .adminId(admin1Uuid)
-                 .build();
-    
+            .inventoryId(inventoryUuid)
+            .inventoryName("prod inventory")
+            .items(itemsMap)
+            .adminId(admin1Uuid)
+            .build();
+
     // give admin1 one more inventory that they can add items to
     inventoryRepo.insert(production, admin1Id);
     System.out.println(inventoryRepo.select());

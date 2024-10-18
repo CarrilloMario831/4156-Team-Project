@@ -20,6 +20,8 @@ public class Item {
 
   @NonNull @Setter private String location;
 
+  @Setter private UUID inventoryId;
+
   private int quantity;
 
   @Setter private boolean reservationStatus;

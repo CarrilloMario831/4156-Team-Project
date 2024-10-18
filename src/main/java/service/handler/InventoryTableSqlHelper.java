@@ -102,6 +102,25 @@ public class InventoryTableSqlHelper {
   }
 
   /**
+   * This method will change the admin user column for an inventory and returns a boolean
+   * representing the success of the query.
+   *
+   * @param inventoryId Unique identifier for the inventory within the DB.
+   * @param adminId Unique identifier for the admin who'd we like to change the inventory's access
+   *     to.
+   * @return boolean
+   */
+  public boolean updateAdmin(String inventoryId, String adminId) {
+
+    // Example inventoryId to check if this method works 'bf456378-a8b3-40b6-b1a1-654bc9de5f02'
+    String sql = "update Inventories set user_id = ? where inventory_id = ?";
+    int rows = jdbcTemplate.update(sql, adminId, inventoryId);
+
+    System.out.println(rows + " inventory row/s updated");
+    return rows > 0;
+  }
+
+  /**
    * This method will simply delete.
    *
    * @param inventoryId Unique identifier for the inventory within the DB we'd like to delete.

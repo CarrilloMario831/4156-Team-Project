@@ -1,5 +1,7 @@
 package service.models;
 
+import static service.util.DateTimeUtils.FORMATTER;
+
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
@@ -33,7 +35,7 @@ public class User {
         + ", \ninventoryAccess= "
         + inventoryAccess
         + "\nlastAccess= "
-        + lastAccess
+        + lastAccess.format(FORMATTER)
         + "]";
   }
 }

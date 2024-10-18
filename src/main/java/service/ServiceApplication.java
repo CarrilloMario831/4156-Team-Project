@@ -110,10 +110,10 @@ public class ServiceApplication {
             .role(UserRoles.USER)
             .lastAccess(now)
             .build();
-    usersTableSqlHelper.insert(user1);
-    usersTableSqlHelper.insert(user2);
+    usersTableSqlHelper.insertUser(user1);
+    usersTableSqlHelper.insertUser(user2);
 
-    System.out.println(usersTableSqlHelper.getUserWithUserId());
+    System.out.println(usersTableSqlHelper.getAllUsers());
     System.out.println(usersTableSqlHelper.getUserWithUserId(userId1.toString()));
     usersTableSqlHelper.updateUsername(userId1.toString(), "daKing827");
     usersTableSqlHelper.delete(userId2.toString());

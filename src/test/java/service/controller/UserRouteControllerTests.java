@@ -2,7 +2,6 @@ package service.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static service.util.DateTimeUtils.FORMATTER;
@@ -186,7 +185,7 @@ public class UserRouteControllerTests {
 
     // Test Success
     when(usersTableSqlHelper.getUserWithUsername(any())).thenReturn(null);
-    doNothing().when(usersTableSqlHelper).insert(any());
+    when(usersTableSqlHelper.insertUser(any())).thenReturn(true);
     ResponseEntity<?> createUserResponse = userRouteController.createUser(testUsername);
     assertEquals(HttpStatus.OK, createUserResponse.getStatusCode());
 
@@ -209,7 +208,7 @@ public class UserRouteControllerTests {
 
     // Test Internal Error
     when(usersTableSqlHelper.getUserWithUsername(any())).thenReturn(null);
-    doThrow(new RuntimeException()).when(usersTableSqlHelper).insert(any());
+    doThrow(new RuntimeException()).when(usersTableSqlHelper).insertUser(any());
     createUserResponse = userRouteController.createUser(testUsername);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, createUserResponse.getStatusCode());
   }

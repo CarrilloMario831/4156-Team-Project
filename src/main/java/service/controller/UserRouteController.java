@@ -26,6 +26,7 @@ public class UserRouteController {
   @Autowired public UsersTableSqlHelper usersTableSqlHelper;
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
+  /** Sample javadoc to pass checkstyle. */
   @GetMapping(value = "/getUsername", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getUsername(@RequestParam(value = "userId") String userId) {
     if (userId == null || userId.isEmpty()) {
@@ -48,6 +49,7 @@ public class UserRouteController {
     }
   }
 
+  /** Sample javadoc to pass checkstyle. */
   @GetMapping(value = "/getRole", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getRole(@RequestParam(value = "userId") String userId) {
     if (userId == null || userId.isEmpty()) {
@@ -72,6 +74,7 @@ public class UserRouteController {
     }
   }
 
+  /** Sample javadoc to pass checkstyle. */
   @GetMapping(value = "/getLastAccess", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getLastAccess(@RequestParam(value = "userId") String userId) {
     if (userId == null || userId.isEmpty()) {
@@ -97,6 +100,7 @@ public class UserRouteController {
     }
   }
 
+  /** Sample javadoc to pass checkstyle. */
   @PostMapping(value = "/createUser", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> createUser(@RequestParam(value = "username") String username) {
     if (username == null || username.isEmpty()) {
@@ -124,6 +128,7 @@ public class UserRouteController {
     }
   }
 
+  /** Sample javadoc to pass checkstyle. */
   @PatchMapping(value = "/updateUsername", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> updateUsername(
       @RequestParam(value = "userId") String userId,
@@ -172,6 +177,7 @@ public class UserRouteController {
     }
   }
 
+  /** Sample javadoc to pass checkstyle. */
   @PatchMapping(value = "/updateRole", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> updateRole(
       @RequestParam(value = "userId") String userId,

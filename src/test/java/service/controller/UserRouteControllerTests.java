@@ -2,6 +2,7 @@ package service.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 import static service.util.DateTimeUtils.FORMATTER;
@@ -203,7 +204,7 @@ public class UserRouteControllerTests {
     when(usersTableSqlHelper.getUserWithUsername(any())).thenReturn(testUser);
     createUserResponse = userRouteController.createUser(testUsername);
     assertEquals(
-        "Username user1already taken. Try a different username.", createUserResponse.getBody());
+        "Username user1 already taken. Try a different username.", createUserResponse.getBody());
     assertEquals(HttpStatus.CONFLICT, createUserResponse.getStatusCode());
 
     // Test Internal Error
@@ -211,5 +212,192 @@ public class UserRouteControllerTests {
     doThrow(new RuntimeException()).when(usersTableSqlHelper).insertUser(any());
     createUserResponse = userRouteController.createUser(testUsername);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, createUserResponse.getStatusCode());
+  }
+
+  @Test
+  public void testUpdateUsername() {
+    // Test null and empty fields
+    ResponseEntity<?> updateUsernameResponse = userRouteController.updateUsername(null, "", "");
+    assertEquals("UserID cannot be empty.", updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateUsernameResponse.getStatusCode());
+    updateUsernameResponse = userRouteController.updateUsername("", "", "");
+    assertEquals("UserID cannot be empty.", updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateUsernameResponse.getStatusCode());
+    updateUsernameResponse =
+        userRouteController.updateUsername(String.valueOf(testUser.getUserId()), "", "");
+    assertEquals("Current username cannot be empty.", updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateUsernameResponse.getStatusCode());
+    updateUsernameResponse =
+        userRouteController.updateUsername(String.valueOf(testUser.getUserId()), null, "");
+    assertEquals("Current username cannot be empty.", updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateUsernameResponse.getStatusCode());
+    updateUsernameResponse =
+        userRouteController.updateUsername(
+            String.valueOf(testUser.getUserId()), testUser.getUsername(), "");
+    assertEquals("New username cannot be empty.", updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateUsernameResponse.getStatusCode());
+    updateUsernameResponse =
+        userRouteController.updateUsername(
+            String.valueOf(testUser.getUserId()), testUser.getUsername(), null);
+    assertEquals("New username cannot be empty.", updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateUsernameResponse.getStatusCode());
+
+    // Test current and new username same
+    updateUsernameResponse =
+        userRouteController.updateUsername(
+            String.valueOf(testUser.getUserId()), testUser.getUsername(), testUser.getUsername());
+    assertEquals(
+        "New username is the same as current username. Please enter a different username.",
+        updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateUsernameResponse.getStatusCode());
+
+    // Test taken username
+    String newUsername = "iloveswe23";
+    when(usersTableSqlHelper.getUserWithUsername(any())).thenReturn(testUser);
+    updateUsernameResponse =
+        userRouteController.updateUsername(
+            String.valueOf(testUser.getUserId()), testUser.getUsername(), newUsername);
+    assertEquals(
+        "Username " + newUsername + " already taken. \nTry a different username.",
+        updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.CONFLICT, updateUsernameResponse.getStatusCode());
+
+    // Test User not found
+    when(usersTableSqlHelper.getUserWithUsername(any())).thenReturn(null);
+    when(usersTableSqlHelper.getUserWithUserId(any())).thenReturn(null);
+    updateUsernameResponse =
+        userRouteController.updateUsername(
+            String.valueOf(testUser.getUserId()), testUser.getUsername(), newUsername);
+    assertEquals(
+        "User with userId: " + testUser.getUserId() + " was not found",
+        updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateUsernameResponse.getStatusCode());
+
+    // Test current username wrong
+    when(usersTableSqlHelper.getUserWithUserId(any())).thenReturn(testUser);
+    updateUsernameResponse =
+        userRouteController.updateUsername(
+            String.valueOf(testUser.getUserId()), "wrongUsername", newUsername);
+    assertEquals(
+        "Current username is wrong for userID: "
+            + testUser.getUserId()
+            + "\nPlease enter the correct current username.",
+        updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateUsernameResponse.getStatusCode());
+
+    // Test unsuccessful update
+    when(usersTableSqlHelper.updateUsername(anyString(), anyString())).thenReturn(false);
+    updateUsernameResponse =
+        userRouteController.updateUsername(
+            String.valueOf(testUser.getUserId()), testUser.getUsername(), newUsername);
+    assertEquals(
+        "User with \nuserId: "
+            + testUser.getUserId()
+            + " \nusername: "
+            + testUser.getUsername()
+            + "\ncould not be updated.",
+        updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateUsernameResponse.getStatusCode());
+
+    // Test successful update
+    when(usersTableSqlHelper.updateUsername(anyString(), anyString())).thenReturn(true);
+    updateUsernameResponse =
+        userRouteController.updateUsername(
+            String.valueOf(testUser.getUserId()), testUser.getUsername(), newUsername);
+    assertEquals(
+        "Username for userID: "
+            + testUser.getUserId()
+            + " successfully changed from: \n"
+            + testUser.getUsername()
+            + " --> "
+            + newUsername,
+        updateUsernameResponse.getBody());
+    assertEquals(HttpStatus.OK, updateUsernameResponse.getStatusCode());
+
+    // Test internal error
+    when(usersTableSqlHelper.updateUsername(anyString(), anyString()))
+        .thenThrow(RuntimeException.class);
+    updateUsernameResponse =
+        userRouteController.updateUsername(
+            String.valueOf(testUser.getUserId()), testUser.getUsername(), newUsername);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateUsernameResponse.getStatusCode());
+  }
+
+  @Test
+  public void updateRole() {
+
+    // Test null and empty fields
+    ResponseEntity<?> updateRoleResponse = userRouteController.updateRole(null, "");
+    assertEquals("UserID cannot be empty.", updateRoleResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateRoleResponse.getStatusCode());
+    updateRoleResponse = userRouteController.updateRole("", "");
+    assertEquals("UserID cannot be empty.", updateRoleResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateRoleResponse.getStatusCode());
+    updateRoleResponse = userRouteController.updateRole(String.valueOf(testUser.getUserId()), null);
+    assertEquals("Role is invalid. Must be ADMIN or USER.", updateRoleResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateRoleResponse.getStatusCode());
+    updateRoleResponse = userRouteController.updateRole(String.valueOf(testUser.getUserId()), "");
+    assertEquals("Role is invalid. Must be ADMIN or USER.", updateRoleResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateRoleResponse.getStatusCode());
+
+    // Test a role that is neither ADMIN nor USER
+    updateRoleResponse =
+        userRouteController.updateRole(String.valueOf(testUser.getUserId()), "invalid");
+    assertEquals("Role is invalid. Must be ADMIN or USER.", updateRoleResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateRoleResponse.getStatusCode());
+
+    // Test user not found
+    when(usersTableSqlHelper.getUserWithUserId(any())).thenReturn(null);
+    updateRoleResponse =
+        userRouteController.updateRole(
+            String.valueOf(testUser.getUserId()), UserRoles.ADMIN.toString());
+    assertEquals(
+        "User with userId: " + testUser.getUserId() + " was not found.",
+        updateRoleResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateRoleResponse.getStatusCode());
+
+    // Test same role
+    when(usersTableSqlHelper.getUserWithUserId(any())).thenReturn(testUser);
+    updateRoleResponse =
+        userRouteController.updateRole(
+            String.valueOf(testUser.getUserId()), testUser.getRole().toString());
+    assertEquals(
+        "User " + testUser.getUsername() + " is already " + testUser.getRole(),
+        updateRoleResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateRoleResponse.getStatusCode());
+
+    // Test unsuccessful udpate
+    when(usersTableSqlHelper.updateRole(anyString(), anyString())).thenReturn(false);
+    updateRoleResponse =
+        userRouteController.updateRole(String.valueOf(testUser.getUserId()), "ADMIN");
+    assertEquals(
+        "User with \nuserId: "
+            + testUser.getUserId()
+            + " \nusername: "
+            + testUser.getUsername()
+            + "\ncould not be updated.",
+        updateRoleResponse.getBody());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateRoleResponse.getStatusCode());
+
+    // Test successful update
+    when(usersTableSqlHelper.updateRole(anyString(), anyString())).thenReturn(true);
+    updateRoleResponse =
+        userRouteController.updateRole(String.valueOf(testUser.getUserId()), "ADMIN");
+    assertEquals(
+        "Role of "
+            + testUser.getUsername()
+            + " was successfully changed from: \n"
+            + testUser.getRole()
+            + " --> "
+            + UserRoles.ADMIN,
+        updateRoleResponse.getBody());
+    assertEquals(HttpStatus.OK, updateRoleResponse.getStatusCode());
+
+    // Test internal error
+    when(usersTableSqlHelper.updateRole(anyString(), anyString()))
+        .thenThrow(RuntimeException.class);
+    updateRoleResponse =
+        userRouteController.updateRole(String.valueOf(testUser.getUserId()), "ADMIN");
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateRoleResponse.getStatusCode());
   }
 }

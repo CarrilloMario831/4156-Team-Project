@@ -44,9 +44,6 @@ public class UsersTableSqlHelper {
             + "user_id, username, role, "
             + "last_access, inventory_access) "
             + "values (?,?,?,?,?)";
-
-    // JDBC template provides many methods and query() is synomous with select
-    // update() is for the SQL insert, update, deletes
     int rows =
         jdbcTemplate.update(
             sql,
@@ -99,7 +96,6 @@ public class UsersTableSqlHelper {
     if (results.isEmpty()) {
       return null;
     } else if (results.size() > 1) {
-      // throw error multiple users of the same userID
       throw new IllegalStateException("More than one user found for username: " + username);
     } else {
       return results.get(0);

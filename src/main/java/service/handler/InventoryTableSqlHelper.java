@@ -72,14 +72,8 @@ public class InventoryTableSqlHelper {
    * @param inventoryId Unique identifier for the inventory you'd like to search for in the DB.
    */
   public List<Inventory> select(String inventoryId) {
-
-    // define the sql query
     String sql = "select * from Inventories where inventory_id = " + "'" + inventoryId + "'";
-
-    // This stores the select query results from the DB
     RowMapper<Inventory> rowMapper = new InventoryRowMapper();
-
-    // Store the results within an indexable array
     return jdbcTemplate.query(sql, rowMapper);
   }
 
@@ -92,8 +86,6 @@ public class InventoryTableSqlHelper {
    * @return boolean
    */
   public boolean update(String inventoryId, String inventoryName) {
-
-    // Example inventoryId to check if this method works 'bf456378-a8b3-40b6-b1a1-654bc9de5f02'
     String sql = "update Inventories set inventory_name = ? where inventory_id = ?";
     int rows = jdbcTemplate.update(sql, inventoryName, inventoryId);
 
@@ -102,8 +94,8 @@ public class InventoryTableSqlHelper {
   }
 
   /**
-   * <<<<<<< HEAD This method will change the admin user column for an inventory and returns a
-   * boolean representing the success of the query.
+   * This method will change the admin user column for an inventory and returns a boolean
+   * representing the success of the query.
    *
    * @param inventoryId Unique identifier for the inventory within the DB.
    * @param adminId Unique identifier for the admin who'd we like to change the inventory's access
@@ -111,8 +103,6 @@ public class InventoryTableSqlHelper {
    * @return boolean
    */
   public boolean updateAdmin(String inventoryId, String adminId) {
-
-    // Example inventoryId to check if this method works 'bf456378-a8b3-40b6-b1a1-654bc9de5f02'
     String sql = "update Inventories set user_id = ? where inventory_id = ?";
     int rows = jdbcTemplate.update(sql, adminId, inventoryId);
 
@@ -121,7 +111,7 @@ public class InventoryTableSqlHelper {
   }
 
   /**
-   * ======= >>>>>>> sql-connect This method will simply delete.
+   * This method will simply delete.
    *
    * @param inventoryId Unique identifier for the inventory within the DB we'd like to delete.
    * @return boolean representing the number of rows deleted.

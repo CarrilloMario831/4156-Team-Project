@@ -1,4 +1,4 @@
-package service.service;
+package service.models;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,10 +11,10 @@ import java.util.HashMap;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import service.models.Inventory;
-import service.models.Item;
+import org.springframework.boot.test.context.SpringBootTest;
 
 /** Unit tests for the Inventory class. */
+@SpringBootTest
 public class InventoryUnitTests {
 
   private Inventory inventory;

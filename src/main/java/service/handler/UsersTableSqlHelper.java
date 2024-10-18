@@ -39,10 +39,6 @@ public class UsersTableSqlHelper {
    * @param user User object that you'd like to store within DB.
    */
   public void insert(User user) {
-    // Create your insert SQL query with "?" as a placeholder for variable
-    // values
-
-    // Users is the table within the MySQL DB
     String sql =
         "insert into Users ("
             + "user_id, username, role, "
@@ -67,11 +63,7 @@ public class UsersTableSqlHelper {
    * the DB.
    */
   public List<User> select() {
-
-    // define the sql query
     String sql = "select * from Users";
-
-    // Store the results within an indexable array
     return jdbcTemplate.query(sql, getRowMapper());
   }
 
@@ -82,13 +74,8 @@ public class UsersTableSqlHelper {
    * @param userId Unique identifier for the user you'd like to search for in the DB.
    */
   public User select(String userId) {
-
-    // define the sql query
     String sql = "select * from Users where user_id = " + "'" + userId + "'";
-
-    // Store the results within an indexable array
     List<User> results = jdbcTemplate.query(sql, getRowMapper());
-
     if (results.isEmpty()) {
       return null;
     } else if (results.size() > 1) {
@@ -110,7 +97,6 @@ public class UsersTableSqlHelper {
   public boolean update(String userId, String username) {
     String sql = "update Users set username = ? where user_id = ?";
     int rows = jdbcTemplate.update(sql, username, userId);
-
     System.out.println(rows + " row/s updated");
     return rows == 1;
   }
@@ -123,10 +109,8 @@ public class UsersTableSqlHelper {
    */
   public boolean delete(String userId) {
     String sql = "delete from Users where user_id = ?";
-
     int rows = jdbcTemplate.update(sql, userId);
     System.out.println(rows + " row/s deleted");
-
     return rows == 1;
   }
 

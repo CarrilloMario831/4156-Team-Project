@@ -1,6 +1,5 @@
 package service.models;
 
-import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.Builder;
@@ -24,7 +23,7 @@ public class Item {
   private int quantity;
 
   @Setter private boolean reservationStatus;
-  @Setter private Duration reservationDuration;
+  @Setter private long reservationDurationInMillis;
   @Setter private LocalDateTime reservationTime;
   @Setter private double price;
   @Setter private LocalDateTime nextRestockDateTime;
@@ -36,7 +35,7 @@ public class Item {
       this.itemId = UUID.randomUUID(); // Automatically generate itemId
       this.timeOfAddition = LocalDateTime.now(); // Automatically set time of addition
       this.reservationStatus = false; // Default reservation status
-      this.reservationDuration = Duration.ZERO; // Default reservation duration
+      this.reservationDurationInMillis = 0; // Default reservation duration
     }
   }
 
@@ -95,17 +94,18 @@ public class Item {
     sb.append("Quantity: ").append(quantity).append("\n");
     sb.append("Price: $").append(price).append("\n");
     sb.append("Reservation Status: ")
-            .append(reservationStatus ? "Reserved" : "Available")
-            .append("\n");
+        .append(reservationStatus ? "Reserved" : "Available")
+        .append("\n");
 
     if (reservationStatus) {
-      sb.append("Reservation Duration: ").append(reservationDuration.toMinutes())
-              .append(" minutes\n");
+      sb.append("Reservation Duration: ")
+          .append(reservationDurationInMillis)
+          .append(" milliseconds\n");
       sb.append("Reservation Time: ").append(reservationTime.toString()).append("\n");
     }
 
     if (nextRestockDateTime != null) {
-      sb.append("Next Restock Date: ").append(nextRestockDateTime.toString()).append("\n");
+      sb.append("Next Restock Date: ").append(nextRestockDateTime).append("\n");
     }
 
     return sb.toString();

@@ -8,20 +8,18 @@ import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
 
-/**
- * Represents an inventory that holds a collection of items.
- */
+/** Represents an inventory that holds a collection of items. */
 @Getter
 @Builder
 public class Inventory {
 
-  @NonNull private final UUID inventoryId = UUID.randomUUID();
+  @NonNull @Setter private UUID inventoryId = UUID.randomUUID();
 
   @NonNull @Setter private String inventoryName;
 
-  @NonNull private Map<UUID, Item> items;
+  private Map<UUID, Item> items;
 
-  @NonNull private final UUID adminId;
+  @NonNull @Setter private UUID adminId;
 
   /**
    * Creates a new item and adds it to the inventory.
@@ -29,10 +27,11 @@ public class Inventory {
    * @param itemName the name of the item
    * @param quantity the quantity of the item
    * @param location the location of the item
-   * @param price    the price of the item
+   * @param price the price of the item
    */
   public void createItem(String itemName, int quantity, String location, double price) {
-    Item item = Item.builder()
+    Item item =
+        Item.builder()
             .itemName(itemName)
             .quantity(quantity)
             .location(location)
@@ -87,13 +86,16 @@ public class Inventory {
   public String toString() {
     StringBuilder sb = new StringBuilder();
     sb.append(inventoryName).append(" (").append(inventoryId).append("):\n");
+    if (this.items == null) {
+      return sb.toString();
+    }
     for (Map.Entry<UUID, Item> entry : items.entrySet()) {
       Item value = entry.getValue();
       sb.append("Item Name: ")
-              .append(value.getItemName())
-              .append(" Quantity: ")
-              .append(value.getQuantity())
-              .append("\n");
+          .append(value.getItemName())
+          .append(" Quantity: ")
+          .append(value.getQuantity())
+          .append("\n");
     }
     return sb.toString();
   }

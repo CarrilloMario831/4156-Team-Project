@@ -1,4 +1,4 @@
-package service.service;
+package service.models;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import service.models.Item;
 
 /** Unit tests for the Item class. */
 @SpringBootTest
@@ -42,8 +41,8 @@ public class ItemUnitTests {
     assertNotNull(testItem.getTimeOfAddition(), "Time of addition should not be null");
     assertFalse(testItem.isReservationStatus(), "Reservation status should be false by default");
     assertEquals(
-        Duration.ZERO,
-        testItem.getReservationDuration(),
+        0,
+        testItem.getReservationDurationInMillis(),
         "Reservation duration should be zero by default");
     assertNull(testItem.getReservationTime(), "Reservation time should be null by default");
     assertNull(testItem.getNextRestockDateTime(), "Next restock date should be null by default");
@@ -122,12 +121,12 @@ public class ItemUnitTests {
   /** Tests setting and getting the reservation duration. */
   @Test
   public void testReservationDuration() {
-    Duration duration = Duration.ofHours(2);
-    testItem.setReservationDuration(duration);
+    long durationInMillis = Duration.ofHours(2).toMillis();
+    testItem.setReservationDurationInMillis(durationInMillis);
     assertEquals(
-        duration,
-        testItem.getReservationDuration(),
-        "Reservation duration should be set to 2 hours");
+        durationInMillis,
+        testItem.getReservationDurationInMillis(),
+        "Reservation duration should be set to 2 hours in milliseconds");
   }
 
   /** Tests setting and getting the reservation time. */
@@ -183,8 +182,11 @@ public class ItemUnitTests {
   /** Tests the toString method of the Item class. */
   @Test
   public void testToStringMethod() {
-    String expectedString = "Item Details:\n"
-            + "UUID: " + testItem.getItemId() + "\n"
+    String expectedString =
+        "Item Details:\n"
+            + "UUID: "
+            + testItem.getItemId()
+            + "\n"
             + "Name: Toyota Forklift\n"
             + "Location: Garage\n"
             + "Quantity: 2\n"

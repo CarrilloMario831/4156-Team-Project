@@ -72,7 +72,6 @@ public class ServiceApplication {
     for (Item item : itemsList) {
       itemsMap.put(item.getItemId(), item);
     }
-
     // reference to the helper to test User operations
     UsersTableSqlHelper usersTableSqlHelper = context.getBean(UsersTableSqlHelper.class);
 

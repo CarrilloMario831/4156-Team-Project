@@ -150,7 +150,6 @@ public class UserRouteController {
           HttpStatus.BAD_REQUEST);
     }
     try {
-      // Check if the new username is taken
       if (usersTableSqlHelper.getUserWithUsername(newUsername) != null) {
         return new ResponseEntity<>(
             "Username " + newUsername + " already taken. \nTry a different username.",
@@ -158,13 +157,11 @@ public class UserRouteController {
       }
       User user = usersTableSqlHelper.getUserWithUserId(userId);
 
-      // Check if the user even exists
       if (user == null) {
         return new ResponseEntity<>(
             "User with userId: " + userId + " was not found", HttpStatus.NOT_FOUND);
       }
 
-      // Check if the current username is accurate
       if (!user.getUsername().equals(currentUsername)) {
         return new ResponseEntity<>(
             "Current username is wrong for userID: "

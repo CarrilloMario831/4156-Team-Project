@@ -1,9 +1,10 @@
 package service.handler;
 
+import static service.util.DateTimeUtils.FORMATTER;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
@@ -23,7 +24,6 @@ import service.models.Item;
 public class ItemsTableSqlHelper {
 
   private JdbcTemplate jdbcTemplate;
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
   /**
    * This method allows for Spring Boot to auto-manage the beans needed to connect to the SQL DB.
@@ -105,15 +105,15 @@ public class ItemsTableSqlHelper {
   private Item getItemFromTable(ResultSet rs) throws SQLException {
     return Item.builder()
         .itemId(UUID.fromString(rs.getString("uuid")))
-        .timeOfAddition(LocalDateTime.parse(rs.getString("time_of_addition"), formatter))
+        .timeOfAddition(LocalDateTime.parse(rs.getString("time_of_addition"), FORMATTER))
         .itemName(rs.getString("item_name"))
         .quantity(rs.getInt("quantity"))
         .location(rs.getString("location"))
         .price(rs.getDouble("price"))
         .reservationDurationInMillis(rs.getLong("reservation_duration"))
         .reservationStatus(rs.getBoolean("reserved_status"))
-        .reservationTime(LocalDateTime.parse(rs.getString("reservation_time"), formatter))
-        .nextRestockDateTime(LocalDateTime.parse(rs.getString("next_restock"), formatter))
+        .reservationTime(LocalDateTime.parse(rs.getString("reservation_time"), FORMATTER))
+        .nextRestockDateTime(LocalDateTime.parse(rs.getString("next_restock"), FORMATTER))
         .build();
   }
 

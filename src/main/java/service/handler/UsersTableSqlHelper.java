@@ -1,7 +1,8 @@
 package service.handler;
 
+import static service.util.DateTimeUtils.FORMATTER;
+
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.UUID;
 import lombok.Getter;
@@ -22,7 +23,6 @@ import service.util.UserRoles;
 public class UsersTableSqlHelper {
 
   private JdbcTemplate jdbcTemplate;
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
   /**
    * This method allows for Spring Boot to auto-manage the beans needed to connect to the SQL DB.
@@ -184,7 +184,7 @@ public class UsersTableSqlHelper {
             .userId(UUID.fromString(rs.getString("user_id")))
             .username(rs.getString("username"))
             .role(UserRoles.valueOf(rs.getString("role")))
-            .lastAccess(LocalDateTime.parse(rs.getString("last_access"), formatter))
+            .lastAccess(LocalDateTime.parse(rs.getString("last_access"), FORMATTER))
             .inventoryAccess(
                 rs.getString("inventory_access") != null
                     ? UUID.fromString(rs.getString("inventory_access"))

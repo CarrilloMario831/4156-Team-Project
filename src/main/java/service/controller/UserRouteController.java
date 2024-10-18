@@ -1,7 +1,8 @@
 package service.controller;
 
+import static service.util.DateTimeUtils.FORMATTER;
+
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,6 @@ import service.util.UserRoles;
 public class UserRouteController {
 
   @Autowired public UsersTableSqlHelper usersTableSqlHelper;
-  private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
   /** Sample javadoc to pass checkstyle. */
   @GetMapping(value = "/getUsername", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -65,7 +65,7 @@ public class UserRouteController {
       Enum<UserRoles> userRole = user.getRole();
       if (userRole == null) {
         return new ResponseEntity<>(
-            "User " + username + " has no role assigned. ", HttpStatus.NO_CONTENT);
+            "User " + username + " has no role assigned.", HttpStatus.NO_CONTENT);
       }
       return new ResponseEntity<>(userRole.toString(), HttpStatus.OK);
     } catch (Exception e) {
@@ -91,9 +91,9 @@ public class UserRouteController {
       String username = user.getUsername();
       if (lastAccess == null) {
         return new ResponseEntity<>(
-            "User " + username + " has not accessed the service yet. ", HttpStatus.NO_CONTENT);
+            "User " + username + " has not accessed the service yet.", HttpStatus.NO_CONTENT);
       }
-      return new ResponseEntity<>(lastAccess.format(formatter), HttpStatus.OK);
+      return new ResponseEntity<>(lastAccess.format(FORMATTER), HttpStatus.OK);
     } catch (Exception e) {
       System.out.println(e.getMessage());
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -119,7 +119,7 @@ public class UserRouteController {
               .role(UserRoles.USER)
               .lastAccess(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
               .build();
-      usersTableSqlHelper.insert(newUser);
+      usersTableSqlHelper.insertUser(newUser);
       return new ResponseEntity<>(
           username + " was successfully created. \n UserID: " + newUser.getUserId(), HttpStatus.OK);
     } catch (Exception e) {

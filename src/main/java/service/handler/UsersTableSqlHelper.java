@@ -38,7 +38,7 @@ public class UsersTableSqlHelper {
    *
    * @param user User object that you'd like to store within DB.
    */
-  public void insert(User user) {
+  public boolean insertUser(User user) {
     String sql =
         "insert into Users ("
             + "user_id, username, role, "
@@ -56,13 +56,14 @@ public class UsersTableSqlHelper {
             user.getLastAccess(),
             user.getInventoryAccess() != null ? user.getInventoryAccess().toString() : null);
     System.out.println(rows + "row/s inserted.");
+    return rows == 1;
   }
 
   /**
    * This is a test select method for providing insight into what it looks like to read users from
    * the DB.
    */
-  public List<User> getUserWithUserId() {
+  public List<User> getAllUsers() {
     String sql = "select * from Users";
     return jdbcTemplate.query(sql, getRowMapper());
   }

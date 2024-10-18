@@ -37,7 +37,7 @@ public class InventoryTableSqlHelper {
     // Create your insert SQL query with "?" as a placeholder for variable values
 
     // Inventories is the table within the MySQL DB
-    String sql = "insert into Inventories (inventory_id, inventory_name, user_key) values (?,?,?)";
+    String sql = "insert into Inventories (inventory_id, inventory_name, user_id) values (?,?,?)";
 
     // JDBC template provides many methods and query() is synonymous with select
     // update() is for the SQL insert, update, deletes

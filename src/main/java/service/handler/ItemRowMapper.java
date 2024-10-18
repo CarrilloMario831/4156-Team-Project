@@ -37,7 +37,7 @@ public class ItemRowMapper extends BaseRowMapper<Item> {
         .reservationTime(LocalDateTime.parse(rs.getString("reservation_time"), formatter))
         .nextRestockDateTime(
             rs.getString("next_restock") != null
-                ? LocalDateTime.parse(rs.getString("next_restrock"), formatter)
+                ? LocalDateTime.parse(rs.getString("next_restock"), formatter)
                 : null)
         .build();
   }

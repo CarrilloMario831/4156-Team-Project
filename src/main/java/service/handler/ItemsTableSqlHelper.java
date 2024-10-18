@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -114,7 +115,10 @@ public class ItemsTableSqlHelper {
         .reservationDurationInMillis(rs.getLong("reservation_duration"))
         .reservationStatus(rs.getBoolean("reserved_status"))
         .reservationTime(LocalDateTime.parse(rs.getString("reservation_time"), FORMATTER))
-        .nextRestockDateTime(LocalDateTime.parse(rs.getString("next_restock"), FORMATTER))
+        .nextRestockDateTime(
+            rs.getString("next_restock") != null
+                ? LocalDateTime.parse(rs.getString("next_restock"), FORMATTER)
+                : null)
         .build();
   }
 

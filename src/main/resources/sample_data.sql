@@ -3,8 +3,8 @@ USE reservation_management;
 -- Sample insert for Users
 INSERT INTO Users (user_id, username, role, last_access)
 VALUES
-    ('u1234567-abcd-4d5e-9999-abcdef012345', 'admin1', 'ADMIN', '2024-10-17 12:03:33.550874'),
-    ('u89f6789-abcd-4d5e-8888-abcdef876543', 'secretary1', 'USER', '2024-10-17 12:03:33.550874');
+    ('f1234567-abcd-4d5e-9999-abcdef012345', 'admin1', 'ADMIN', '2024-10-17 12:03:33'),
+    ('f89f6789-abcd-4d5e-8888-abcdef876543', 'secretary1', 'USER', '2024-10-17 12:03:33');
 
 
 -- Sample inserts for Items

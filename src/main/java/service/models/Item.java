@@ -9,75 +9,27 @@ import lombok.Setter;
 
 /** Represents an Item in the Reservation/Management Service. */
 @Getter
+@Setter
 @Builder
 public class Item {
 
-  @NonNull private final UUID itemId;
+  @NonNull private UUID itemId;
 
-  @NonNull @Setter private String itemName;
+  @NonNull private String itemName;
 
-  @NonNull @Setter private LocalDateTime timeOfAddition;
+  @NonNull private LocalDateTime timeOfAddition;
 
-  @NonNull @Setter private String location;
+  @NonNull private String location;
+
+  @Setter private UUID inventoryId;
 
   private int quantity;
 
-  @Setter private boolean reservationStatus;
-  @Setter private long reservationDurationInMillis;
-  @Setter private LocalDateTime reservationTime;
-  @Setter private double price;
-  @Setter private LocalDateTime nextRestockDateTime;
-
-  /** Item builder. */
-  public static class ItemBuilder {
-    /** Item builder. */
-    public ItemBuilder() {
-      this.itemId = UUID.randomUUID(); // Automatically generate itemId
-      this.timeOfAddition = LocalDateTime.now(); // Automatically set time of addition
-      this.reservationStatus = false; // Default reservation status
-      this.reservationDurationInMillis = 0; // Default reservation duration
-    }
-  }
-
-  /**
-   * Adjusts the quantity of the item by the specified amount. Positive values increase the
-   * quantity, negative values decrease it.
-   *
-   * @param adjustment the amount to adjust the quantity by
-   */
-  public void adjustQuantity(int adjustment) {
-    this.quantity += adjustment;
-    if (this.quantity < 0) {
-      this.quantity = 0; // Ensures quantity doesn't go negative
-    }
-  }
-
-  /**
-   * Adds the specified number of items to the current quantity.
-   *
-   * @param numberOfItems the number of items to add
-   */
-  public void addItemQuantity(int numberOfItems) {
-    adjustQuantity(numberOfItems);
-  }
-
-  /**
-   * Sets the quantity of the item.
-   *
-   * @param quantity the new quantity; if negative, quantity is set to 0
-   */
-  public void setItemQuantity(int quantity) {
-    this.quantity = Math.max(quantity, 0);
-  }
-
-  /**
-   * Removes the specified number of items from the current quantity.
-   *
-   * @param numberOfItems the number of items to remove
-   */
-  public void removeItems(int numberOfItems) {
-    adjustQuantity(-numberOfItems);
-  }
+  private boolean reservationStatus;
+  private long reservationDurationInMillis;
+  private LocalDateTime reservationTime;
+  private double price;
+  private LocalDateTime nextRestockDateTime;
 
   /**
    * Returns a string representation of the item.

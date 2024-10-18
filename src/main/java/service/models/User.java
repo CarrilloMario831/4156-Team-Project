@@ -16,8 +16,8 @@ import service.util.UserRoles;
 @Builder
 public class User {
   private final UUID userId;
-  private final String username;
-  private final UserRoles role;
+  private String username;
+  private UserRoles role;
   private LocalDateTime lastAccess;
 
   @Nullable private final UUID inventoryAccess;

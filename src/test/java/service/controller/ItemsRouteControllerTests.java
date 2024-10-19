@@ -178,7 +178,6 @@ public class ItemsRouteControllerTests {
   /** Test the getItemQuantity endpoint. */
   @Test
   public void testGetItemQuantity() {
-    String testItemId = String.valueOf(testItem.getItemId());
 
     // Test null and empty itemId
     ResponseEntity<?> response = itemsRouteController.getItemQuantity(null);
@@ -190,6 +189,7 @@ public class ItemsRouteControllerTests {
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
     // Test when item is not found
+    String testItemId = String.valueOf(testItem.getItemId());
     when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
     response = itemsRouteController.getItemQuantity(testItemId);
     assertEquals("Item with itemId: " + testItemId + " was not found", response.getBody());
@@ -212,7 +212,6 @@ public class ItemsRouteControllerTests {
   /** Test the getItemPrice endpoint. */
   @Test
   public void testGetItemPrice() {
-    String testItemId = String.valueOf(testItem.getItemId());
 
     // Test null and empty itemId
     ResponseEntity<?> response = itemsRouteController.getItemPrice(null);
@@ -224,6 +223,7 @@ public class ItemsRouteControllerTests {
     assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
 
     // Test when item is not found
+    String testItemId = String.valueOf(testItem.getItemId());
     when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
     response = itemsRouteController.getItemPrice(testItemId);
     assertEquals("Item with itemId: " + testItemId + " was not found", response.getBody());
@@ -246,7 +246,6 @@ public class ItemsRouteControllerTests {
   /** Test the updateItemReservation endpoint. */
   @Test
   public void testUpdateItemReservation() {
-    String testItemId = String.valueOf(testItem.getItemId());
 
     // Test with null or empty itemId
     ResponseEntity<String> updateItemReservationResponse =
@@ -262,6 +261,7 @@ public class ItemsRouteControllerTests {
     assertEquals(HttpStatus.BAD_REQUEST, updateItemReservationResponse.getStatusCode());
 
     // Test with negative reservation duration
+    String testItemId = String.valueOf(testItem.getItemId());
     updateItemReservationResponse = itemsRouteController.updateItemReservation(testItemId, -1000);
     assertEquals(
         "Reservation duration cannot be negative.", updateItemReservationResponse.getBody());
@@ -307,7 +307,6 @@ public class ItemsRouteControllerTests {
   /** Test the cancelItemReservation endpoint. */
   @Test
   public void testCancelItemReservation() {
-    String testItemId = String.valueOf(testItem.getItemId());
 
     // Test with null or empty itemId
     ResponseEntity<String> cancelItemReservationResponse =
@@ -320,6 +319,7 @@ public class ItemsRouteControllerTests {
     assertEquals(HttpStatus.BAD_REQUEST, cancelItemReservationResponse.getStatusCode());
 
     // Test when the item is not found
+    String testItemId = String.valueOf(testItem.getItemId());
     when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
     cancelItemReservationResponse = itemsRouteController.cancelItemReservation(testItemId);
     assertEquals(

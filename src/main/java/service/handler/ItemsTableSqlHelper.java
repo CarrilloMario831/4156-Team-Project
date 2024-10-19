@@ -207,7 +207,10 @@ public class ItemsTableSqlHelper {
    */
   public boolean cancelItemReservation(String itemId) {
     String sql =
-        "update Items set reserved_status = false, reservation_time = null, reservation_duration = 0 where item_id = ?";
+        "update Items set reserved_status = false, "
+            + "reservation_time = null, "
+            + "reservation_duration = 0 "
+            + "where item_id = ?";
     int rows = jdbcTemplate.update(sql, itemId);
     System.out.println(rows + " row/s updated.");
     return rows == 1;

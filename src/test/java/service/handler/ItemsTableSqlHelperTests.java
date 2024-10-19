@@ -37,22 +37,20 @@ public class ItemsTableSqlHelperTests {
   @BeforeEach
   public void setup() {
     testItem =
-            Item.builder()
-                    .itemId(UUID.fromString("9cdd2cec-d003-4964-b55c-cb336c51b809"))
-                    .itemName("Test Item")
-                    .timeOfAddition(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
-                    .location("Test Location")
-                    .quantity(10)
-                    .reservationStatus(false)
-                    .reservationDurationInMillis(0)
-                    .price(19.99)
-                    .nextRestockDateTime(null)
-                    .build();
+        Item.builder()
+            .itemId(UUID.fromString("9cdd2cec-d003-4964-b55c-cb336c51b809"))
+            .itemName("Test Item")
+            .timeOfAddition(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+            .location("Test Location")
+            .quantity(10)
+            .reservationStatus(false)
+            .reservationDurationInMillis(0)
+            .price(19.99)
+            .nextRestockDateTime(null)
+            .build();
   }
 
-  /**
-   * Tests the insertion of an item into the database.
-   */
+  /** Tests the insertion of an item into the database. */
   @Test
   public void testInsertItem() {
     // Test successful insert
@@ -69,10 +67,10 @@ public class ItemsTableSqlHelperTests {
             any(),
             any(),
             any()))
-            .thenReturn(1);
+        .thenReturn(1);
     assertTrue(
-            itemsTableSqlHelper.insertItem(testItem),
-            "Insert should return true when one row is affected.");
+        itemsTableSqlHelper.insertItem(testItem),
+        "Insert should return true when one row is affected.");
 
     // Test unsuccessful insert
     when(jdbcTemplate.update(
@@ -88,10 +86,10 @@ public class ItemsTableSqlHelperTests {
             any(),
             any(),
             any()))
-            .thenReturn(0);
+        .thenReturn(0);
     assertFalse(
-            itemsTableSqlHelper.insertItem(testItem),
-            "Insert should return false when no rows are affected.");
+        itemsTableSqlHelper.insertItem(testItem),
+        "Insert should return false when no rows are affected.");
 
     // Test exception thrown
     when(jdbcTemplate.update(
@@ -107,44 +105,37 @@ public class ItemsTableSqlHelperTests {
             any(),
             any(),
             any()))
-            .thenThrow(RuntimeException.class);
+        .thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> itemsTableSqlHelper.insertItem(testItem),
-            "Insert should propagate exceptions.");
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.insertItem(testItem),
+        "Insert should propagate exceptions.");
   }
 
-  /**
-   * Tests retrieving all items from the database.
-   */
+  /** Tests retrieving all items from the database. */
   @Test
   public void testGetAllItems() {
     // Test successful query
     List<Item> items = new ArrayList<>();
     items.add(testItem);
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(items);
-    assertEquals(
-            items,
-            itemsTableSqlHelper.getAllItems(),
-            "Should return the list of all items.");
+    assertEquals(items, itemsTableSqlHelper.getAllItems(), "Should return the list of all items.");
 
     // Test empty list
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(new ArrayList<>());
     assertTrue(
-            itemsTableSqlHelper.getAllItems().isEmpty(),
-            "Should return an empty list when no items are found.");
+        itemsTableSqlHelper.getAllItems().isEmpty(),
+        "Should return an empty list when no items are found.");
 
     // Test exception thrown
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> itemsTableSqlHelper.getAllItems(),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.getAllItems(),
+        "Should propagate exceptions.");
   }
 
-  /**
-   * Tests retrieving an item by its ID.
-   */
+  /** Tests retrieving an item by its ID. */
   @Test
   public void testGetItem() {
     String itemId = testItem.getItemId().toString();
@@ -154,27 +145,25 @@ public class ItemsTableSqlHelperTests {
     items.add(testItem);
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(items);
     assertEquals(
-            items,
-            itemsTableSqlHelper.getItem(itemId),
-            "Should return the list of items with the given ID.");
+        items,
+        itemsTableSqlHelper.getItem(itemId),
+        "Should return the list of items with the given ID.");
 
     // Test item not found
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(new ArrayList<>());
     assertTrue(
-            itemsTableSqlHelper.getItem(itemId).isEmpty(),
-            "Should return an empty list when item is not found.");
+        itemsTableSqlHelper.getItem(itemId).isEmpty(),
+        "Should return an empty list when item is not found.");
 
     // Test exception thrown
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> itemsTableSqlHelper.getItem(itemId),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.getItem(itemId),
+        "Should propagate exceptions.");
   }
 
-  /**
-   * Tests updating the location of an item.
-   */
+  /** Tests updating the location of an item. */
   @Test
   public void testUpdateItemLocation() {
     String itemId = testItem.getItemId().toString();
@@ -183,27 +172,25 @@ public class ItemsTableSqlHelperTests {
     // Test successful update
     when(jdbcTemplate.update(anyString(), eq(newLocation), eq(itemId))).thenReturn(1);
     assertTrue(
-            itemsTableSqlHelper.updateItemLocation(itemId, newLocation),
-            "Update should return true when one row is affected.");
+        itemsTableSqlHelper.updateItemLocation(itemId, newLocation),
+        "Update should return true when one row is affected.");
 
     // Test unsuccessful update
     when(jdbcTemplate.update(anyString(), eq(newLocation), eq(itemId))).thenReturn(0);
     assertFalse(
-            itemsTableSqlHelper.updateItemLocation(itemId, newLocation),
-            "Update should return false when no rows are affected.");
+        itemsTableSqlHelper.updateItemLocation(itemId, newLocation),
+        "Update should return false when no rows are affected.");
 
     // Test exception thrown
     when(jdbcTemplate.update(anyString(), eq(newLocation), eq(itemId)))
-            .thenThrow(RuntimeException.class);
+        .thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> itemsTableSqlHelper.updateItemLocation(itemId, newLocation),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.updateItemLocation(itemId, newLocation),
+        "Should propagate exceptions.");
   }
 
-  /**
-   * Tests updating the price of an item.
-   */
+  /** Tests updating the price of an item. */
   @Test
   public void testUpdateItemPrice() {
     String itemId = testItem.getItemId().toString();
@@ -212,27 +199,25 @@ public class ItemsTableSqlHelperTests {
     // Test successful update
     when(jdbcTemplate.update(anyString(), eq(newPrice), eq(itemId))).thenReturn(1);
     assertTrue(
-            itemsTableSqlHelper.updateItemPrice(itemId, newPrice),
-            "Update should return true when one row is affected.");
+        itemsTableSqlHelper.updateItemPrice(itemId, newPrice),
+        "Update should return true when one row is affected.");
 
     // Test unsuccessful update
     when(jdbcTemplate.update(anyString(), eq(newPrice), eq(itemId))).thenReturn(0);
     assertFalse(
-            itemsTableSqlHelper.updateItemPrice(itemId, newPrice),
-            "Update should return false when no rows are affected.");
+        itemsTableSqlHelper.updateItemPrice(itemId, newPrice),
+        "Update should return false when no rows are affected.");
 
     // Test exception thrown
     when(jdbcTemplate.update(anyString(), eq(newPrice), eq(itemId)))
-            .thenThrow(RuntimeException.class);
+        .thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> itemsTableSqlHelper.updateItemPrice(itemId, newPrice),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.updateItemPrice(itemId, newPrice),
+        "Should propagate exceptions.");
   }
 
-  /**
-   * Tests updating the quantity of an item.
-   */
+  /** Tests updating the quantity of an item. */
   @Test
   public void testUpdateItemQuantity() {
     String itemId = testItem.getItemId().toString();
@@ -241,27 +226,25 @@ public class ItemsTableSqlHelperTests {
     // Test successful update
     when(jdbcTemplate.update(anyString(), eq(newQuantity), eq(itemId))).thenReturn(1);
     assertTrue(
-            itemsTableSqlHelper.updateItemQuantity(itemId, newQuantity),
-            "Update should return true when one row is affected.");
+        itemsTableSqlHelper.updateItemQuantity(itemId, newQuantity),
+        "Update should return true when one row is affected.");
 
     // Test unsuccessful update
     when(jdbcTemplate.update(anyString(), eq(newQuantity), eq(itemId))).thenReturn(0);
     assertFalse(
-            itemsTableSqlHelper.updateItemQuantity(itemId, newQuantity),
-            "Update should return false when no rows are affected.");
+        itemsTableSqlHelper.updateItemQuantity(itemId, newQuantity),
+        "Update should return false when no rows are affected.");
 
     // Test exception thrown
     when(jdbcTemplate.update(anyString(), eq(newQuantity), eq(itemId)))
-            .thenThrow(RuntimeException.class);
+        .thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> itemsTableSqlHelper.updateItemQuantity(itemId, newQuantity),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.updateItemQuantity(itemId, newQuantity),
+        "Should propagate exceptions.");
   }
 
-  /**
-   * Tests deleting an item from the database.
-   */
+  /** Tests deleting an item from the database. */
   @Test
   public void testDeleteItem() {
     String itemId = testItem.getItemId().toString();
@@ -269,26 +252,24 @@ public class ItemsTableSqlHelperTests {
     // Test successful delete
     when(jdbcTemplate.update(anyString(), eq(itemId))).thenReturn(1);
     assertTrue(
-            itemsTableSqlHelper.deleteItem(itemId),
-            "Delete should return true when one row is affected.");
+        itemsTableSqlHelper.deleteItem(itemId),
+        "Delete should return true when one row is affected.");
 
     // Test unsuccessful delete
     when(jdbcTemplate.update(anyString(), eq(itemId))).thenReturn(0);
     assertFalse(
-            itemsTableSqlHelper.deleteItem(itemId),
-            "Delete should return false when no rows are affected.");
+        itemsTableSqlHelper.deleteItem(itemId),
+        "Delete should return false when no rows are affected.");
 
     // Test exception thrown
     when(jdbcTemplate.update(anyString(), eq(itemId))).thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> itemsTableSqlHelper.deleteItem(itemId),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.deleteItem(itemId),
+        "Should propagate exceptions.");
   }
 
-  /**
-   * Tests updating the name of an item.
-   */
+  /** Tests updating the name of an item. */
   @Test
   public void testUpdateItemName() {
     String itemId = testItem.getItemId().toString();
@@ -297,21 +278,21 @@ public class ItemsTableSqlHelperTests {
     // Test successful update
     when(jdbcTemplate.update(anyString(), eq(newItemName), eq(itemId))).thenReturn(1);
     assertTrue(
-            itemsTableSqlHelper.updateItemName(itemId, newItemName),
-            "Update should return true when one row is affected.");
+        itemsTableSqlHelper.updateItemName(itemId, newItemName),
+        "Update should return true when one row is affected.");
 
     // Test unsuccessful update
     when(jdbcTemplate.update(anyString(), eq(newItemName), eq(itemId))).thenReturn(0);
     assertFalse(
-            itemsTableSqlHelper.updateItemName(itemId, newItemName),
-            "Update should return false when no rows are affected.");
+        itemsTableSqlHelper.updateItemName(itemId, newItemName),
+        "Update should return false when no rows are affected.");
 
     // Test exception thrown
     when(jdbcTemplate.update(anyString(), eq(newItemName), eq(itemId)))
-            .thenThrow(RuntimeException.class);
+        .thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> itemsTableSqlHelper.updateItemName(itemId, newItemName),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.updateItemName(itemId, newItemName),
+        "Should propagate exceptions.");
   }
 }

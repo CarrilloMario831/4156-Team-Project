@@ -551,4 +551,84 @@ public class ItemsRouteController {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
+
+  /** Updates the reservation duration for the specified item. */
+  @PatchMapping(value = "/updateItemReservation", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> updateItemReservation(
+      @RequestParam(value = "itemId") String itemId,
+      @RequestParam(value = "reservationDurationInMillis") long reservationDurationInMillis) {
+    if (itemId == null || itemId.isEmpty()) {
+      return new ResponseEntity<>("itemId needed to update reservation.", HttpStatus.BAD_REQUEST);
+    }
+    if (reservationDurationInMillis < 0) {
+      return new ResponseEntity<>(
+          "Reservation duration cannot be negative.", HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      List<Item> itemList = itemsTableSqlHelper.getItem(itemId);
+      if (itemList == null || itemList.isEmpty()) {
+        return new ResponseEntity<>(
+            "Item with itemId: " + itemId + " was not found", HttpStatus.NOT_FOUND);
+      }
+      Item item = itemList.get(0);
+
+      if (item == null) {
+        return new ResponseEntity<>("No item found for itemID: " + itemId, HttpStatus.NOT_FOUND);
+      }
+
+      boolean isSuccess =
+          itemsTableSqlHelper.updateItemReservation(itemId, reservationDurationInMillis);
+
+      if (!isSuccess) {
+        return new ResponseEntity<>(
+            "Could not update reservation for item: " + item.getItemName(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+
+      return new ResponseEntity<>(
+          "Reservation for item: " + item.getItemName() + " updated successfully.", HttpStatus.OK);
+
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /** Cancels the reservation for the specified item. */
+  @PatchMapping(value = "/cancelItemReservation", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<String> cancelItemReservation(
+      @RequestParam(value = "itemId") String itemId) {
+    if (itemId == null || itemId.isEmpty()) {
+      return new ResponseEntity<>("itemId needed to cancel reservation.", HttpStatus.BAD_REQUEST);
+    }
+
+    try {
+      List<Item> itemList = itemsTableSqlHelper.getItem(itemId);
+      if (itemList == null || itemList.isEmpty()) {
+        return new ResponseEntity<>(
+            "Item with itemId: " + itemId + " was not found", HttpStatus.NOT_FOUND);
+      }
+      Item item = itemList.get(0);
+
+      if (item == null) {
+        return new ResponseEntity<>("No item found for itemID: " + itemId, HttpStatus.NOT_FOUND);
+      }
+
+      boolean isSuccess = itemsTableSqlHelper.cancelItemReservation(itemId);
+
+      if (!isSuccess) {
+        return new ResponseEntity<>(
+            "Could not cancel reservation for item: " + item.getItemName(),
+            HttpStatus.INTERNAL_SERVER_ERROR);
+      }
+
+      return new ResponseEntity<>(
+          "Reservation for item: " + item.getItemName() + " has been canceled.", HttpStatus.OK);
+
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
 }

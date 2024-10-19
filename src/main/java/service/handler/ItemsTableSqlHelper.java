@@ -184,4 +184,32 @@ public class ItemsTableSqlHelper {
     System.out.println(rows + " row/s updated");
     return rows == 1;
   }
+
+  /**
+   * This method will update the reservation duration for an item.
+   *
+   * @param itemId Unique identifier for the item within the DB.
+   * @param reservationDurationInMillis New reservation duration in milliseconds.
+   * @return Return true or false whether the update was done.
+   */
+  public boolean updateItemReservation(String itemId, long reservationDurationInMillis) {
+    String sql = "update Items set reservation_duration = ? where item_id = ?";
+    int rows = jdbcTemplate.update(sql, reservationDurationInMillis, itemId);
+    System.out.println(rows + " row/s updated.");
+    return rows == 1;
+  }
+
+  /**
+   * This method will cancel the reservation of an item by clearing the reservation fields.
+   *
+   * @param itemId Unique identifier for the item within the DB.
+   * @return Return true or false whether the update was done.
+   */
+  public boolean cancelItemReservation(String itemId) {
+    String sql =
+        "update Items set reserved_status = false, reservation_time = null, reservation_duration = 0 where item_id = ?";
+    int rows = jdbcTemplate.update(sql, itemId);
+    System.out.println(rows + " row/s updated.");
+    return rows == 1;
+  }
 }

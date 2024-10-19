@@ -1,6 +1,7 @@
 package service.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
@@ -172,5 +173,182 @@ public class ItemsRouteControllerTests {
     when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
     updateItemNameResponse = itemsRouteController.updateItemName(testItemId, testItemName);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemNameResponse.getStatusCode());
+  }
+
+  /** Test the getItemQuantity endpoint. */
+  @Test
+  public void testGetItemQuantity() {
+    String testItemId = String.valueOf(testItem.getItemId());
+
+    // Test null and empty itemId
+    ResponseEntity<?> response = itemsRouteController.getItemQuantity(null);
+    assertEquals("itemId needed to get item name.", response.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+    response = itemsRouteController.getItemQuantity("");
+    assertEquals("itemId needed to get item name.", response.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+    // Test when item is not found
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
+    response = itemsRouteController.getItemQuantity(testItemId);
+    assertEquals("Item with itemId: " + testItemId + " was not found", response.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+    // Test successful response
+    List<Item> testItems = new ArrayList<>();
+    testItems.add(testItem);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    response = itemsRouteController.getItemQuantity(testItemId);
+    assertEquals(testItem.getQuantity(), response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Test internal error
+    when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
+    response = itemsRouteController.getItemQuantity(testItemId);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  /** Test the getItemPrice endpoint. */
+  @Test
+  public void testGetItemPrice() {
+    String testItemId = String.valueOf(testItem.getItemId());
+
+    // Test null and empty itemId
+    ResponseEntity<?> response = itemsRouteController.getItemPrice(null);
+    assertEquals("itemId needed to get item name.", response.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+    response = itemsRouteController.getItemPrice("");
+    assertEquals("itemId needed to get item name.", response.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
+
+    // Test when item is not found
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
+    response = itemsRouteController.getItemPrice(testItemId);
+    assertEquals("Item with itemId: " + testItemId + " was not found", response.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+    // Test successful response
+    List<Item> testItems = new ArrayList<>();
+    testItems.add(testItem);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    response = itemsRouteController.getItemPrice(testItemId);
+    assertEquals(testItem.getPrice(), response.getBody());
+    assertEquals(HttpStatus.OK, response.getStatusCode());
+
+    // Test internal error
+    when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
+    response = itemsRouteController.getItemPrice(testItemId);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, response.getStatusCode());
+  }
+
+  /** Test the updateItemReservation endpoint. */
+  @Test
+  public void testUpdateItemReservation() {
+    String testItemId = String.valueOf(testItem.getItemId());
+
+    // Test with null or empty itemId
+    ResponseEntity<String> updateItemReservationResponse =
+        itemsRouteController.updateItemReservation(null, 86400000); // 24
+    // hours
+    // in
+    // ms
+    assertEquals("itemId needed to update reservation.", updateItemReservationResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemReservationResponse.getStatusCode());
+
+    updateItemReservationResponse = itemsRouteController.updateItemReservation("", 86400000);
+    assertEquals("itemId needed to update reservation.", updateItemReservationResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemReservationResponse.getStatusCode());
+
+    // Test with negative reservation duration
+    updateItemReservationResponse = itemsRouteController.updateItemReservation(testItemId, -1000);
+    assertEquals(
+        "Reservation duration cannot be negative.", updateItemReservationResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemReservationResponse.getStatusCode());
+
+    // Test when the item is not found
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
+    updateItemReservationResponse =
+        itemsRouteController.updateItemReservation(testItemId, 86400000);
+    assertEquals(
+        "Item with itemId: " + testItemId + " was not found",
+        updateItemReservationResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateItemReservationResponse.getStatusCode());
+
+    // Test successful reservation update
+    List<Item> testItems = new ArrayList<>();
+    testItems.add(testItem);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    when(itemsTableSqlHelper.updateItemReservation(anyString(), anyLong())).thenReturn(true);
+    updateItemReservationResponse =
+        itemsRouteController.updateItemReservation(testItemId, 86400000);
+    assertEquals(
+        "Reservation for item: " + testItem.getItemName() + " updated successfully.",
+        updateItemReservationResponse.getBody());
+    assertEquals(HttpStatus.OK, updateItemReservationResponse.getStatusCode());
+
+    // Test failed reservation update
+    when(itemsTableSqlHelper.updateItemReservation(anyString(), anyLong())).thenReturn(false);
+    updateItemReservationResponse =
+        itemsRouteController.updateItemReservation(testItemId, 86400000);
+    assertEquals(
+        "Could not update reservation for item: " + testItem.getItemName(),
+        updateItemReservationResponse.getBody());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemReservationResponse.getStatusCode());
+
+    // Test internal server error
+    when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
+    updateItemReservationResponse =
+        itemsRouteController.updateItemReservation(testItemId, 86400000);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemReservationResponse.getStatusCode());
+  }
+
+  /** Test the cancelItemReservation endpoint. */
+  @Test
+  public void testCancelItemReservation() {
+    String testItemId = String.valueOf(testItem.getItemId());
+
+    // Test with null or empty itemId
+    ResponseEntity<String> cancelItemReservationResponse =
+        itemsRouteController.cancelItemReservation(null);
+    assertEquals("itemId needed to cancel reservation.", cancelItemReservationResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, cancelItemReservationResponse.getStatusCode());
+
+    cancelItemReservationResponse = itemsRouteController.cancelItemReservation("");
+    assertEquals("itemId needed to cancel reservation.", cancelItemReservationResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, cancelItemReservationResponse.getStatusCode());
+
+    // Test when the item is not found
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
+    cancelItemReservationResponse = itemsRouteController.cancelItemReservation(testItemId);
+    assertEquals(
+        "Item with itemId: " + testItemId + " was not found",
+        cancelItemReservationResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, cancelItemReservationResponse.getStatusCode());
+
+    // Test successful reservation cancellation
+    List<Item> testItems = new ArrayList<>();
+    testItems.add(testItem);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    when(itemsTableSqlHelper.cancelItemReservation(anyString())).thenReturn(true);
+    cancelItemReservationResponse = itemsRouteController.cancelItemReservation(testItemId);
+    assertEquals(
+        "Reservation for item: " + testItem.getItemName() + " has been canceled.",
+        cancelItemReservationResponse.getBody());
+    assertEquals(HttpStatus.OK, cancelItemReservationResponse.getStatusCode());
+
+    // Test failed reservation cancellation
+    when(itemsTableSqlHelper.cancelItemReservation(anyString())).thenReturn(false);
+    cancelItemReservationResponse = itemsRouteController.cancelItemReservation(testItemId);
+    assertEquals(
+        "Could not cancel reservation for item: " + testItem.getItemName(),
+        cancelItemReservationResponse.getBody());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, cancelItemReservationResponse.getStatusCode());
+
+    // Test internal server error
+    when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
+    cancelItemReservationResponse = itemsRouteController.cancelItemReservation(testItemId);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, cancelItemReservationResponse.getStatusCode());
   }
 }

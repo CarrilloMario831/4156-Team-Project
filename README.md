@@ -9,62 +9,68 @@ This section provides step-by-step instructions to set up the codebase on your l
 Before setting up the project, ensure that your local machine meets the following requirements:
 
 - **Java Development Kit (JDK) 17**
-    - **Download:** [OpenJDK 17](https://openjdk.java.net/projects/jdk/17/)
-    - **Installation Verification:**
-      ```bash
-      java -version
-      ```
-      You should see output similar to:
-      ```
-      java version "17.0.2" 2022-01-18 LTS
-      Java(TM) SE Runtime Environment (build 17.0.2+8-LTS-86)
-      Java HotSpot(TM) 64-Bit Server VM (build 17.0.2+8-LTS-86, mixed mode, sharing)
-      ```
+
+  - **Download:** [OpenJDK 17](https://openjdk.java.net/projects/jdk/17/)
+  - **Installation Verification:**
+    ```bash
+    java -version
+    ```
+    You should see output similar to:
+    ```
+    java version "17.0.2" 2022-01-18 LTS
+    Java(TM) SE Runtime Environment (build 17.0.2+8-LTS-86)
+    Java HotSpot(TM) 64-Bit Server VM (build 17.0.2+8-LTS-86, mixed mode, sharing)
+    ```
 
 - **Apache Maven 3.9.5**
-    - **Download:** [Maven Download Page](https://maven.apache.org/download.cgi)
-    - **Installation Verification:**
-      ```bash
-      mvn -version
-      ```
-      You should see output similar to:
-      ```
-      Apache Maven 3.9.5 (f8a0c37d9c3af58d163c9bd08aebc2b1c2a9b6b1)
-      Maven home: /usr/local/apache-maven/apache-maven-3.9.5
-      Java version: 17.0.2, vendor: Oracle Corporation, runtime: /usr/local/java/jdk-17.0.2
-      Default locale: en_US, platform encoding: UTF-8
-      OS name: "mac os x", version: "11.6.8", arch: "x86_64", family: "mac"
-      ```
+
+  - **Download:** [Maven Download Page](https://maven.apache.org/download.cgi)
+  - **Installation Verification:**
+    ```bash
+    mvn -version
+    ```
+    You should see output similar to:
+    ```
+    Apache Maven 3.9.5 (f8a0c37d9c3af58d163c9bd08aebc2b1c2a9b6b1)
+    Maven home: /usr/local/apache-maven/apache-maven-3.9.5
+    Java version: 17.0.2, vendor: Oracle Corporation, runtime: /usr/local/java/jdk-17.0.2
+    Default locale: en_US, platform encoding: UTF-8
+    OS name: "mac os x", version: "11.6.8", arch: "x86_64", family: "mac"
+    ```
 
 - **Git**
-    - **Download:** [Git Download Page](https://git-scm.com/downloads)
-    - **Installation Verification:**
-      ```bash
-      git --version
-      ```
-      You should see output similar to:
-      ```
-      git version 2.39
-      ```
+
+  - **Download:** [Git Download Page](https://git-scm.com/downloads)
+  - **Installation Verification:**
+    ```bash
+    git --version
+    ```
+    You should see output similar to:
+    ```
+    git version 2.39
+    ```
 
 - **Integrated Development Environment (IDE)**
-    - **Recommended:** [IntelliJ IDEA](https://www.jetbrains.com/idea/)
-    - **Alternative Options:** Eclipse, Visual Studio Code, etc.
+  - **Recommended:** [IntelliJ IDEA](https://www.jetbrains.com/idea/)
+  - **Alternative Options:** Eclipse, Visual Studio Code, etc.
 
 ## Cloning the Repository
 
 1. **Open Terminal (MacOS) or Command Prompt (Windows).**
 
 2. **Navigate to the Directory Where You Want to Clone the Project:**
+
    ```bash
    cd /path/to/your/desired/directory
    ```
 
 3. **Clone the Repository Using Git:**
+
    ```bash
    git clone https://github.com/your-username/your-repository.git
    ```
-   *Replace `https://github.com/your-username/your-repository.git` with the actual repository URL.*
+
+   _Replace `https://github.com/your-username/your-repository.git` with the actual repository URL._
 
 4. **Navigate into the Project Directory:**
    ```bash
@@ -75,7 +81,9 @@ Before setting up the project, ensure that your local machine meets the followin
 
 1. **Install Dependencies:**
    Maven will automatically handle project dependencies specified in the `pom.xml` file. No additional steps are required.
+
 ## MySQL Database Setup
+
 1. These steps are borrowed from Prof. Ferguson's [HW0 for W4111 Intro to DB](https://github.com/donald-f-ferguson/W4111-Intro-to-Databases-Base/blob/main/docs/Homework/HW0/HW0.md#mysql-server-community-edition).
 2. Install MySQL (Server) Community edition if you don't already have it.
 3. Write down and remember the root user ID and password.
@@ -109,10 +117,12 @@ Once the application is running, you can access it via:
 
 - **API Endpoints:**
   Open your browser or Postman and navigate to:
+
   ```
   http://127.0.0.1:8080/endpoint?arg1=value&arg2=value&...
   ```
-  *Replace `/endpoint?arg=value` with the actual endpoint and parameters you wish to test.*
+
+  _Replace `/endpoint?arg=value` with the actual endpoint and parameters you wish to test._
 
 - **Application Logs:**
   The console where you ran the Maven command will display logs, including startup information, incoming requests, and any error messages.
@@ -127,15 +137,19 @@ Once the application is running, you can access it via:
 Here are some additional Maven commands that might be useful:
 
 - **Build the Project:**
+
   ```bash
   mvn clean install
   ```
+
   This command cleans any previous builds and installs the project dependencies, compiling the code and packaging it as specified in the `pom.xml`.
 
 - **Run Tests:**
+
   ```bash
   mvn test
   ```
+
   Executes the test suites defined in the project.
 
 - **Package the Application:**
@@ -154,6 +168,7 @@ Here are some additional Maven commands that might be useful:
 
 - **Dependency Issues:**
   Run the following command to force Maven to update dependencies:
+
   ```bash
   mvn clean install -U
   ```
@@ -165,6 +180,7 @@ Here are some additional Maven commands that might be useful:
 
 - **Using an IDE:**
   For a better development experience, consider importing the project into an Integrated Development Environment (IDE) like [IntelliJ IDEA](https://www.jetbrains.com/idea/), [Eclipse](https://www.eclipse.org/downloads/), or [Visual Studio Code](https://code.visualstudio.com/). These IDEs offer features like code completion, debugging, and easy navigation.
+
 ---
 
 ## Endpoints
@@ -176,7 +192,8 @@ This section provides detailed documentation for the API endpoints. Each endpoin
 ### GET `/api/inventories/getInventoryName`
 
 - **Expected Input Parameters:**
-    - `inventoryId` (String): Unique identifier for the inventory.
+
+  - `inventoryId` (String): Unique identifier for the inventory.
 
 - **Expected Output:** The name of the inventory as a plain text string.
 
@@ -184,6 +201,7 @@ This section provides detailed documentation for the API endpoints. Each endpoin
 Returns the name of the specified inventory.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -191,17 +209,19 @@ Returns the name of the specified inventory.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"inventoryId needed to get inventories."`
-    - `HTTP 404 Not Found`: `"Inventory with inventoryId: [inventoryId] has not been found."`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"inventoryId needed to get inventories."`
+  - `HTTP 404 Not Found`: `"Inventory with inventoryId: [inventoryId] has not been found."`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/inventories/getInventoryAdmin`
 
 - **Expected Input Parameters:**
-    - `inventoryId` (String): Unique identifier for the inventory.
+
+  - `inventoryId` (String): Unique identifier for the inventory.
 
 - **Expected Output:** The admin of the inventory as a plain text string.
 
@@ -209,6 +229,7 @@ Returns the name of the specified inventory.
 Returns the admin of the specified inventory.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -216,17 +237,19 @@ Returns the admin of the specified inventory.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"inventoryId needed to get inventories."`
-    - `HTTP 404 Not Found`: `"Inventory with inventoryId: [inventoryId] has not been found."`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"inventoryId needed to get inventories."`
+  - `HTTP 404 Not Found`: `"Inventory with inventoryId: [inventoryId] has not been found."`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/inventories/getInventoryItems`
 
 - **Expected Input Parameters:**
-    - `inventoryId` (String): Unique identifier for the inventory.
+
+  - `inventoryId` (String): Unique identifier for the inventory.
 
 - **Expected Output:** A list of items in the inventory as a plain text string.
 
@@ -234,6 +257,7 @@ Returns the admin of the specified inventory.
 Retrieves the items contained in the specified inventory.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -243,18 +267,20 @@ Retrieves the items contained in the specified inventory.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"inventoryId needed to get inventories."`
-    - `HTTP 404 Not Found`: `"Inventory with inventoryId: [inventoryId] has not been found."`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"inventoryId needed to get inventories."`
+  - `HTTP 404 Not Found`: `"Inventory with inventoryId: [inventoryId] has not been found."`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### PATCH `/api/inventories/updateInventoryName`
 
 - **Expected Input Parameters:**
-    - `inventoryId` (String): Unique identifier for the inventory.
-    - `newInventoryName` (String): The new name for the inventory.
+
+  - `inventoryId` (String): Unique identifier for the inventory.
+  - `newInventoryName` (String): The new name for the inventory.
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -262,6 +288,7 @@ Retrieves the items contained in the specified inventory.
 Updates the name of the specified inventory.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -269,17 +296,19 @@ Updates the name of the specified inventory.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"inventoryId needed to get inventories."`
-    - `HTTP 500 Internal Server Error`: `"Unsuccessful inventory name change."` or `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"inventoryId needed to get inventories."`
+  - `HTTP 500 Internal Server Error`: `"Unsuccessful inventory name change."` or `"[Error message]"`
 
 ---
 
 ### PATCH `/api/inventories/updateInventoryAdmin`
 
 - **Expected Input Parameters:**
-    - `inventoryId` (String): Unique identifier for the inventory.
-    - `adminId` (String): Unique identifier for the new admin.
+
+  - `inventoryId` (String): Unique identifier for the inventory.
+  - `adminId` (String): Unique identifier for the new admin.
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -287,6 +316,7 @@ Updates the name of the specified inventory.
 Updates the admin of the specified inventory.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -294,28 +324,30 @@ Updates the admin of the specified inventory.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"inventoryId needed to get inventories."` or `"adminId is required."`
-    - `HTTP 500 Internal Server Error`:
-        - If the new admin is the same as the current admin: `"[Admin Name] is already the admin for this inventory."`
-        - `"Unsuccessful inventory admin change."`
-        - `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"inventoryId needed to get inventories."` or `"adminId is required."`
+  - `HTTP 500 Internal Server Error`:
+    - If the new admin is the same as the current admin: `"[Admin Name] is already the admin for this inventory."`
+    - `"Unsuccessful inventory admin change."`
+    - `"[Error message]"`
 
 ---
 
 ### POST `/api/items/createItem`
 
 - **Expected Input Parameters:**
-    - **Request Body (JSON):**
-        - `itemName` (String): Name of the item.
-        - `location` (String): Location of the item.
-        - `inventoryId` (UUID): Identifier of the inventory.
-        - `quantity` (Integer): Quantity of the item.
-        - `price` (Double): Price of the item.
-        - `nextRestockDateTime` (String): Next restock date and time in ISO format.
-        - `reservationStatus` (Boolean): Reservation status of the item.
-        - `reservationTime` (String): Reservation time in ISO format.
-        - `reservationDurationInMillis` (Long): Reservation duration in milliseconds.
+
+  - **Request Body (JSON):**
+    - `itemName` (String): Name of the item.
+    - `location` (String): Location of the item.
+    - `inventoryId` (UUID): Identifier of the inventory.
+    - `quantity` (Integer): Quantity of the item.
+    - `price` (Double): Price of the item.
+    - `nextRestockDateTime` (String): Next restock date and time in ISO format.
+    - `reservationStatus` (Boolean): Reservation status of the item.
+    - `reservationTime` (String): Reservation time in ISO format.
+    - `reservationDurationInMillis` (Long): Reservation duration in milliseconds.
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -323,6 +355,7 @@ Updates the admin of the specified inventory.
 Creates a new item in the inventory system.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 201 Created`
 - **Response Body:**
   ```
@@ -331,16 +364,18 @@ Creates a new item in the inventory system.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"Empty request"`
-    - `HTTP 500 Internal Server Error`: `"Failed to create item"` or `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"Empty request"`
+  - `HTTP 500 Internal Server Error`: `"Failed to create item"` or `"[Error message]"`
 
 ---
 
 ### GET `/api/items/getItemName`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** The name of the item as a plain text string.
 
@@ -348,6 +383,7 @@ Creates a new item in the inventory system.
 Retrieves the name of the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -355,18 +391,20 @@ Retrieves the name of the specified item.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to get item name."`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found."`
-    - `HTTP 204 No Content`: `"Item [itemId] has no item name."`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to get item name."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found."`
+  - `HTTP 204 No Content`: `"Item [itemId] has no item name."`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/items/getItemTimeOfAddition`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** The time of addition of the item as a string.
 
@@ -374,6 +412,7 @@ Retrieves the name of the specified item.
 Retrieves the time when the specified item was added.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -381,17 +420,19 @@ Retrieves the time when the specified item was added.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to get item time of addition."`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to get item time of addition."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/items/getItemQuantity`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** The quantity of the item as an integer.
 
@@ -399,6 +440,7 @@ Retrieves the time when the specified item was added.
 Retrieves the quantity of the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -406,17 +448,19 @@ Retrieves the quantity of the specified item.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to get item quantity."`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to get item quantity."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/items/isItemReserved`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** A boolean value indicating if the item is reserved.
 
@@ -424,6 +468,7 @@ Retrieves the quantity of the specified item.
 Checks if the specified item is reserved.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -435,17 +480,19 @@ Checks if the specified item is reserved.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to check reservation status."`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to check reservation status."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/items/getItemReservationDuration`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** The reservation duration in milliseconds as a number.
 
@@ -453,6 +500,7 @@ Checks if the specified item is reserved.
 Retrieves the reservation duration for the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -460,17 +508,19 @@ Retrieves the reservation duration for the specified item.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to get reservation duration."`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to get reservation duration."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/items/getItemReservationTime`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** The reservation time as a string.
 
@@ -478,6 +528,7 @@ Retrieves the reservation duration for the specified item.
 Retrieves the reservation time of the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -485,17 +536,19 @@ Retrieves the reservation time of the specified item.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to get reservation time."`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to get reservation time."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/items/getItemLocation`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** The location of the item as a plain text string.
 
@@ -503,6 +556,7 @@ Retrieves the reservation time of the specified item.
 Retrieves the location of the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -510,17 +564,19 @@ Retrieves the location of the specified item.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to get item location."`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to get item location."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/items/getItemPrice`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** The price of the item as a number.
 
@@ -528,6 +584,7 @@ Retrieves the location of the specified item.
 Retrieves the price of the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -535,17 +592,19 @@ Retrieves the price of the specified item.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to get item price."`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to get item price."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/items/getNextRestockTime`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** The next restock date and time as a string.
 
@@ -553,6 +612,7 @@ Retrieves the price of the specified item.
 Retrieves the next restock date and time for the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -560,18 +620,20 @@ Retrieves the next restock date and time for the specified item.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to get next restock time."`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 204 No Content`: `"No restock time available for item: [Item Name]"`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to get next restock time."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 204 No Content`: `"No restock time available for item: [Item Name]"`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/items/getInventoryIdFromItemId`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** The inventory ID associated with the item as a string.
 
@@ -579,6 +641,7 @@ Retrieves the next restock date and time for the specified item.
 Retrieves the inventory ID for the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -586,19 +649,21 @@ Retrieves the inventory ID for the specified item.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to get inventory ID."`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 404 Not Found`: `"No inventory id found for item: [Item Name]"`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to get inventory ID."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 404 Not Found`: `"No inventory id found for item: [Item Name]"`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### PATCH `/api/items/updateItemName`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
-    - `newItemName` (String): The new name for the item.
+
+  - `itemId` (String): Unique identifier for the item.
+  - `newItemName` (String): The new name for the item.
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -606,32 +671,35 @@ Retrieves the inventory ID for the specified item.
 Updates the name of the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
   Item: [Item ID]
-  was successfully renamed. 
+  was successfully renamed.
   [Old Item Name] --> [New Item Name]
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`:
-        - `"itemId is needed to update item name."`
-        - `"Item name cannot be empty."`
-        - `"Item [itemId] already has the name: [newItemName]"`
-    - `HTTP 404 Not Found`: `"Item with itemID: [itemId] was not found."`
-    - `HTTP 409 Conflict`: `"There are multiple items with itemID: [itemId]"`
-    - `HTTP 500 Internal Server Error`:
-        - `"Item with itemID: [itemId] could not be updated."`
-        - `"[Error message]"`
+  - `HTTP 400 Bad Request`:
+    - `"itemId is needed to update item name."`
+    - `"Item name cannot be empty."`
+    - `"Item [itemId] already has the name: [newItemName]"`
+  - `HTTP 404 Not Found`: `"Item with itemID: [itemId] was not found."`
+  - `HTTP 409 Conflict`: `"There are multiple items with itemID: [itemId]"`
+  - `HTTP 500 Internal Server Error`:
+    - `"Item with itemID: [itemId] could not be updated."`
+    - `"[Error message]"`
 
 ---
 
 ### DELETE `/api/items/deleteItem`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
+
+  - `itemId` (String): Unique identifier for the item.
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -639,6 +707,7 @@ Updates the name of the specified item.
 Deletes the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -647,23 +716,25 @@ Deletes the specified item.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"itemId needed to delete item."`
-    - `HTTP 404 Not Found`:
-        - `"Item with item id: [itemId] does not exist."`
-        - `"No item found for itemID: [itemId]"`
-    - `HTTP 409 Conflict`: `"There are multiple items with itemID: [itemId]"`
-    - `HTTP 500 Internal Server Error`:
-        - `"Item with itemID: [itemId] could not be deleted."`
-        - `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"itemId needed to delete item."`
+  - `HTTP 404 Not Found`:
+    - `"Item with item id: [itemId] does not exist."`
+    - `"No item found for itemID: [itemId]"`
+  - `HTTP 409 Conflict`: `"There are multiple items with itemID: [itemId]"`
+  - `HTTP 500 Internal Server Error`:
+    - `"Item with itemID: [itemId] could not be deleted."`
+    - `"[Error message]"`
 
 ---
 
 ### PATCH `/api/items/updateItemQuantity`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
-    - `newQuantity` (Integer): The new quantity for the item.
+
+  - `itemId` (String): Unique identifier for the item.
+  - `newQuantity` (Integer): The new quantity for the item.
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -671,33 +742,36 @@ Deletes the specified item.
 Updates the quantity of the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
   Item: [Item ID]
   Name: [Item Name]
-  Quantity was successfully updated. 
+  Quantity was successfully updated.
   [Old Quantity] --> [New Quantity]
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`:
-        - `"itemId needed to update quantity."`
-        - `"Quantity cannot be a negative number."`
-        - `"Item "[Item Name]" already has a quantity of [Quantity]"`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 500 Internal Server Error`:
-        - `"Could not update quantity for item: [itemId]"`
-        - `"[Error message]"`
+  - `HTTP 400 Bad Request`:
+    - `"itemId needed to update quantity."`
+    - `"Quantity cannot be a negative number."`
+    - `"Item "[Item Name]" already has a quantity of [Quantity]"`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`:
+    - `"Could not update quantity for item: [itemId]"`
+    - `"[Error message]"`
 
 ---
 
 ### PATCH `/api/items/updateItemLocation`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
-    - `newLocation` (String): The new location for the item.
+
+  - `itemId` (String): Unique identifier for the item.
+  - `newLocation` (String): The new location for the item.
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -705,33 +779,36 @@ Updates the quantity of the specified item.
 Updates the location of the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
   Item: [Item ID]
   Name: [Item Name]
-  Location was successfully updated. 
+  Location was successfully updated.
   "[Old Location]" --> "[New Location]"
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`:
-        - `"itemId needed to update location."`
-        - `"Location cannot be empty."`
-        - `"Item "[Item Name]" already has a location of: "[Old Location]"`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 500 Internal Server Error`:
-        - `"Could not update location for item: "[Item Name]""`
-        - `"[Error message]"`
+  - `HTTP 400 Bad Request`:
+    - `"itemId needed to update location."`
+    - `"Location cannot be empty."`
+    - `"Item "[Item Name]" already has a location of: "[Old Location]"`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`:
+    - `"Could not update location for item: "[Item Name]""`
+    - `"[Error message]"`
 
 ---
 
 ### PATCH `/api/items/updateItemPrice`
 
 - **Expected Input Parameters:**
-    - `itemId` (String): Unique identifier for the item.
-    - `newPrice` (Double): The new price for the item.
+
+  - `itemId` (String): Unique identifier for the item.
+  - `newPrice` (Double): The new price for the item.
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -739,32 +816,99 @@ Updates the location of the specified item.
 Updates the price of the specified item.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
   Item: [Item ID]
   Name: [Item Name]
-  Price was successfully updated. 
+  Price was successfully updated.
   [Old Price] --> [New Price]
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`:
-        - `"itemId needed to update price."`
-        - `"Item price cannot be negative."`
-        - `"Item "[Item Name]" already has a price of: [Old Price]"`
-    - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
-    - `HTTP 500 Internal Server Error`:
-        - `"Could not update price for item: "[Item Name]""`
-        - `"[Error message]"`
+  - `HTTP 400 Bad Request`:
+    - `"itemId needed to update price."`
+    - `"Item price cannot be negative."`
+    - `"Item "[Item Name]" already has a price of: [Old Price]"`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`:
+    - `"Could not update price for item: "[Item Name]""`
+    - `"[Error message]"`
+
+---
+
+### PATCH `/api/items/updateItemReservation`
+
+- **Expected Input Parameters:**
+
+  - `itemId` (String): Unique identifier for the item.
+  - `reservationDurationInMillis` (Long): The new reservation duration for the item in milliseconds.
+
+- **Expected Output:** Confirmation message as a plain text string.
+
+**Description:**
+Updates the reservation duration of the specified item.
+
+**Upon Success:**
+
+- **Status Code:** `HTTP 200 OK`
+- **Response Body:**
+  ```
+  Reservation for item: [Item Name] updated successfully.
+  ```
+
+**Upon Failure:**
+
+- **Status Codes & Responses:**
+  - `HTTP 400 Bad Request`:
+    - `"itemId needed to update reservation."`
+    - `"Reservation duration cannot be negative."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`:
+    - `"Could not update reservation for item: "[Item Name]""`
+    - `"[Error message]"`
+
+---
+
+### PATCH `/api/items/cancelItemReservation`
+
+- **Expected Input Parameters:**
+
+  - `itemId` (String): Unique identifier for the item.
+
+- **Expected Output:** Confirmation message as a plain text string.
+
+**Description:**
+Cancels the reservation for the specified item.
+
+**Upon Success:**
+
+- **Status Code:** `HTTP 200 OK`
+- **Response Body:**
+  ```
+  Reservation for item: [Item Name] has been canceled.
+  ```
+
+**Upon Failure:**
+
+- **Status Codes & Responses:**
+  - `HTTP 400 Bad Request`:
+    - `"itemId needed to cancel reservation."`
+  - `HTTP 404 Not Found`: `"Item with itemId: [itemId] was not found"`
+  - `HTTP 500 Internal Server Error`:
+    - `"Could not cancel reservation for item: "[Item Name]""`
+    - `"[Error message]"`
 
 ---
 
 ### GET `/api/users/getUsername`
 
 - **Expected Input Parameters:**
-    - `userId` (String): Unique identifier for the user.
+
+  - `userId` (String): Unique identifier for the user.
 
 - **Expected Output:** The username as a plain text string.
 
@@ -772,6 +916,7 @@ Updates the price of the specified item.
 Retrieves the username of the specified user.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -779,18 +924,20 @@ Retrieves the username of the specified user.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"userId needed to get username."`
-    - `HTTP 404 Not Found`: `"User with userId: [userId] was not found"`
-    - `HTTP 204 No Content`: `"User [userId] has no username."`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"userId needed to get username."`
+  - `HTTP 404 Not Found`: `"User with userId: [userId] was not found"`
+  - `HTTP 204 No Content`: `"User [userId] has no username."`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/users/getRole`
 
 - **Expected Input Parameters:**
-    - `userId` (String): Unique identifier for the user.
+
+  - `userId` (String): Unique identifier for the user.
 
 - **Expected Output:** The role of the user as a plain text string.
 
@@ -798,6 +945,7 @@ Retrieves the username of the specified user.
 Retrieves the role of the specified user.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -805,18 +953,20 @@ Retrieves the role of the specified user.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"userId needed to get role."`
-    - `HTTP 404 Not Found`: `"User with userId: [userId] was not found"`
-    - `HTTP 204 No Content`: `"User [Username] has no role assigned."`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"userId needed to get role."`
+  - `HTTP 404 Not Found`: `"User with userId: [userId] was not found"`
+  - `HTTP 204 No Content`: `"User [Username] has no role assigned."`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### GET `/api/users/getLastAccess`
 
 - **Expected Input Parameters:**
-    - `userId` (String): Unique identifier for the user.
+
+  - `userId` (String): Unique identifier for the user.
 
 - **Expected Output:** The last access time of the user as a string.
 
@@ -824,6 +974,7 @@ Retrieves the role of the specified user.
 Retrieves the last access time of the specified user.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
@@ -831,18 +982,20 @@ Retrieves the last access time of the specified user.
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"userId needed to get time of last access."`
-    - `HTTP 404 Not Found`: `"User with userId: [userId] was not found"`
-    - `HTTP 204 No Content`: `"User [Username] has not accessed the service yet."`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"userId needed to get time of last access."`
+  - `HTTP 404 Not Found`: `"User with userId: [userId] was not found"`
+  - `HTTP 204 No Content`: `"User [Username] has not accessed the service yet."`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### POST `/api/users/createUser`
 
 - **Expected Input Parameters:**
-    - `username` (String): The desired username for the new user.
+
+  - `username` (String): The desired username for the new user.
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -850,27 +1003,30 @@ Retrieves the last access time of the specified user.
 Creates a new user with the specified username.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
-  [Username] was successfully created. 
+  [Username] was successfully created.
   UserID: [User ID]
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`: `"Username needed to create user."`
-    - `HTTP 409 Conflict`: `"Username [username] already taken. Try a different username."`
-    - `HTTP 500 Internal Server Error`: `"[Error message]"`
+  - `HTTP 400 Bad Request`: `"Username needed to create user."`
+  - `HTTP 409 Conflict`: `"Username [username] already taken. Try a different username."`
+  - `HTTP 500 Internal Server Error`: `"[Error message]"`
 
 ---
 
 ### PATCH `/api/users/updateUsername`
 
 - **Expected Input Parameters:**
-    - `userId` (String): Unique identifier for the user.
-    - `currentUsername` (String): The current username.
-    - `newUsername` (String): The new desired username.
+
+  - `userId` (String): Unique identifier for the user.
+  - `currentUsername` (String): The current username.
+  - `newUsername` (String): The new desired username.
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -878,34 +1034,37 @@ Creates a new user with the specified username.
 Updates the username of the specified user.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
-  Username for userID: [User ID] successfully changed from: 
+  Username for userID: [User ID] successfully changed from:
   [Current Username] --> [New Username]
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`:
-        - `"UserID cannot be empty."`
-        - `"Current username cannot be empty."`
-        - `"New username cannot be empty."`
-        - `"New username is the same as current username. Please enter a different username."`
-        - `"Current username is wrong for userID: [userId]. Please enter the correct current username."`
-    - `HTTP 404 Not Found`: `"User with userId: [userId] was not found"`
-    - `HTTP 409 Conflict`: `"Username [newUsername] already taken. Try a different username."`
-    - `HTTP 500 Internal Server Error`:
-        - `"User with userId: [userId] could not be updated."`
-        - `"[Error message]"`
+  - `HTTP 400 Bad Request`:
+    - `"UserID cannot be empty."`
+    - `"Current username cannot be empty."`
+    - `"New username cannot be empty."`
+    - `"New username is the same as current username. Please enter a different username."`
+    - `"Current username is wrong for userID: [userId]. Please enter the correct current username."`
+  - `HTTP 404 Not Found`: `"User with userId: [userId] was not found"`
+  - `HTTP 409 Conflict`: `"Username [newUsername] already taken. Try a different username."`
+  - `HTTP 500 Internal Server Error`:
+    - `"User with userId: [userId] could not be updated."`
+    - `"[Error message]"`
 
 ---
 
 ### PATCH `/api/users/updateRole`
 
 - **Expected Input Parameters:**
-    - `userId` (String): Unique identifier for the user.
-    - `newRole` (String): The new role to assign (must be "ADMIN" or "USER").
+
+  - `userId` (String): Unique identifier for the user.
+  - `newRole` (String): The new role to assign (must be "ADMIN" or "USER").
 
 - **Expected Output:** Confirmation message as a plain text string.
 
@@ -913,36 +1072,39 @@ Updates the username of the specified user.
 Updates the role of the specified user.
 
 **Upon Success:**
+
 - **Status Code:** `HTTP 200 OK`
 - **Response Body:**
   ```
-  Role of [Username] was successfully changed from: 
+  Role of [Username] was successfully changed from:
   [Old Role] --> [New Role]
   ```
 
 **Upon Failure:**
+
 - **Status Codes & Responses:**
-    - `HTTP 400 Bad Request`:
-        - `"UserID cannot be empty."`
-        - `"Role is invalid. Must be ADMIN or USER."`
-        - `"User [Username] is already [newRole]"`
-    - `HTTP 404 Not Found`: `"User with userId: [userId] was not found."`
-    - `HTTP 500 Internal Server Error`:
-        - `"User with userId: [userId] could not be updated."`
-        - `"[Error message]"`
+  - `HTTP 400 Bad Request`:
+    - `"UserID cannot be empty."`
+    - `"Role is invalid. Must be ADMIN or USER."`
+    - `"User [Username] is already [newRole]"`
+  - `HTTP 404 Not Found`: `"User with userId: [userId] was not found."`
+  - `HTTP 500 Internal Server Error`:
+    - `"User with userId: [userId] could not be updated."`
+    - `"[Error message]"`
 
 ---
 
 ## Error Handling
 
-All endpoints may return a `HTTP 500 Internal Server Error` with its specific exception message 
+All endpoints may return a `HTTP 500 Internal Server Error` with its specific exception message
 in cases of unexpected failures or exceptions. Ensure that input parameters are correctly formatted and valid to avoid `HTTP 400 Bad Request` responses.
 
 ---
 
-## Tools Used 
-* Lombok
-* Spotless
-* PMD
+## Tools Used
+
+- Lombok
+- Spotless
+- PMD
 
 ---

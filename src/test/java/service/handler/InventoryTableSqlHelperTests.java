@@ -36,44 +36,38 @@ public class InventoryTableSqlHelperTests {
   private Inventory testInventory;
   private String userKey;
 
-  /**
-   * Sets up a test inventory before each test.
-   */
+  /** Sets up a test inventory before each test. */
   @BeforeEach
   public void setup() {
     testInventory =
-            Inventory.builder()
-                    .inventoryId(UUID.fromString("bf456378-a8b3-40b6-b1a1-654bc9de5f02"))
-                    .inventoryName("Test Inventory")
-                    .adminId(UUID.fromString("9cdd2cec-d003-4964-b55c-cb336c51b809"))
-                    .build();
+        Inventory.builder()
+            .inventoryId(UUID.fromString("bf456378-a8b3-40b6-b1a1-654bc9de5f02"))
+            .inventoryName("Test Inventory")
+            .adminId(UUID.fromString("9cdd2cec-d003-4964-b55c-cb336c51b809"))
+            .build();
 
     userKey = testInventory.getAdminId().toString();
   }
 
-  /**
-   * Tests the insert method of InventoryTableSqlHelper.
-   */
+  /** Tests the insert method of InventoryTableSqlHelper. */
   @Test
   public void testInsert() {
     // Test successful insert
     when(jdbcTemplate.update(anyString(), anyString(), anyString(), anyString())).thenReturn(1);
     assertDoesNotThrow(
-            () -> inventoryTableSqlHelper.insert(testInventory, userKey),
-            "Insert should not throw an exception when successful.");
+        () -> inventoryTableSqlHelper.insert(testInventory, userKey),
+        "Insert should not throw an exception when successful.");
 
     // Test exception thrown
     when(jdbcTemplate.update(anyString(), anyString(), anyString(), anyString()))
-            .thenThrow(RuntimeException.class);
+        .thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> inventoryTableSqlHelper.insert(testInventory, userKey),
-            "Insert should propagate exceptions.");
+        RuntimeException.class,
+        () -> inventoryTableSqlHelper.insert(testInventory, userKey),
+        "Insert should propagate exceptions.");
   }
 
-  /**
-   * Tests selecting all inventories from the database.
-   */
+  /** Tests selecting all inventories from the database. */
   @Test
   public void testSelectAll() {
     // Prepare a list of inventories
@@ -89,22 +83,20 @@ public class InventoryTableSqlHelperTests {
 
     // Test empty list
     when(jdbcTemplate.query(anyString(), any(InventoryRowMapper.class)))
-            .thenReturn(new ArrayList<>());
+        .thenReturn(new ArrayList<>());
     result = inventoryTableSqlHelper.select();
     assertTrue(result.isEmpty(), "Should return an empty list when no inventories are found.");
 
     // Test exception thrown
     when(jdbcTemplate.query(anyString(), any(InventoryRowMapper.class)))
-            .thenThrow(RuntimeException.class);
+        .thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> inventoryTableSqlHelper.select(),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> inventoryTableSqlHelper.select(),
+        "Should propagate exceptions.");
   }
 
-  /**
-   * Tests selecting an inventory by its ID.
-   */
+  /** Tests selecting an inventory by its ID. */
   @Test
   public void testSelectById() {
     String inventoryId = testInventory.getInventoryId().toString();
@@ -115,7 +107,7 @@ public class InventoryTableSqlHelperTests {
 
     // Mock the jdbcTemplate to return the inventories list when the specific SQL is called
     when(jdbcTemplate.query(contains("where inventory_id"), any(InventoryRowMapper.class)))
-            .thenReturn(inventories);
+        .thenReturn(inventories);
 
     // Call the method and assert the result
     List<Inventory> result = inventoryTableSqlHelper.select(inventoryId);
@@ -123,22 +115,20 @@ public class InventoryTableSqlHelperTests {
 
     // Test inventory not found
     when(jdbcTemplate.query(contains("where inventory_id"), any(InventoryRowMapper.class)))
-            .thenReturn(new ArrayList<>());
+        .thenReturn(new ArrayList<>());
     result = inventoryTableSqlHelper.select(inventoryId);
     assertTrue(result.isEmpty(), "Should return an empty list when inventory is not found.");
 
     // Test exception thrown
     when(jdbcTemplate.query(contains("where inventory_id"), any(InventoryRowMapper.class)))
-            .thenThrow(RuntimeException.class);
+        .thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> inventoryTableSqlHelper.select(inventoryId),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> inventoryTableSqlHelper.select(inventoryId),
+        "Should propagate exceptions.");
   }
 
-  /**
-   * Tests updating the inventory name.
-   */
+  /** Tests updating the inventory name. */
   @Test
   public void testUpdateInventoryName() {
     String inventoryId = testInventory.getInventoryId().toString();
@@ -147,27 +137,25 @@ public class InventoryTableSqlHelperTests {
     // Test successful update
     when(jdbcTemplate.update(anyString(), eq(newInventoryName), eq(inventoryId))).thenReturn(1);
     assertTrue(
-            inventoryTableSqlHelper.update(inventoryId, newInventoryName),
-            "Update should return true when one or more rows are affected.");
+        inventoryTableSqlHelper.update(inventoryId, newInventoryName),
+        "Update should return true when one or more rows are affected.");
 
     // Test unsuccessful update
     when(jdbcTemplate.update(anyString(), eq(newInventoryName), eq(inventoryId))).thenReturn(0);
     assertFalse(
-            inventoryTableSqlHelper.update(inventoryId, newInventoryName),
-            "Update should return false when no rows are affected.");
+        inventoryTableSqlHelper.update(inventoryId, newInventoryName),
+        "Update should return false when no rows are affected.");
 
     // Test exception thrown
     when(jdbcTemplate.update(anyString(), eq(newInventoryName), eq(inventoryId)))
-            .thenThrow(RuntimeException.class);
+        .thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> inventoryTableSqlHelper.update(inventoryId, newInventoryName),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> inventoryTableSqlHelper.update(inventoryId, newInventoryName),
+        "Should propagate exceptions.");
   }
 
-  /**
-   * Tests updating the admin ID of an inventory.
-   */
+  /** Tests updating the admin ID of an inventory. */
   @Test
   public void testUpdateAdmin() {
     String inventoryId = testInventory.getInventoryId().toString();
@@ -176,27 +164,25 @@ public class InventoryTableSqlHelperTests {
     // Test successful update
     when(jdbcTemplate.update(anyString(), eq(newAdminId), eq(inventoryId))).thenReturn(1);
     assertTrue(
-            inventoryTableSqlHelper.updateAdmin(inventoryId, newAdminId),
-            "Update should return true when one or more rows are affected.");
+        inventoryTableSqlHelper.updateAdmin(inventoryId, newAdminId),
+        "Update should return true when one or more rows are affected.");
 
     // Test unsuccessful update
     when(jdbcTemplate.update(anyString(), eq(newAdminId), eq(inventoryId))).thenReturn(0);
     assertFalse(
-            inventoryTableSqlHelper.updateAdmin(inventoryId, newAdminId),
-            "Update should return false when no rows are affected.");
+        inventoryTableSqlHelper.updateAdmin(inventoryId, newAdminId),
+        "Update should return false when no rows are affected.");
 
     // Test exception thrown
     when(jdbcTemplate.update(anyString(), eq(newAdminId), eq(inventoryId)))
-            .thenThrow(RuntimeException.class);
+        .thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> inventoryTableSqlHelper.updateAdmin(inventoryId, newAdminId),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> inventoryTableSqlHelper.updateAdmin(inventoryId, newAdminId),
+        "Should propagate exceptions.");
   }
 
-  /**
-   * Tests deleting an inventory.
-   */
+  /** Tests deleting an inventory. */
   @Test
   public void testDelete() {
     String inventoryId = testInventory.getInventoryId().toString();
@@ -204,21 +190,21 @@ public class InventoryTableSqlHelperTests {
     // Test successful delete
     when(jdbcTemplate.update(anyString(), eq(inventoryId))).thenReturn(1);
     assertTrue(
-            inventoryTableSqlHelper.delete(inventoryId),
-            "Delete should return true when one or more rows are affected.");
+        inventoryTableSqlHelper.delete(inventoryId),
+        "Delete should return true when one or more rows are affected.");
 
     // Test unsuccessful delete
     when(jdbcTemplate.update(anyString(), eq(inventoryId))).thenReturn(0);
     assertFalse(
-            inventoryTableSqlHelper.delete(inventoryId),
-            "Delete should return false when no rows are affected.");
+        inventoryTableSqlHelper.delete(inventoryId),
+        "Delete should return false when no rows are affected.");
 
     // Test exception thrown
     when(jdbcTemplate.update(anyString(), eq(inventoryId))).thenThrow(RuntimeException.class);
     assertThrows(
-            RuntimeException.class,
-            () -> inventoryTableSqlHelper.delete(inventoryId),
-            "Should propagate exceptions.");
+        RuntimeException.class,
+        () -> inventoryTableSqlHelper.delete(inventoryId),
+        "Should propagate exceptions.");
   }
 
   /**
@@ -230,8 +216,7 @@ public class InventoryTableSqlHelperTests {
   public void testInventoryRowMapper() throws SQLException {
     ResultSet resultSet = mock(ResultSet.class);
 
-    when(resultSet.getString("inventory_id"))
-            .thenReturn(testInventory.getInventoryId().toString());
+    when(resultSet.getString("inventory_id")).thenReturn(testInventory.getInventoryId().toString());
     when(resultSet.getString("inventory_name")).thenReturn(testInventory.getInventoryName());
     when(resultSet.getString("user_id")).thenReturn(testInventory.getAdminId().toString());
 
@@ -239,14 +224,14 @@ public class InventoryTableSqlHelperTests {
     Inventory mappedInventory = rowMapper.mapRow(resultSet, 1);
 
     assertEquals(
-            testInventory.getInventoryId(),
-            mappedInventory.getInventoryId(),
-            "Inventory ID should match.");
+        testInventory.getInventoryId(),
+        mappedInventory.getInventoryId(),
+        "Inventory ID should match.");
     assertEquals(
-            testInventory.getInventoryName(),
-            mappedInventory.getInventoryName(),
-            "Inventory name should match.");
+        testInventory.getInventoryName(),
+        mappedInventory.getInventoryName(),
+        "Inventory name should match.");
     assertEquals(
-            testInventory.getAdminId(), mappedInventory.getAdminId(), "Admin ID should match.");
+        testInventory.getAdminId(), mappedInventory.getAdminId(), "Admin ID should match.");
   }
 }

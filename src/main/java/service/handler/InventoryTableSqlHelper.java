@@ -33,7 +33,7 @@ public class InventoryTableSqlHelper {
    * @param inventory Inventory object that you'd like to store within DB.
    * @param userKey This references the user to which this inventory belongs to.
    */
-  public void insert(Inventory inventory, String userKey) {
+  public boolean insert(Inventory inventory, String userKey) {
     // Create your insert SQL query with "?" as a placeholder for variable values
 
     // Inventories is the table within the MySQL DB
@@ -44,7 +44,9 @@ public class InventoryTableSqlHelper {
     int rows =
         jdbcTemplate.update(
             sql, inventory.getInventoryId().toString(), inventory.getInventoryName(), userKey);
+
     System.out.println(rows + "Inventory row/s inserted.");
+    return rows == 1;
   }
 
   /**
@@ -106,7 +108,7 @@ public class InventoryTableSqlHelper {
     String sql = "update Inventories set user_id = ? where inventory_id = ?";
     int rows = jdbcTemplate.update(sql, adminId, inventoryId);
 
-    System.out.println(rows + " inventory row/s updated");
+    //    System.out.println(rows + " inventory row/s updated");
     return rows > 0;
   }
 

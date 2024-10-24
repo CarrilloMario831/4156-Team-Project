@@ -97,7 +97,7 @@ Before setting up the project, ensure that your local machine meets the followin
 10. Now, you should be able to open any of the tables and find some data in them to start playing
     around with.
 
-## Running the Application
+## Running the Application Locally
 
 ### For Java on MacOS and Windows
 
@@ -180,6 +180,97 @@ Here are some additional Maven commands that might be useful:
 
 - **Using an IDE:**
   For a better development experience, consider importing the project into an Integrated Development Environment (IDE) like [IntelliJ IDEA](https://www.jetbrains.com/idea/), [Eclipse](https://www.eclipse.org/downloads/), or [Visual Studio Code](https://code.visualstudio.com/). These IDEs offer features like code completion, debugging, and easy navigation.
+
+---
+
+## Running the Application in the Cloud
+
+In addition to running the application locally, we've deployed the service to a cloud-based instance using **Google Cloud Platform (GCP)**. This deployment allows the application to be accessed globally, independent of local machines. **_The link to access the service is provided in the `Live Link` section below._**
+
+Below are the steps for deploying the service to the cloud and accessing it live.
+
+### Deploying and Testing the Application on GCP
+
+#### 1. Create a Project in Google Cloud Platform (GCP)
+
+- **Create a new project** in the [GCP Console](https://console.cloud.google.com/):
+  - Click **Create Project**, provide a project name, and note the project ID.
+  - Enable **App Engine** and **Cloud SQL** APIs for your project.
+
+#### 2. Cloud SQL Setup
+
+- **Create a Cloud SQL Instance**:
+
+  - In the [Google Cloud Console](https://console.cloud.google.com/), navigate to **SQL**.
+  - Click **Create Instance**, choose **MySQL**, and follow the steps to set up the instance:
+    - **Instance ID**: `team-project-service-demo` (or any preferred name).
+    - **Region**: Choose a region close to your App Engine deployment (e.g., `us-east1`).
+    - **Database Version**: Choose MySQL 8.0.
+  - Set up a **root password** that you’ll use to access the database.
+  - Create the `reservation_management` database and set up the necessary tables (following the schema from the local setup).
+
+- **Grant Access**:
+  - Ensure your App Engine default service account has the **Cloud SQL Client** and **App Engine Deployer** roles under **IAM & Admin**.
+
+#### 3. Configure the App for Deployment
+
+- Modify the `app.yaml` to look as follows:
+
+```
+runtime: java17
+
+entrypoint: java -jar target/Service-0.0.1-SNAPSHOT.jar
+
+instance_class: F1
+```
+
+- This tells App Egnine to run the Spring Boot application packaged as a JAR file. The `.jar` file is created when you build the project using Maven and contains all the compiled code and dependencies needed to run the application.
+- The database connection information, including the Cloud SQL connection string, should be configured in the `application.properties` file:
+
+```
+spring.application.name=Service
+
+spring.datasource.url=jdbc:mysql://<CLOUD_INSTANCE_IP_ADDRESS>:<PORT_NUMBER>/reservation_management
+spring.datasource.username=<DB_USER>
+spring.datasource.password=<DB_PASSWORD>
+
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+```
+
+- Replace `<DB_USER>` and `<DB_PASSWORD>` with your actual database credentials. Note the IP address of the Cloud SQL instance `<CLOUD_INSTANCE_IP_ADDRESS>` from the cloud console. You should specify the `<PORT_NUMBER>` as well (default: 3306).
+
+#### 4. Deploy to App Engine
+
+Before deploying, ensure that you have initialized the Google Cloud SDK on your machine:
+
+1. **Install the Google Cloud SDK** if you haven't already:
+
+   - Follow the instructions [here](https://cloud.google.com/sdk/docs/install).
+
+2. **Initialize the SDK** by running the following in the root directory of your project:
+
+```
+gcloud init
+```
+
+This command will guide you through a series of prompts to select your project and set up authentication.
+
+3. **Deploy the service to App Engine** by running:
+
+```
+gcloud app deploy
+```
+
+Once deployed, you will be given access to a live link at which you can interact with the cloud-hosted service via the endpoints specified in the `Endpoints` section.
+
+---
+
+## Live Link
+
+Our team's deployed service is live and accessible at:
+https://team-project-service-demo.ue.r.appspot.com/
+
+Use **Postman** or your browswer to test the APIs. For instructions on how to make requests, please see the `Accessing the Application` section.
 
 ---
 

@@ -27,6 +27,8 @@ public class ItemsTableSqlHelper {
 
   /**
    * This method allows for Spring Boot to auto-manage the beans needed to connect to the SQL DB.
+   *
+   * @param jdbcTemplate the jdbc template
    */
   @Autowired
   public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
@@ -38,6 +40,7 @@ public class ItemsTableSqlHelper {
    * into the DB.
    *
    * @param item Item object that you'd like to store within DB.
+   * @return the boolean
    */
   public boolean insertItem(Item item) {
     String sql =
@@ -60,13 +63,14 @@ public class ItemsTableSqlHelper {
             item.getPrice(),
             item.getNextRestockDateTime(),
             item.getInventoryId() != null ? item.getInventoryId().toString() : null);
-    //    System.out.println(rows + "row/s inserted.");
     return rows == 1;
   }
 
   /**
    * This is a test select method for providing insight into what it looks like to read items from
    * the DB.
+   *
+   * @return the all items
    */
   public List<Item> getAllItems() {
     String sql = "select * from Items";
@@ -79,16 +83,11 @@ public class ItemsTableSqlHelper {
    * the DB.
    *
    * @param itemId Unique identifier for the item you'd like to search for in the DB.
+   * @return the item
    */
   public List<Item> getItem(String itemId) {
-
-    // define the sql query
     String sql = "select * from Items where item_id = " + "'" + itemId + "'";
-
-    // This stores the select query results from the DB
     RowMapper<Item> rowMapper = (rs, rowNum) -> getItemFromTable(rs);
-
-    // Store the results within an indexable array
     return jdbcTemplate.query(sql, rowMapper);
   }
 
@@ -122,9 +121,6 @@ public class ItemsTableSqlHelper {
    * @return Return true or false whether the update was done.
    */
   public boolean updateItemLocation(String itemId, String location) {
-
-    // UPDATE Items SET item_name = 'Cheese Nuggets' where item_id =
-    // '0b1ee0b0-8bf0-11ef-9fd0-343c922917f9'
     String sql = "update Items set location = ? where item_id = ?";
     int rows = jdbcTemplate.update(sql, location, itemId);
     System.out.println(rows + " row/s updated");
@@ -177,7 +173,13 @@ public class ItemsTableSqlHelper {
     return rows == 1;
   }
 
-  /** pass checkstyle. */
+  /**
+   * pass checkstyle. @param itemId the item id
+   *
+   * @param itemId the item id
+   * @param newItemName the new item name
+   * @return the boolean
+   */
   public boolean updateItemName(String itemId, String newItemName) {
     String sql = "update Items set item_name = ? where item_id = ?";
     int rows = jdbcTemplate.update(sql, newItemName, itemId);

@@ -15,7 +15,7 @@ public class CreateItemRequest {
 
   @NonNull private String location;
 
-  private UUID inventoryId;
+  @NonNull private UUID inventoryId;
 
   private int quantity;
 

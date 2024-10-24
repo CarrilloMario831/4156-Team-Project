@@ -8,10 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import org.springframework.lang.Nullable;
 import service.util.UserRoles;
 
-/** Sample javadoc for User mini class. */
+/** The type User. */
 @Getter
 @Setter
 @NonNull
@@ -22,8 +21,6 @@ public class User {
   private UserRoles role;
   private LocalDateTime lastAccess;
 
-  @Nullable private final UUID inventoryAccess;
-
   @Override
   public String toString() {
     return "User [userId="
@@ -32,8 +29,6 @@ public class User {
         + username
         + ", \nrole="
         + role
-        + ", \ninventoryAccess= "
-        + inventoryAccess
         + "\nlastAccess= "
         + lastAccess.format(FORMATTER)
         + "]";

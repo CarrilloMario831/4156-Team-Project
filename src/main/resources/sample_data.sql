@@ -7,10 +7,10 @@ VALUES
     ('f89f6789-abcd-4d5e-8888-abcdef876543', 'secretary1', 'USER', '2024-10-17 12:03:33');
 
 -- Sample inserts for Inventories
-INSERT INTO Inventories (inventory_id, inventory_name, user_id)
+INSERT INTO Inventories (inventory_id, inventory_name)
 VALUES
-    ('bf456378-a8b3-40b6-b1a1-654bc9de5f02', 'Electronics Inventory', 'f1234567-abcd-4d5e-9999-abcdef012345'),
-    ('bd123478-12ab-45f6-abc8-4456ac987654', 'Office Supplies Inventory', 'f89f6789-abcd-4d5e-8888-abcdef876543');
+    ('bf456378-a8b3-40b6-b1a1-654bc9de5f02', 'Electronics Inventory'),
+    ('bd123478-12ab-45f6-abc8-4456ac987654', 'Office Supplies Inventory');
 
 -- Sample inserts for Items
 INSERT INTO Items (item_id, item_name, time_of_addition, reservation_time, quantity, reserved_status, price, location, inventory_id)

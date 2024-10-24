@@ -27,9 +27,15 @@ import service.requests.CreateItemRequest;
 @RequestMapping("/api/items")
 public class ItemsRouteController {
 
+  /** The Items table sql helper. */
   @Autowired public ItemsTableSqlHelper itemsTableSqlHelper;
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Create item response entity.
+   *
+   * @param createItemRequest the create item request
+   * @return the response entity
+   */
   @PostMapping(value = "/createItem", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> createItem(@RequestBody CreateItemRequest createItemRequest) {
     if (createItemRequest == null) {
@@ -67,7 +73,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets item name.
+   *
+   * @param itemId the item id
+   * @return the item name
+   */
   @GetMapping(value = "/getItemName", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getItemName(@RequestParam(value = "itemId") String itemId) {
     if (itemId == null || itemId.isEmpty()) {
@@ -90,7 +101,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets item time of addition.
+   *
+   * @param itemId the item id
+   * @return the item time of addition
+   */
   @GetMapping(value = "/getItemTimeOfAddition", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getItemTimeOfAddition(
       @RequestParam(value = "itemId") String itemId) {
@@ -111,7 +127,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets item quantity.
+   *
+   * @param itemId the item id
+   * @return the item quantity
+   */
   @GetMapping(value = "/getItemQuantity", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> getItemQuantity(@RequestParam(value = "itemId") String itemId) {
     if (itemId == null || itemId.isEmpty()) {
@@ -131,7 +152,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Is item reserved response entity.
+   *
+   * @param itemId the item id
+   * @return the response entity
+   */
   @GetMapping(value = "/isItemReserved", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> isItemReserved(@RequestParam(value = "itemId") String itemId) {
     if (itemId == null || itemId.isEmpty()) {
@@ -150,7 +176,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets item reservation duration.
+   *
+   * @param itemId the item id
+   * @return the item reservation duration
+   */
   @GetMapping(value = "/getItemReservationDuration", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> getItemReservationDuration(
       @RequestParam(value = "itemId") String itemId) {
@@ -170,7 +201,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets item reservation time.
+   *
+   * @param itemId the item id
+   * @return the item reservation time
+   */
   @GetMapping(value = "/getItemReservationTime", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getItemReservationTime(
       @RequestParam(value = "itemId") String itemId) {
@@ -191,7 +227,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets item location.
+   *
+   * @param itemId the item id
+   * @return the item location
+   */
   @GetMapping(value = "/getItemLocation", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getItemLocation(@RequestParam(value = "itemId") String itemId) {
     if (itemId == null || itemId.isEmpty()) {
@@ -210,7 +251,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets item price.
+   *
+   * @param itemId the item id
+   * @return the item price
+   */
   @GetMapping(value = "/getItemPrice", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> getItemPrice(@RequestParam(value = "itemId") String itemId) {
     if (itemId == null || itemId.isEmpty()) {
@@ -229,7 +275,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets next restock time.
+   *
+   * @param itemId the item id
+   * @return the next restock time
+   */
   @GetMapping(value = "/getNextRestockTime", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getNextRestockTime(@RequestParam(value = "itemId") String itemId) {
     if (itemId == null || itemId.isEmpty()) {
@@ -254,7 +305,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets inventory id from item id.
+   *
+   * @param itemId the item id
+   * @return the inventory id from item id
+   */
   @GetMapping(value = "/getInventoryIdFromItemId", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getInventoryIdFromItemId(
       @RequestParam(value = "itemId") String itemId) {
@@ -280,7 +336,13 @@ public class ItemsRouteController {
     }
   }
 
-  /** pass checkstyle. */
+  /**
+   * pass checkstyle. @param itemId the item id
+   *
+   * @param itemId the item id
+   * @param newItemName the new item name
+   * @return the response entity
+   */
   @PatchMapping(value = "/updateItemName", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> updateItemName(
       @RequestParam(value = "itemId") String itemId,
@@ -344,7 +406,12 @@ public class ItemsRouteController {
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  /** pass checkstyle. */
+  /**
+   * pass checkstyle. @param itemId the item id
+   *
+   * @param itemId the item id
+   * @return the response entity
+   */
   @DeleteMapping(value = "/deleteItem", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> deleteItem(@RequestParam(value = "itemId") String itemId) {
     if (itemId == null || itemId.isEmpty()) {
@@ -394,7 +461,13 @@ public class ItemsRouteController {
         HttpStatus.INTERNAL_SERVER_ERROR);
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Update item quantity response entity.
+   *
+   * @param itemId the item id
+   * @param newQuantity the new quantity
+   * @return the response entity
+   */
   @PatchMapping(value = "/updateItemQuantity", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> updateItemQuantity(
       @RequestParam(value = "itemId") String itemId,
@@ -445,7 +518,13 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Update item location response entity.
+   *
+   * @param itemId the item id
+   * @param newLocation the new location
+   * @return the response entity
+   */
   @PatchMapping(value = "/updateItemLocation", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> updateItemLocation(
       @RequestParam(value = "itemId") String itemId,
@@ -501,7 +580,13 @@ public class ItemsRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Update item price response entity.
+   *
+   * @param itemId the item id
+   * @param newPrice the new price
+   * @return the response entity
+   */
   @PatchMapping(value = "/updateItemPrice", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> updateItemPrice(
       @RequestParam(value = "itemId") String itemId,
@@ -552,7 +637,13 @@ public class ItemsRouteController {
     }
   }
 
-  /** Updates the reservation duration for the specified item. */
+  /**
+   * Updates the reservation duration for the specified item. @param itemId the item id
+   *
+   * @param itemId the item id
+   * @param reservationDurationInMillis the reservation duration in millis
+   * @return the response entity
+   */
   @PatchMapping(value = "/updateItemReservation", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> updateItemReservation(
       @RequestParam(value = "itemId") String itemId,
@@ -595,7 +686,12 @@ public class ItemsRouteController {
     }
   }
 
-  /** Cancels the reservation for the specified item. */
+  /**
+   * Cancels the reservation for the specified item. @param itemId the item id
+   *
+   * @param itemId the item id
+   * @return the response entity
+   */
   @PatchMapping(value = "/cancelItemReservation", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> cancelItemReservation(
       @RequestParam(value = "itemId") String itemId) {

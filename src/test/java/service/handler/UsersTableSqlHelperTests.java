@@ -43,7 +43,6 @@ public class UsersTableSqlHelperTests {
             .userId(UUID.fromString("9cdd2cec-d003-4964-b55c-cb336c51b809"))
             .lastAccess(now)
             .role(UserRoles.USER)
-            .inventoryAccess(UUID.fromString("bf456378-a8b3-40b6-b1a1-654bc9de5f02"))
             .build();
   }
 
@@ -51,19 +50,18 @@ public class UsersTableSqlHelperTests {
   @Test
   public void testInsertUser() {
     // Test successful insert
-    when(jdbcTemplate.update(any(), any(), any(), any(), any(), any())).thenReturn(1);
+    when(jdbcTemplate.update(any(), any(), any(), any(), any())).thenReturn(1);
     assertTrue(
         usersTableSqlHelper.insertUser(testUser), "Insert should return true when successful.");
 
     // Test unsuccessful insert
-    when(jdbcTemplate.update(any(), any(), any(), any(), any(), any())).thenReturn(0);
+    when(jdbcTemplate.update(any(), any(), any(), any(), any())).thenReturn(0);
     assertFalse(
         usersTableSqlHelper.insertUser(testUser),
         "Insert should return false when no rows are affected.");
 
     // Test exception thrown
-    when(jdbcTemplate.update(any(), any(), any(), any(), any(), any()))
-        .thenThrow(RuntimeException.class);
+    when(jdbcTemplate.update(any(), any(), any(), any(), any())).thenThrow(RuntimeException.class);
     assertThrows(
         RuntimeException.class,
         () -> usersTableSqlHelper.insertUser(testUser),
@@ -216,33 +214,6 @@ public class UsersTableSqlHelperTests {
         () ->
             usersTableSqlHelper.updateLastAccess(
                 testUser.getUserId().toString(), testUser.getLastAccess()),
-        "Update should propagate exceptions.");
-  }
-
-  /** Tests updating a user's inventory access. */
-  @Test
-  public void testUpdateInventoryAccess() {
-    // Test successful update
-    when(jdbcTemplate.update(any(), any(), anyString())).thenReturn(1);
-    assertTrue(
-        usersTableSqlHelper.updateInventoryAccess(
-            testUser.getUserId().toString(), testUser.getInventoryAccess().toString()),
-        "Update should return true when successful.");
-
-    // Test unsuccessful update
-    when(jdbcTemplate.update(any(), any(), anyString())).thenReturn(0);
-    assertFalse(
-        usersTableSqlHelper.updateInventoryAccess(
-            testUser.getUserId().toString(), testUser.getInventoryAccess().toString()),
-        "Update should return false when no rows are affected.");
-
-    // Test exception thrown
-    when(jdbcTemplate.update(any(), any(), anyString())).thenThrow(RuntimeException.class);
-    assertThrows(
-        RuntimeException.class,
-        () ->
-            usersTableSqlHelper.updateInventoryAccess(
-                testUser.getUserId().toString(), testUser.getInventoryAccess().toString()),
         "Update should propagate exceptions.");
   }
 

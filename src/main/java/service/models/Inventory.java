@@ -18,8 +18,6 @@ public class Inventory {
 
   private Map<UUID, Item> items;
 
-  @NonNull @Setter private UUID adminId;
-
   /**
    * Returns a string representation of the inventory.
    *

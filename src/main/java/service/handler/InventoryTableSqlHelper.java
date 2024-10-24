@@ -31,19 +31,18 @@ public class InventoryTableSqlHelper {
    * inventories into the DB.
    *
    * @param inventory Inventory object that you'd like to store within DB.
-   * @param userKey This references the user to which this inventory belongs to.
    */
-  public boolean insert(Inventory inventory, String userKey) {
+  public boolean insert(Inventory inventory) {
     // Create your insert SQL query with "?" as a placeholder for variable values
 
     // Inventories is the table within the MySQL DB
-    String sql = "insert into Inventories (inventory_id, inventory_name, user_id) values (?,?,?)";
+    String sql = "insert into Inventories (inventory_id, inventory_name) values (?,?)";
 
     // JDBC template provides many methods and query() is synonymous with select
     // update() is for the SQL insert, update, deletes
     int rows =
         jdbcTemplate.update(
-            sql, inventory.getInventoryId().toString(), inventory.getInventoryName(), userKey);
+            sql, inventory.getInventoryId().toString(), inventory.getInventoryName());
 
     System.out.println(rows + "Inventory row/s inserted.");
     return rows == 1;
@@ -104,13 +103,13 @@ public class InventoryTableSqlHelper {
    *     to.
    * @return boolean
    */
-  public boolean updateAdmin(String inventoryId, String adminId) {
-    String sql = "update Inventories set user_id = ? where inventory_id = ?";
-    int rows = jdbcTemplate.update(sql, adminId, inventoryId);
-
-    //    System.out.println(rows + " inventory row/s updated");
-    return rows > 0;
-  }
+  //  public boolean updateAdmin(String inventoryId, String adminId) {
+  //    String sql = "update Inventories set user_id = ? where inventory_id = ?";
+  //    int rows = jdbcTemplate.update(sql, adminId, inventoryId);
+  //
+  //    //    System.out.println(rows + " inventory row/s updated");
+  //    return rows > 0;
+  //  }
 
   /**
    * This method will simply delete.

@@ -39,19 +39,14 @@ public class UsersTableSqlHelper {
    * @param user User object that you'd like to store within DB.
    */
   public boolean insertUser(User user) {
-    String sql =
-        "insert into Users ("
-            + "user_id, username, role, "
-            + "last_access, inventory_access) "
-            + "values (?,?,?,?,?)";
+    String sql = "insert into Users (user_id, username, role, last_access) values (?,?,?,?)";
     int rows =
         jdbcTemplate.update(
             sql,
             user.getUserId().toString(),
             user.getUsername(),
             user.getRole().toString(),
-            user.getLastAccess(),
-            user.getInventoryAccess() != null ? user.getInventoryAccess().toString() : null);
+            user.getLastAccess());
     System.out.println(rows + "row/s inserted.");
     return rows == 1;
   }
@@ -155,12 +150,12 @@ public class UsersTableSqlHelper {
    * @param inventoryAccess lastAccess of user.
    * @return boolean
    */
-  public boolean updateInventoryAccess(String userId, String inventoryAccess) {
-    String sql = "update Users set inventory_access = ? where user_id = ?";
-    int rows = jdbcTemplate.update(sql, inventoryAccess, userId);
-    System.out.println(rows + " row/s updated");
-    return rows == 1;
-  }
+  //  public boolean updateInventoryAccess(String userId, String inventoryAccess) {
+  //    String sql = "update Users set inventory_access = ? where user_id = ?";
+  //    int rows = jdbcTemplate.update(sql, inventoryAccess, userId);
+  //    System.out.println(rows + " row/s updated");
+  //    return rows == 1;
+  //  }
 
   /**
    * This method will simply delete user from the table.
@@ -182,10 +177,10 @@ public class UsersTableSqlHelper {
             .username(rs.getString("username"))
             .role(UserRoles.valueOf(rs.getString("role")))
             .lastAccess(LocalDateTime.parse(rs.getString("last_access"), FORMATTER))
-            .inventoryAccess(
-                rs.getString("inventory_access") != null
-                    ? UUID.fromString(rs.getString("inventory_access"))
-                    : null)
+            //            .inventoryAccess(
+            //                rs.getString("inventory_access") != null
+            //                    ? UUID.fromString(rs.getString("inventory_access"))
+            //                    : null)
             .build();
   }
 }

@@ -18,7 +18,6 @@ import service.handler.ItemsTableSqlHelper;
 import service.handler.UsersTableSqlHelper;
 import service.models.Inventory;
 import service.models.Item;
-import service.models.User;
 import service.requests.CreateInventoryRequest;
 
 /** This class contains all the API endpoints for inventory-related requests. */
@@ -44,11 +43,9 @@ public class InventoryRouteController {
           Inventory.builder()
               .inventoryId(UUID.randomUUID())
               .inventoryName(createInventoryRequest.getInventoryName())
-              .adminId(createInventoryRequest.getAdminId())
               .build();
-      String adminId = createInventoryRequest.getAdminId().toString();
 
-      boolean isSuccessful = inventoryTableSqlHelper.insert(newInventory, adminId);
+      boolean isSuccessful = inventoryTableSqlHelper.insert(newInventory);
 
       if (!isSuccessful) {
         return new ResponseEntity<>("Failed to create inventory", HttpStatus.INTERNAL_SERVER_ERROR);
@@ -100,31 +97,32 @@ public class InventoryRouteController {
    * @param inventoryId Unique identifier for the inventory the client would like to access.
    * @return a string representation of the inventory's admin.
    */
-  @GetMapping(value = "/getInventoryAdmin", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> getInventoryOwner(
-      @RequestParam(value = "inventoryId") String inventoryId) {
-    if (inventoryId == null || inventoryId.isEmpty()) {
-      return new ResponseEntity<>("inventoryId needed to get inventories.", HttpStatus.BAD_REQUEST);
-    }
-    try {
-      List<Inventory> inventoryList = inventoryTableSqlHelper.select(inventoryId);
-      if (inventoryList == null) {
-        return new ResponseEntity<>(
-            "Inventory with inventoryId: " + inventoryId + " has not been found.",
-            HttpStatus.NOT_FOUND);
-      }
-      // use the inventory's id to grab the user ID and you can get their name
-      UUID adminId = inventoryList.get(0).getAdminId();
-      User admin = usersTableSqlHelper.getUserWithUserId(adminId.toString());
-      String adminName = admin.getUsername();
-      String inventoryName = inventoryList.get(0).getInventoryName();
-      return new ResponseEntity<>(
-          "Inventory: " + inventoryName + " has admin: " + adminName, HttpStatus.OK);
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+  //  @GetMapping(value = "/getInventoryAdmin", produces = MediaType.APPLICATION_JSON_VALUE)
+  //  public ResponseEntity<String> getInventoryOwner(
+  //      @RequestParam(value = "inventoryId") String inventoryId) {
+  //    if (inventoryId == null || inventoryId.isEmpty()) {
+  //      return new ResponseEntity<>("inventoryId needed to get inventories.",
+  // HttpStatus.BAD_REQUEST);
+  //    }
+  //    try {
+  //      List<Inventory> inventoryList = inventoryTableSqlHelper.select(inventoryId);
+  //      if (inventoryList == null) {
+  //        return new ResponseEntity<>(
+  //            "Inventory with inventoryId: " + inventoryId + " has not been found.",
+  //            HttpStatus.NOT_FOUND);
+  //      }
+  //      // use the inventory's id to grab the user ID and you can get their name
+  //      UUID adminId = inventoryList.get(0).getAdminId();
+  //      User admin = usersTableSqlHelper.getUserWithUserId(adminId.toString());
+  //      String adminName = admin.getUsername();
+  //      String inventoryName = inventoryList.get(0).getInventoryName();
+  //      return new ResponseEntity<>(
+  //          "Inventory: " + inventoryName + " has admin: " + adminName, HttpStatus.OK);
+  //    } catch (Exception e) {
+  //      System.out.println(e.getMessage());
+  //      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+  //    }
+  //  }
 
   /**
    * Returns a string representation of the requested inventory's items.
@@ -135,6 +133,9 @@ public class InventoryRouteController {
   @GetMapping(value = "/getInventoryItems", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getInventoryItems(
       @RequestParam(value = "inventoryId") String inventoryId) {
+
+    // TODO: Use the junction table to make this request faster
+
     if (inventoryId == null || inventoryId.isEmpty()) {
       return new ResponseEntity<>("inventoryId needed to get inventories.", HttpStatus.BAD_REQUEST);
     }
@@ -216,46 +217,48 @@ public class InventoryRouteController {
    * @param adminId Unique identifier for the inventory the client would like to access.
    * @return a string representation of the inventory's new admin.
    */
-  @PatchMapping(value = "/updateInventoryAdmin", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> updateInventoryAdmin(
-      @RequestParam(value = "inventoryId") String inventoryId,
-      @RequestParam(value = "adminId") String adminId) {
-    if (adminId == null || adminId.isEmpty()) {
-      return new ResponseEntity<>("inventoryId needed to get inventories.", HttpStatus.BAD_REQUEST);
-    }
-    try {
-
-      // check if this is the current admin already
-      List<Inventory> inventoryList = inventoryTableSqlHelper.select(inventoryId);
-
-      // grab the inventory object within the inventory list and check if it's current admin
-      String currentAdmin = inventoryList.get(0).getAdminId().toString();
-      String currentAdminName = usersTableSqlHelper.getUserWithUserId(currentAdmin).getUsername();
-
-      if (currentAdmin.equals(adminId)) {
-        return new ResponseEntity<>(
-            currentAdminName + " is already the admin for this inventory.\n",
-            HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-
-      // check if you can update this admin for this inventory.
-      boolean updateSuccess = inventoryTableSqlHelper.updateAdmin(inventoryId, adminId);
-
-      // grab the new name of the admin to let the user know.
-      String newAdminName = usersTableSqlHelper.getUserWithUserId(adminId).getUsername();
-
-      if (updateSuccess) {
-        String returnString =
-            "Successfully changed the inventory's admin to: " + newAdminName + "\n";
-        return new ResponseEntity<>(returnString, HttpStatus.OK);
-      } else {
-        return new ResponseEntity<>(
-            "Unsuccessful inventory admin change.\n", HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-
-    } catch (Exception e) {
-      System.out.println(e.getMessage());
-      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-  }
+  //  @PatchMapping(value = "/updateInventoryAdmin", produces = MediaType.APPLICATION_JSON_VALUE)
+  //  public ResponseEntity<?> updateInventoryAdmin(
+  //      @RequestParam(value = "inventoryId") String inventoryId,
+  //      @RequestParam(value = "adminId") String adminId) {
+  //    if (adminId == null || adminId.isEmpty()) {
+  //      return new ResponseEntity<>("inventoryId needed to get inventories.",
+  // HttpStatus.BAD_REQUEST);
+  //    }
+  //    try {
+  //
+  //      // check if this is the current admin already
+  //      List<Inventory> inventoryList = inventoryTableSqlHelper.select(inventoryId);
+  //
+  //      // grab the inventory object within the inventory list and check if it's current admin
+  //      String currentAdmin = inventoryList.get(0).getAdminId().toString();
+  //      String currentAdminName =
+  // usersTableSqlHelper.getUserWithUserId(currentAdmin).getUsername();
+  //
+  //      if (currentAdmin.equals(adminId)) {
+  //        return new ResponseEntity<>(
+  //            currentAdminName + " is already the admin for this inventory.\n",
+  //            HttpStatus.INTERNAL_SERVER_ERROR);
+  //      }
+  //
+  //      // check if you can update this admin for this inventory.
+  //      boolean updateSuccess = inventoryTableSqlHelper.updateAdmin(inventoryId, adminId);
+  //
+  //      // grab the new name of the admin to let the user know.
+  //      String newAdminName = usersTableSqlHelper.getUserWithUserId(adminId).getUsername();
+  //
+  //      if (updateSuccess) {
+  //        String returnString =
+  //            "Successfully changed the inventory's admin to: " + newAdminName + "\n";
+  //        return new ResponseEntity<>(returnString, HttpStatus.OK);
+  //      } else {
+  //        return new ResponseEntity<>(
+  //            "Unsuccessful inventory admin change.\n", HttpStatus.INTERNAL_SERVER_ERROR);
+  //      }
+  //
+  //    } catch (Exception e) {
+  //      System.out.println(e.getMessage());
+  //      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+  //    }
+  //  }
 }

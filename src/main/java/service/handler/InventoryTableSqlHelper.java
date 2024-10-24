@@ -1,10 +1,10 @@
 package service.handler;
 
 import java.util.List;
+import java.util.UUID;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import service.models.Inventory;
 
@@ -42,8 +42,13 @@ public class InventoryTableSqlHelper {
    */
   public List<Inventory> select() {
     String sql = "select * from Inventories";
-    RowMapper<Inventory> rowMapper = new InventoryRowMapper();
-    return jdbcTemplate.query(sql, rowMapper);
+    return jdbcTemplate.query(
+        sql,
+        (rs, rowNum) ->
+            Inventory.builder()
+                .inventoryId(UUID.fromString(rs.getString("inventory_id")))
+                .inventoryName(rs.getString("inventory_name"))
+                .build());
   }
 
   /**
@@ -55,8 +60,13 @@ public class InventoryTableSqlHelper {
    */
   public List<Inventory> select(String inventoryId) {
     String sql = "select * from Inventories where inventory_id = " + "'" + inventoryId + "'";
-    RowMapper<Inventory> rowMapper = new InventoryRowMapper();
-    return jdbcTemplate.query(sql, rowMapper);
+    return jdbcTemplate.query(
+        sql,
+        (rs, rowNum) ->
+            Inventory.builder()
+                .inventoryId(UUID.fromString(rs.getString("inventory_id")))
+                .inventoryName(rs.getString("inventory_name"))
+                .build());
   }
 
   /**

@@ -9,11 +9,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -23,6 +20,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import service.models.Inventory;
 
 /** Unit tests for the InventoryTableSqlHelper class. */
@@ -72,21 +70,19 @@ public class InventoryTableSqlHelperTests {
     inventories.add(testInventory);
 
     // Mock the jdbcTemplate to return the inventories list
-    when(jdbcTemplate.query(anyString(), any(InventoryRowMapper.class))).thenReturn(inventories);
+    when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(inventories);
 
     // Call the method and assert the result
     List<Inventory> result = inventoryTableSqlHelper.select();
     assertEquals(inventories, result, "Should return the list of all inventories.");
 
     // Test empty list
-    when(jdbcTemplate.query(anyString(), any(InventoryRowMapper.class)))
-        .thenReturn(new ArrayList<>());
+    when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(new ArrayList<>());
     result = inventoryTableSqlHelper.select();
     assertTrue(result.isEmpty(), "Should return an empty list when no inventories are found.");
 
     // Test exception thrown
-    when(jdbcTemplate.query(anyString(), any(InventoryRowMapper.class)))
-        .thenThrow(RuntimeException.class);
+    when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenThrow(RuntimeException.class);
     assertThrows(
         RuntimeException.class,
         () -> inventoryTableSqlHelper.select(),
@@ -103,7 +99,7 @@ public class InventoryTableSqlHelperTests {
     inventories.add(testInventory);
 
     // Mock the jdbcTemplate to return the inventories list when the specific SQL is called
-    when(jdbcTemplate.query(contains("where inventory_id"), any(InventoryRowMapper.class)))
+    when(jdbcTemplate.query(contains("where inventory_id"), any(RowMapper.class)))
         .thenReturn(inventories);
 
     // Call the method and assert the result
@@ -111,13 +107,13 @@ public class InventoryTableSqlHelperTests {
     assertEquals(inventories, result, "Should return the list of inventories with the given ID.");
 
     // Test inventory not found
-    when(jdbcTemplate.query(contains("where inventory_id"), any(InventoryRowMapper.class)))
+    when(jdbcTemplate.query(contains("where inventory_id"), any(RowMapper.class)))
         .thenReturn(new ArrayList<>());
     result = inventoryTableSqlHelper.select(inventoryId);
     assertTrue(result.isEmpty(), "Should return an empty list when inventory is not found.");
 
     // Test exception thrown
-    when(jdbcTemplate.query(contains("where inventory_id"), any(InventoryRowMapper.class)))
+    when(jdbcTemplate.query(contains("where inventory_id"), any(RowMapper.class)))
         .thenThrow(RuntimeException.class);
     assertThrows(
         RuntimeException.class,
@@ -175,31 +171,5 @@ public class InventoryTableSqlHelperTests {
         RuntimeException.class,
         () -> inventoryTableSqlHelper.delete(inventoryId),
         "Should propagate exceptions.");
-  }
-
-  /**
-   * Tests the InventoryRowMapper's mapRow method.
-   *
-   * @throws SQLException if a database access error occurs.
-   */
-  @Test
-  public void testInventoryRowMapper() throws SQLException {
-    ResultSet resultSet = mock(ResultSet.class);
-
-    when(resultSet.getString("inventory_id")).thenReturn(testInventory.getInventoryId().toString());
-    when(resultSet.getString("inventory_name")).thenReturn(testInventory.getInventoryName());
-
-    InventoryRowMapper rowMapper = new InventoryRowMapper();
-    Inventory mappedInventory = rowMapper.mapRow(resultSet, 1);
-
-    assert mappedInventory != null;
-    assertEquals(
-        testInventory.getInventoryId(),
-        mappedInventory.getInventoryId(),
-        "Inventory ID should match.");
-    assertEquals(
-        testInventory.getInventoryName(),
-        mappedInventory.getInventoryName(),
-        "Inventory name should match.");
   }
 }

@@ -1,0 +1,5 @@
+runtime: java17
+
+entrypoint: java -jar target/Service-0.0.1-SNAPSHOT.jar
+
+instance_class: F1

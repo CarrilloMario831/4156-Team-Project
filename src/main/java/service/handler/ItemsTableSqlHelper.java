@@ -60,7 +60,7 @@ public class ItemsTableSqlHelper {
             item.getPrice(),
             item.getNextRestockDateTime(),
             item.getInventoryId() != null ? item.getInventoryId().toString() : null);
-    System.out.println(rows + "row/s inserted.");
+    //    System.out.println(rows + "row/s inserted.");
     return rows == 1;
   }
 
@@ -193,7 +193,8 @@ public class ItemsTableSqlHelper {
    * @return Return true or false whether the update was done.
    */
   public boolean updateItemReservation(String itemId, long reservationDurationInMillis) {
-    String sql = "update Items set reservation_duration = ? where item_id = ?";
+    String sql =
+        "update Items set reservation_duration = ?, reserved_status = true where item_id" + " = ?";
     int rows = jdbcTemplate.update(sql, reservationDurationInMillis, itemId);
     System.out.println(rows + " row/s updated.");
     return rows == 1;

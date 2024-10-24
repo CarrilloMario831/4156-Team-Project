@@ -13,11 +13,15 @@ import service.models.Inventory;
 import service.models.User;
 import service.util.UserRoles;
 
-/** Sample JavaDoc to pass checkstyle. */
+/** The type Service application. */
 @SpringBootApplication(scanBasePackages = {"service", "service.handler"})
 public class ServiceApplication {
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * The entry point of application.
+   *
+   * @param args the input arguments
+   */
   public static void main(String[] args) {
     //        SpringApplication.run(ServiceApplication.class, args);
     ApplicationContext context = SpringApplication.run(ServiceApplication.class, args);

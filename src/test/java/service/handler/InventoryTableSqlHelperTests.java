@@ -43,10 +43,7 @@ public class InventoryTableSqlHelperTests {
         Inventory.builder()
             .inventoryId(UUID.fromString("bf456378-a8b3-40b6-b1a1-654bc9de5f02"))
             .inventoryName("Test Inventory")
-            //            .adminId(UUID.fromString("9cdd2cec-d003-4964-b55c-cb336c51b809"))
             .build();
-
-    //    userKey = testInventory.getAdminId().toString();
   }
 
   /** Tests the insert method of InventoryTableSqlHelper. */
@@ -155,33 +152,6 @@ public class InventoryTableSqlHelperTests {
         "Should propagate exceptions.");
   }
 
-  /** Tests updating the admin ID of an inventory. */
-  //  @Test
-  //  public void testUpdateAdmin() {
-  //    String inventoryId = testInventory.getInventoryId().toString();
-  //    String newAdminId = UUID.randomUUID().toString();
-  //
-  //    // Test successful update
-  //    when(jdbcTemplate.update(anyString(), eq(newAdminId), eq(inventoryId))).thenReturn(1);
-  //    assertTrue(
-  //        inventoryTableSqlHelper.updateAdmin(inventoryId, newAdminId),
-  //        "Update should return true when one or more rows are affected.");
-  //
-  //    // Test unsuccessful update
-  //    when(jdbcTemplate.update(anyString(), eq(newAdminId), eq(inventoryId))).thenReturn(0);
-  //    assertFalse(
-  //        inventoryTableSqlHelper.updateAdmin(inventoryId, newAdminId),
-  //        "Update should return false when no rows are affected.");
-  //
-  //    // Test exception thrown
-  //    when(jdbcTemplate.update(anyString(), eq(newAdminId), eq(inventoryId)))
-  //        .thenThrow(RuntimeException.class);
-  //    assertThrows(
-  //        RuntimeException.class,
-  //        () -> inventoryTableSqlHelper.updateAdmin(inventoryId, newAdminId),
-  //        "Should propagate exceptions.");
-  //  }
-
   /** Tests deleting an inventory. */
   @Test
   public void testDelete() {
@@ -218,11 +188,11 @@ public class InventoryTableSqlHelperTests {
 
     when(resultSet.getString("inventory_id")).thenReturn(testInventory.getInventoryId().toString());
     when(resultSet.getString("inventory_name")).thenReturn(testInventory.getInventoryName());
-    //    when(resultSet.getString("user_id")).thenReturn(testInventory.getAdminId().toString());
 
     InventoryRowMapper rowMapper = new InventoryRowMapper();
     Inventory mappedInventory = rowMapper.mapRow(resultSet, 1);
 
+    assert mappedInventory != null;
     assertEquals(
         testInventory.getInventoryId(),
         mappedInventory.getInventoryId(),
@@ -231,7 +201,5 @@ public class InventoryTableSqlHelperTests {
         testInventory.getInventoryName(),
         mappedInventory.getInventoryName(),
         "Inventory name should match.");
-    //    assertEquals(
-    //        testInventory.getAdminId(), mappedInventory.getAdminId(), "Admin ID should match.");
   }
 }

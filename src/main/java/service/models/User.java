@@ -10,7 +10,7 @@ import lombok.NonNull;
 import lombok.Setter;
 import service.util.UserRoles;
 
-/** Sample javadoc for User mini class. */
+/** The type User. */
 @Getter
 @Setter
 @NonNull

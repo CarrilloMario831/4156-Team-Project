@@ -24,9 +24,15 @@ import service.util.UserRoles;
 @RequestMapping("/api/users")
 public class UserRouteController {
 
+  /** The Users table sql helper. */
   @Autowired public UsersTableSqlHelper usersTableSqlHelper;
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets username.
+   *
+   * @param userId the user id
+   * @return the username
+   */
   @GetMapping(value = "/getUsername", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getUsername(@RequestParam(value = "userId") String userId) {
     if (userId == null || userId.isEmpty()) {
@@ -49,7 +55,12 @@ public class UserRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets role.
+   *
+   * @param userId the user id
+   * @return the role
+   */
   @GetMapping(value = "/getRole", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getRole(@RequestParam(value = "userId") String userId) {
     if (userId == null || userId.isEmpty()) {
@@ -74,7 +85,12 @@ public class UserRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Gets last access.
+   *
+   * @param userId the user id
+   * @return the last access
+   */
   @GetMapping(value = "/getLastAccess", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> getLastAccess(@RequestParam(value = "userId") String userId) {
     if (userId == null || userId.isEmpty()) {
@@ -100,7 +116,12 @@ public class UserRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Create user response entity.
+   *
+   * @param username the username
+   * @return the response entity
+   */
   @PostMapping(value = "/createUser", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> createUser(@RequestParam(value = "username") String username) {
     if (username == null || username.isEmpty()) {
@@ -128,7 +149,14 @@ public class UserRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Update username response entity.
+   *
+   * @param userId the user id
+   * @param currentUsername the current username
+   * @param newUsername the new username
+   * @return the response entity
+   */
   @PatchMapping(value = "/updateUsername", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> updateUsername(
       @RequestParam(value = "userId") String userId,
@@ -196,7 +224,13 @@ public class UserRouteController {
     }
   }
 
-  /** Sample javadoc to pass checkstyle. */
+  /**
+   * Update role response entity.
+   *
+   * @param userId the user id
+   * @param newRole the new role
+   * @return the response entity
+   */
   @PatchMapping(value = "/updateRole", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<?> updateRole(
       @RequestParam(value = "userId") String userId,

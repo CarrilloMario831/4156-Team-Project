@@ -32,7 +32,7 @@ public class ItemsRouteControllerTests {
 
   private Item testItem;
 
-  /** Sample javadoc to pass checkstyle. */
+  /** Sets . */
   @BeforeEach
   public void setup() {
     testItem =
@@ -51,6 +51,7 @@ public class ItemsRouteControllerTests {
             .build();
   }
 
+  /** Test get item name. */
   @Test
   public void testGetItemName() {
     // Test empty and null itemId
@@ -96,6 +97,7 @@ public class ItemsRouteControllerTests {
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getItemNameResponse.getStatusCode());
   }
 
+  /** Test update item name. */
   @Test
   public void testUpdateItemName() {
     String testItemName = testItem.getItemName();

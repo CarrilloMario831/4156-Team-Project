@@ -24,7 +24,6 @@ public class InventoryRowMapper extends BaseRowMapper<Inventory> {
     return Inventory.builder()
         .inventoryId(UUID.fromString(rs.getString("inventory_id")))
         .inventoryName(rs.getString("inventory_name"))
-        //        .adminId(UUID.fromString(rs.getString("user_id")))
         .build();
   }
 }

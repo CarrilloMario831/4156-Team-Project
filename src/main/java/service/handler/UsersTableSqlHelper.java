@@ -26,6 +26,8 @@ public class UsersTableSqlHelper {
 
   /**
    * This method allows for Spring Boot to auto-manage the beans needed to connect to the SQL DB.
+   *
+   * @param jdbcTemplate the jdbc template
    */
   @Autowired
   public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {
@@ -37,21 +39,17 @@ public class UsersTableSqlHelper {
    * into the DB.
    *
    * @param user User object that you'd like to store within DB.
+   * @return the boolean
    */
   public boolean insertUser(User user) {
-    String sql =
-        "insert into Users ("
-            + "user_id, username, role, "
-            + "last_access, inventory_access) "
-            + "values (?,?,?,?,?)";
+    String sql = "insert into Users (user_id, username, role, last_access) values (?,?,?,?)";
     int rows =
         jdbcTemplate.update(
             sql,
             user.getUserId().toString(),
             user.getUsername(),
             user.getRole().toString(),
-            user.getLastAccess(),
-            user.getInventoryAccess() != null ? user.getInventoryAccess().toString() : null);
+            user.getLastAccess());
     System.out.println(rows + "row/s inserted.");
     return rows == 1;
   }
@@ -59,6 +57,8 @@ public class UsersTableSqlHelper {
   /**
    * This is a test select method for providing insight into what it looks like to read users from
    * the DB.
+   *
+   * @return the all users
    */
   public List<User> getAllUsers() {
     String sql = "select * from Users";
@@ -70,6 +70,7 @@ public class UsersTableSqlHelper {
    * the DB.
    *
    * @param userId Unique identifier for the user you'd like to search for in the DB.
+   * @return the user with user id
    */
   public User getUserWithUserId(String userId) {
     String sql = "select * from Users where user_id = " + "'" + userId + "'";
@@ -77,7 +78,6 @@ public class UsersTableSqlHelper {
     if (results.isEmpty()) {
       return null;
     } else if (results.size() > 1) {
-      // throw error multiple users of the same userID
       throw new IllegalStateException("More than one user found for user id: " + userId);
     } else {
       return results.get(0);
@@ -89,6 +89,7 @@ public class UsersTableSqlHelper {
    * the DB.
    *
    * @param username Unique identifier for the user you'd like to search for in the DB.
+   * @return the user with username
    */
   public User getUserWithUsername(String username) {
     String sql = "select * from Users where username = " + "'" + username + "'";
@@ -108,7 +109,7 @@ public class UsersTableSqlHelper {
    *
    * @param userId Unique identifier for the user within the DB.
    * @param username username of user.
-   * @return boolean
+   * @return boolean boolean
    */
   public boolean updateUsername(String userId, String username) {
     String sql = "update Users set username = ? where user_id = ?";
@@ -123,7 +124,7 @@ public class UsersTableSqlHelper {
    *
    * @param userId Unique identifier for the user within the DB.
    * @param userRole role of user.
-   * @return boolean
+   * @return boolean boolean
    */
   public boolean updateRole(String userId, String userRole) {
     String sql = "update Users set role = ? where user_id = ?";
@@ -138,26 +139,11 @@ public class UsersTableSqlHelper {
    *
    * @param userId Unique identifier for the user within the DB.
    * @param lastAccess lastAccess of user.
-   * @return boolean
+   * @return boolean boolean
    */
   public boolean updateLastAccess(String userId, LocalDateTime lastAccess) {
     String sql = "update Users set last_access = ? where user_id = ?";
     int rows = jdbcTemplate.update(sql, lastAccess, userId);
-    System.out.println(rows + " row/s updated");
-    return rows == 1;
-  }
-
-  /**
-   * This method will change the inventory access column for a user and returns a boolean
-   * representing the success of the query.
-   *
-   * @param userId Unique identifier for the user within the DB.
-   * @param inventoryAccess lastAccess of user.
-   * @return boolean
-   */
-  public boolean updateInventoryAccess(String userId, String inventoryAccess) {
-    String sql = "update Users set inventory_access = ? where user_id = ?";
-    int rows = jdbcTemplate.update(sql, inventoryAccess, userId);
     System.out.println(rows + " row/s updated");
     return rows == 1;
   }
@@ -182,10 +168,6 @@ public class UsersTableSqlHelper {
             .username(rs.getString("username"))
             .role(UserRoles.valueOf(rs.getString("role")))
             .lastAccess(LocalDateTime.parse(rs.getString("last_access"), FORMATTER))
-            .inventoryAccess(
-                rs.getString("inventory_access") != null
-                    ? UUID.fromString(rs.getString("inventory_access"))
-                    : null)
             .build();
   }
 }

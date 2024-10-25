@@ -18,6 +18,4 @@ public class CreateInventoryRequest {
   @NonNull @Setter private String inventoryName;
 
   private Map<UUID, Item> items;
-
-  @NonNull @Setter private UUID adminId;
 }

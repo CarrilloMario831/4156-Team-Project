@@ -33,7 +33,7 @@ public class UserRouteControllerTests {
 
   private User testUser;
 
-  /** Sample javadoc to pass checkstyle. */
+  /** Sets . */
   @BeforeEach
   public void setup() {
     testUser =
@@ -45,6 +45,7 @@ public class UserRouteControllerTests {
             .build();
   }
 
+  /** Test get username route. */
   @Test
   public void testGetUsernameRoute() {
     String expectedUsername = testUser.getUsername();
@@ -96,6 +97,7 @@ public class UserRouteControllerTests {
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getUsernameResponse.getStatusCode());
   }
 
+  /** Test get role. */
   @Test
   public void testGetRole() {
     UserRoles expectedRole = testUser.getRole();
@@ -137,6 +139,7 @@ public class UserRouteControllerTests {
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getRoleResponse.getStatusCode());
   }
 
+  /** Test get last access. */
   @Test
   public void testGetLastAccess() {
     String expectedLastAccess = testUser.getLastAccess().format(FORMATTER);
@@ -180,6 +183,7 @@ public class UserRouteControllerTests {
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getLastAccessResponse.getStatusCode());
   }
 
+  /** Test create user. */
   @Test
   public void testCreateUser() {
     String testUsername = "user1";
@@ -214,6 +218,7 @@ public class UserRouteControllerTests {
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, createUserResponse.getStatusCode());
   }
 
+  /** Test update username. */
   @Test
   public void testUpdateUsername() {
     // Test null and empty fields
@@ -323,6 +328,7 @@ public class UserRouteControllerTests {
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateUsernameResponse.getStatusCode());
   }
 
+  /** Update role. */
   @Test
   public void updateRole() {
 

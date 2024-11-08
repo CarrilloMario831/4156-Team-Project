@@ -473,10 +473,11 @@ public class ItemsRouteController {
       @RequestParam(value = "itemId") String itemId,
       @RequestParam(value = "newQuantity") int newQuantity) {
     if (itemId == null || itemId.isEmpty()) {
-      return new ResponseEntity<>("itemId needed to udpate quantity.", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("itemId needed to update quantity.", HttpStatus.BAD_REQUEST);
     }
     if (newQuantity < 0) {
-      return new ResponseEntity<>("Quantity cannot be a negative number.", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          "Item quantity cannot be a negative number.", HttpStatus.BAD_REQUEST);
     }
     try {
       List<Item> itemList = itemsTableSqlHelper.getItem(itemId);
@@ -492,14 +493,15 @@ public class ItemsRouteController {
       int oldQuantity = item.getQuantity();
       if (oldQuantity == newQuantity) {
         return new ResponseEntity<>(
-            "Item \"" + item.getItemName() + "\" already has a quantity of " + oldQuantity,
+            "Item \"" + item.getItemName() + "\" already has a quantity of: " + oldQuantity,
             HttpStatus.CONFLICT);
       }
       boolean isSuccess = itemsTableSqlHelper.updateItemQuantity(itemId, newQuantity);
 
       if (!isSuccess) {
         return new ResponseEntity<>(
-            "Could not update quantity for item: " + itemId, HttpStatus.INTERNAL_SERVER_ERROR);
+            "Could not update quantity for item: \"" + item.getItemName() + "\"",
+            HttpStatus.INTERNAL_SERVER_ERROR);
       }
 
       return new ResponseEntity<>(
@@ -592,7 +594,7 @@ public class ItemsRouteController {
       @RequestParam(value = "itemId") String itemId,
       @RequestParam(value = "newPrice") double newPrice) {
     if (itemId == null || itemId.isEmpty()) {
-      return new ResponseEntity<>("itemId needed to update quantity.", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("itemId needed to update price.", HttpStatus.BAD_REQUEST);
     }
     if (newPrice < 0) {
       return new ResponseEntity<>("Item price cannot be negative.", HttpStatus.BAD_REQUEST);

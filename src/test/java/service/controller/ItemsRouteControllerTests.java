@@ -2,6 +2,7 @@ package service.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyDouble;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -451,10 +452,10 @@ public class ItemsRouteControllerTests {
   public void testUpdateItemPrice() {
     // Test null or invalid field
     ResponseEntity<String> updateItemPriceResponse = itemsRouteController.updateItemPrice(null, -1);
-    assertEquals("itemId needed to update quantity.", updateItemPriceResponse.getBody());
+    assertEquals("itemId needed to update price.", updateItemPriceResponse.getBody());
     assertEquals(HttpStatus.BAD_REQUEST, updateItemPriceResponse.getStatusCode());
     updateItemPriceResponse = itemsRouteController.updateItemPrice("", -1);
-    assertEquals("itemId needed to update quantity.", updateItemPriceResponse.getBody());
+    assertEquals("itemId needed to update price.", updateItemPriceResponse.getBody());
     assertEquals(HttpStatus.BAD_REQUEST, updateItemPriceResponse.getStatusCode());
     updateItemPriceResponse =
         itemsRouteController.updateItemPrice(testItem.getItemId().toString(), -1);
@@ -528,5 +529,94 @@ public class ItemsRouteControllerTests {
     updateItemPriceResponse =
         itemsRouteController.updateItemPrice(testItem.getItemId().toString(), 1);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemPriceResponse.getStatusCode());
+  }
+
+  @Test
+  public void testUpdateItemQuantity() {
+    // Test null or invalid field
+    ResponseEntity<String> updateItemQuantityResponse =
+        itemsRouteController.updateItemQuantity(null, -1);
+    assertEquals("itemId needed to update quantity.", updateItemQuantityResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemQuantityResponse.getStatusCode());
+    updateItemQuantityResponse = itemsRouteController.updateItemQuantity("", -1);
+    assertEquals("itemId needed to update quantity.", updateItemQuantityResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemQuantityResponse.getStatusCode());
+    updateItemQuantityResponse =
+        itemsRouteController.updateItemQuantity(testItem.getItemId().toString(), -1);
+    assertEquals(
+        "Item quantity cannot be a negative number.", updateItemQuantityResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemQuantityResponse.getStatusCode());
+
+    // Test when the item is not found
+    String testItemId = String.valueOf(testItem.getItemId());
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
+    updateItemQuantityResponse =
+        itemsRouteController.updateItemQuantity(testItem.getItemId().toString(), 1);
+    assertEquals(
+        "Item with itemId: " + testItemId + " was not found", updateItemQuantityResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateItemQuantityResponse.getStatusCode());
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(new ArrayList<>());
+    updateItemQuantityResponse =
+        itemsRouteController.updateItemQuantity(testItem.getItemId().toString(), 1);
+    assertEquals(
+        "Item with itemId: " + testItemId + " was not found", updateItemQuantityResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateItemQuantityResponse.getStatusCode());
+
+    // Test a list with null item
+    List<Item> testItems = new ArrayList<>();
+    testItems.add(null);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    updateItemQuantityResponse =
+        itemsRouteController.updateItemQuantity(testItem.getItemId().toString(), 1);
+    assertEquals("No item found for itemID: " + testItemId, updateItemQuantityResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateItemQuantityResponse.getStatusCode());
+
+    // Test matching price
+    testItems.clear();
+    testItems.add(testItem);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    updateItemQuantityResponse =
+        itemsRouteController.updateItemQuantity(
+            testItem.getItemId().toString(), testItem.getQuantity());
+    assertEquals(
+        "Item \""
+            + testItem.getItemName()
+            + "\" already has a quantity of: "
+            + testItem.getQuantity(),
+        updateItemQuantityResponse.getBody());
+    assertEquals(HttpStatus.CONFLICT, updateItemQuantityResponse.getStatusCode());
+
+    // Test unsuccessful update
+    when(itemsTableSqlHelper.updateItemPrice(anyString(), anyDouble())).thenReturn(false);
+    updateItemQuantityResponse =
+        itemsRouteController.updateItemQuantity(
+            testItem.getItemId().toString(), testItem.getQuantity() + 1);
+    assertEquals(
+        "Could not update quantity for item: \"" + testItem.getItemName() + "\"",
+        updateItemQuantityResponse.getBody());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemQuantityResponse.getStatusCode());
+
+    // Test successful update
+    when(itemsTableSqlHelper.updateItemQuantity(anyString(), anyInt())).thenReturn(true);
+    updateItemQuantityResponse =
+        itemsRouteController.updateItemQuantity(
+            testItem.getItemId().toString(), testItem.getQuantity() + 1);
+    assertEquals(
+        "Item: "
+            + testItem.getItemId()
+            + "\nName: "
+            + testItem.getItemName()
+            + "\nQuantity was successfully updated. \n"
+            + testItem.getQuantity()
+            + " --> "
+            + (testItem.getQuantity() + 1),
+        updateItemQuantityResponse.getBody());
+    assertEquals(HttpStatus.OK, updateItemQuantityResponse.getStatusCode());
+
+    // Test internal server error
+    when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
+    updateItemQuantityResponse =
+        itemsRouteController.updateItemQuantity(testItem.getItemId().toString(), 1);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemQuantityResponse.getStatusCode());
   }
 }

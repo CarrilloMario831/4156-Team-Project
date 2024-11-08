@@ -619,4 +619,73 @@ public class ItemsRouteControllerTests {
         itemsRouteController.updateItemQuantity(testItem.getItemId().toString(), 1);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemQuantityResponse.getStatusCode());
   }
+
+  @Test
+  public void testDeleteItem() {
+    // Test null or invalid field
+    ResponseEntity<String> deleteItemResponse = itemsRouteController.deleteItem(null);
+    assertEquals("itemId needed to delete item.", deleteItemResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, deleteItemResponse.getStatusCode());
+    deleteItemResponse = itemsRouteController.deleteItem("");
+    assertEquals("itemId needed to delete item.", deleteItemResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, deleteItemResponse.getStatusCode());
+
+    // Test when the item is not found
+    String testItemId = String.valueOf(testItem.getItemId());
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
+    deleteItemResponse = itemsRouteController.deleteItem(testItem.getItemId().toString());
+    assertEquals(
+        "Item with itemId: " + testItemId + " was not found.", deleteItemResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, deleteItemResponse.getStatusCode());
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(new ArrayList<>());
+    deleteItemResponse = itemsRouteController.deleteItem(testItem.getItemId().toString());
+    assertEquals(
+        "Item with itemId: " + testItemId + " was not found.", deleteItemResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, deleteItemResponse.getStatusCode());
+
+    // Test a list with null item
+    List<Item> testItems = new ArrayList<>();
+    testItems.add(null);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    deleteItemResponse = itemsRouteController.deleteItem(testItem.getItemId().toString());
+    assertEquals("No item found for itemID: " + testItemId, deleteItemResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, deleteItemResponse.getStatusCode());
+
+    // Test a list with multiple items
+    testItems.clear();
+    testItems.add(testItem);
+    testItems.add(null);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    deleteItemResponse = itemsRouteController.deleteItem(testItem.getItemId().toString());
+    assertEquals(
+        "There are multiple items with itemID: " + testItemId, deleteItemResponse.getBody());
+    assertEquals(HttpStatus.CONFLICT, deleteItemResponse.getStatusCode());
+
+    // Test unsuccessful update
+    testItems.clear();
+    testItems.add(testItem);
+    when(itemsTableSqlHelper.updateItemPrice(anyString(), anyDouble())).thenReturn(false);
+    deleteItemResponse = itemsRouteController.deleteItem(testItem.getItemId().toString());
+    assertEquals(
+        "Item with itemID: " + testItem.getItemId() + " could not be deleted.",
+        deleteItemResponse.getBody());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, deleteItemResponse.getStatusCode());
+
+    // Test successful update
+    when(itemsTableSqlHelper.deleteItem(anyString())).thenReturn(true);
+    deleteItemResponse = itemsRouteController.deleteItem(testItem.getItemId().toString());
+    assertEquals(
+        "Item: "
+            + testItem.getItemId()
+            + "\n\""
+            + testItem.getItemName()
+            + "\"was successfully deleted.",
+        deleteItemResponse.getBody());
+    assertEquals(HttpStatus.OK, deleteItemResponse.getStatusCode());
+
+    // Test internal server error
+    when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
+    deleteItemResponse = itemsRouteController.deleteItem(testItem.getItemId().toString());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, deleteItemResponse.getStatusCode());
+  }
 }

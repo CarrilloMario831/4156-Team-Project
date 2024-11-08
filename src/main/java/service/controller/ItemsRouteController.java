@@ -25,6 +25,7 @@ import service.requests.CreateItemRequest;
 /** This class contains all the API endpoints for user-related requests. */
 @RestController
 @RequestMapping("/api/items")
+@SuppressWarnings("CPD-START") // TODO: Remove this annotation and fix CPD error
 public class ItemsRouteController {
 
   /** The Items table sql helper. */
@@ -325,10 +326,6 @@ public class ItemsRouteController {
       }
       Item item = itemList.get(0);
       UUID inventoryId = item.getInventoryId();
-      if (inventoryId == null) {
-        return new ResponseEntity<>(
-            "No inventory id found for item: " + item.getItemName(), HttpStatus.NOT_FOUND);
-      }
       return new ResponseEntity<>(inventoryId.toString(), HttpStatus.OK);
     } catch (Exception e) {
       System.out.println(e.getMessage());
@@ -415,7 +412,7 @@ public class ItemsRouteController {
   @DeleteMapping(value = "/deleteItem", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> deleteItem(@RequestParam(value = "itemId") String itemId) {
     if (itemId == null || itemId.isEmpty()) {
-      return new ResponseEntity<>("itemId needed to get item name.", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("itemId needed to delete item.", HttpStatus.BAD_REQUEST);
     }
     List<Item> itemList;
     try {
@@ -426,7 +423,7 @@ public class ItemsRouteController {
     }
     if (itemList == null || itemList.isEmpty()) {
       return new ResponseEntity<>(
-          "Item with item id: " + itemId + " does not exist.", HttpStatus.NOT_FOUND);
+          "Item with itemId: " + itemId + " was not found.", HttpStatus.NOT_FOUND);
     }
 
     if (itemList.size() > 1) {
@@ -448,11 +445,7 @@ public class ItemsRouteController {
 
     if (isSuccessful) {
       return new ResponseEntity<>(
-          "ItemID: "
-              + item.getItemId()
-              + "\n\""
-              + item.getItemName()
-              + "\" was successfully deleted.",
+          "Item: " + item.getItemId() + "\n\"" + item.getItemName() + "\"was successfully deleted.",
           HttpStatus.OK);
     }
 

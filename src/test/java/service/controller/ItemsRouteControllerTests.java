@@ -1,6 +1,7 @@
 package service.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
@@ -444,5 +445,88 @@ public class ItemsRouteControllerTests {
     updateItemLocationResponse =
         itemsRouteController.updateItemLocation(testItem.getItemId().toString(), "newLocation");
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemLocationResponse.getStatusCode());
+  }
+
+  @Test
+  public void testUpdateItemPrice() {
+    // Test null or invalid field
+    ResponseEntity<String> updateItemPriceResponse = itemsRouteController.updateItemPrice(null, -1);
+    assertEquals("itemId needed to update quantity.", updateItemPriceResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemPriceResponse.getStatusCode());
+    updateItemPriceResponse = itemsRouteController.updateItemPrice("", -1);
+    assertEquals("itemId needed to update quantity.", updateItemPriceResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemPriceResponse.getStatusCode());
+    updateItemPriceResponse =
+        itemsRouteController.updateItemPrice(testItem.getItemId().toString(), -1);
+    assertEquals("Item price cannot be negative.", updateItemPriceResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemPriceResponse.getStatusCode());
+
+    // Test when the item is not found
+    String testItemId = String.valueOf(testItem.getItemId());
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
+    updateItemPriceResponse =
+        itemsRouteController.updateItemPrice(testItem.getItemId().toString(), 1);
+    assertEquals(
+        "Item with itemId: " + testItemId + " was not found", updateItemPriceResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateItemPriceResponse.getStatusCode());
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(new ArrayList<>());
+    updateItemPriceResponse =
+        itemsRouteController.updateItemPrice(testItem.getItemId().toString(), 1);
+    assertEquals(
+        "Item with itemId: " + testItemId + " was not found", updateItemPriceResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateItemPriceResponse.getStatusCode());
+
+    // Test a list with null item
+    List<Item> testItems = new ArrayList<>();
+    testItems.add(null);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    updateItemPriceResponse =
+        itemsRouteController.updateItemPrice(testItem.getItemId().toString(), 1);
+    assertEquals("No item found for itemID: " + testItemId, updateItemPriceResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateItemPriceResponse.getStatusCode());
+
+    // Test matching price
+    testItems.clear();
+    testItems.add(testItem);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    updateItemPriceResponse =
+        itemsRouteController.updateItemPrice(testItem.getItemId().toString(), testItem.getPrice());
+    assertEquals(
+        "Item \"" + testItem.getItemName() + "\" already has a price of: " + testItem.getPrice(),
+        updateItemPriceResponse.getBody());
+    assertEquals(HttpStatus.CONFLICT, updateItemPriceResponse.getStatusCode());
+
+    // Test unsuccessful update
+    when(itemsTableSqlHelper.updateItemPrice(anyString(), anyDouble())).thenReturn(false);
+    updateItemPriceResponse =
+        itemsRouteController.updateItemPrice(
+            testItem.getItemId().toString(), testItem.getPrice() + 1);
+    assertEquals(
+        "Could not update price for item: \"" + testItem.getItemName() + "\"",
+        updateItemPriceResponse.getBody());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemPriceResponse.getStatusCode());
+
+    // Test successful update
+    when(itemsTableSqlHelper.updateItemPrice(anyString(), anyDouble())).thenReturn(true);
+    updateItemPriceResponse =
+        itemsRouteController.updateItemPrice(
+            testItem.getItemId().toString(), testItem.getPrice() + 1);
+    assertEquals(
+        "Item: "
+            + testItem.getItemId()
+            + "\nName: "
+            + testItem.getItemName()
+            + "\nPrice was successfully updated. \n"
+            + testItem.getPrice()
+            + " --> "
+            + (testItem.getPrice() + 1),
+        updateItemPriceResponse.getBody());
+    assertEquals(HttpStatus.OK, updateItemPriceResponse.getStatusCode());
+
+    // Test internal server error
+    when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
+    updateItemPriceResponse =
+        itemsRouteController.updateItemPrice(testItem.getItemId().toString(), 1);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemPriceResponse.getStatusCode());
   }
 }

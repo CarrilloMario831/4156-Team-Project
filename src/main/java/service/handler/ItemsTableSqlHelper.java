@@ -62,7 +62,7 @@ public class ItemsTableSqlHelper {
             item.getLocation(),
             item.getPrice(),
             item.getNextRestockDateTime(),
-            item.getInventoryId() != null ? item.getInventoryId().toString() : null);
+            item.getInventoryId().toString());
     return rows == 1;
   }
 
@@ -94,6 +94,7 @@ public class ItemsTableSqlHelper {
   private Item getItemFromTable(ResultSet rs) throws SQLException {
     return Item.builder()
         .itemId(UUID.fromString(rs.getString("item_id")))
+        .inventoryId(UUID.fromString(rs.getString("inventory_id")))
         .timeOfAddition(LocalDateTime.parse(rs.getString("time_of_addition"), FORMATTER))
         .itemName(rs.getString("item_name"))
         .quantity(rs.getInt("quantity"))
@@ -174,7 +175,7 @@ public class ItemsTableSqlHelper {
   }
 
   /**
-   * pass checkstyle. @param itemId the item id
+   * Update item name boolean.
    *
    * @param itemId the item id
    * @param newItemName the new item name
@@ -183,6 +184,20 @@ public class ItemsTableSqlHelper {
   public boolean updateItemName(String itemId, String newItemName) {
     String sql = "update Items set item_name = ? where item_id = ?";
     int rows = jdbcTemplate.update(sql, newItemName, itemId);
+    System.out.println(rows + " row/s updated");
+    return rows == 1;
+  }
+
+  /**
+   * Update inventory id boolean.
+   *
+   * @param itemId the item id
+   * @param inventoryId the inventory id
+   * @return the boolean
+   */
+  public boolean updateInventoryId(String itemId, String inventoryId) {
+    String sql = "update Items set inventory_id = ? where item_id = ?";
+    int rows = jdbcTemplate.update(sql, inventoryId, itemId);
     System.out.println(rows + " row/s updated");
     return rows == 1;
   }

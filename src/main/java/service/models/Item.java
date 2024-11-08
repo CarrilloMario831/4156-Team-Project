@@ -21,7 +21,7 @@ public class Item {
 
   @NonNull private String location;
 
-  @Setter private UUID inventoryId;
+  @NonNull private UUID inventoryId;
 
   private int quantity;
 

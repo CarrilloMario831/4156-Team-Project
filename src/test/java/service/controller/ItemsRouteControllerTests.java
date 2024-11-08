@@ -248,17 +248,15 @@ public class ItemsRouteControllerTests {
   /** Test the updateItemReservation endpoint. */
   @Test
   public void testUpdateItemReservation() {
+    int oneDayMillis = 24 * 60 * 60 * 1000;
 
     // Test with null or empty itemId
     ResponseEntity<String> updateItemReservationResponse =
-        itemsRouteController.updateItemReservation(null, 86400000); // 24
-    // hours
-    // in
-    // ms
+        itemsRouteController.updateItemReservation(null, oneDayMillis);
     assertEquals("itemId needed to update reservation.", updateItemReservationResponse.getBody());
     assertEquals(HttpStatus.BAD_REQUEST, updateItemReservationResponse.getStatusCode());
 
-    updateItemReservationResponse = itemsRouteController.updateItemReservation("", 86400000);
+    updateItemReservationResponse = itemsRouteController.updateItemReservation("", oneDayMillis);
     assertEquals("itemId needed to update reservation.", updateItemReservationResponse.getBody());
     assertEquals(HttpStatus.BAD_REQUEST, updateItemReservationResponse.getStatusCode());
 
@@ -272,7 +270,7 @@ public class ItemsRouteControllerTests {
     // Test when the item is not found
     when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
     updateItemReservationResponse =
-        itemsRouteController.updateItemReservation(testItemId, 86400000);
+        itemsRouteController.updateItemReservation(testItemId, oneDayMillis);
     assertEquals(
         "Item with itemId: " + testItemId + " was not found",
         updateItemReservationResponse.getBody());
@@ -284,7 +282,7 @@ public class ItemsRouteControllerTests {
     when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
     when(itemsTableSqlHelper.updateItemReservation(anyString(), anyLong())).thenReturn(true);
     updateItemReservationResponse =
-        itemsRouteController.updateItemReservation(testItemId, 86400000);
+        itemsRouteController.updateItemReservation(testItemId, oneDayMillis);
     assertEquals(
         "Reservation for item: " + testItem.getItemName() + " updated successfully.",
         updateItemReservationResponse.getBody());
@@ -293,7 +291,7 @@ public class ItemsRouteControllerTests {
     // Test failed reservation update
     when(itemsTableSqlHelper.updateItemReservation(anyString(), anyLong())).thenReturn(false);
     updateItemReservationResponse =
-        itemsRouteController.updateItemReservation(testItemId, 86400000);
+        itemsRouteController.updateItemReservation(testItemId, oneDayMillis);
     assertEquals(
         "Could not update reservation for item: " + testItem.getItemName(),
         updateItemReservationResponse.getBody());
@@ -302,7 +300,7 @@ public class ItemsRouteControllerTests {
     // Test internal server error
     when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
     updateItemReservationResponse =
-        itemsRouteController.updateItemReservation(testItemId, 86400000);
+        itemsRouteController.updateItemReservation(testItemId, oneDayMillis);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemReservationResponse.getStatusCode());
   }
 

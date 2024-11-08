@@ -337,7 +337,7 @@ public class ItemsRouteController {
   }
 
   /**
-   * pass checkstyle. @param itemId the item id
+   * Update item name response entity.
    *
    * @param itemId the item id
    * @param newItemName the new item name
@@ -407,7 +407,7 @@ public class ItemsRouteController {
   }
 
   /**
-   * pass checkstyle. @param itemId the item id
+   * Delete item response entity.
    *
    * @param itemId the item id
    * @return the response entity

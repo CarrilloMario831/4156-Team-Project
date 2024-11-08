@@ -307,7 +307,6 @@ public class ItemsRouteControllerTests {
   /** Test the cancelItemReservation endpoint. */
   @Test
   public void testCancelItemReservation() {
-
     // Test with null or empty itemId
     ResponseEntity<String> cancelItemReservationResponse =
         itemsRouteController.cancelItemReservation(null);
@@ -350,5 +349,100 @@ public class ItemsRouteControllerTests {
     when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
     cancelItemReservationResponse = itemsRouteController.cancelItemReservation(testItemId);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, cancelItemReservationResponse.getStatusCode());
+  }
+
+  @Test
+  public void testUpdateItemLocation() {
+    // Test null or empty field
+    ResponseEntity<String> updateItemLocationResponse =
+        itemsRouteController.updateItemLocation(null, "");
+    assertEquals("itemId needed to update quantity.", updateItemLocationResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemLocationResponse.getStatusCode());
+    updateItemLocationResponse = itemsRouteController.updateItemLocation("", "");
+    assertEquals("itemId needed to update quantity.", updateItemLocationResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemLocationResponse.getStatusCode());
+    updateItemLocationResponse =
+        itemsRouteController.updateItemLocation(testItem.getItemId().toString(), null);
+    assertEquals("Location cannot be empty.", updateItemLocationResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemLocationResponse.getStatusCode());
+    updateItemLocationResponse =
+        itemsRouteController.updateItemLocation(testItem.getItemId().toString(), "");
+    assertEquals("Location cannot be empty.", updateItemLocationResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, updateItemLocationResponse.getStatusCode());
+
+    // Test when the item is not found
+    String testItemId = String.valueOf(testItem.getItemId());
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
+    updateItemLocationResponse =
+        itemsRouteController.updateItemLocation(
+            testItem.getItemId().toString(), testItem.getLocation());
+    assertEquals(
+        "Item with itemId: " + testItemId + " was not found", updateItemLocationResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateItemLocationResponse.getStatusCode());
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(new ArrayList<>());
+    updateItemLocationResponse =
+        itemsRouteController.updateItemLocation(
+            testItem.getItemId().toString(), testItem.getLocation());
+    assertEquals(
+        "Item with itemId: " + testItemId + " was not found", updateItemLocationResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateItemLocationResponse.getStatusCode());
+
+    // Test a list with null item
+    List<Item> testItems = new ArrayList<>();
+    testItems.add(null);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    updateItemLocationResponse =
+        itemsRouteController.updateItemLocation(
+            testItem.getItemId().toString(), testItem.getLocation());
+    assertEquals("No item found for itemID: " + testItemId, updateItemLocationResponse.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, updateItemLocationResponse.getStatusCode());
+
+    // Test matching location
+    testItems.clear();
+    testItems.add(testItem);
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(testItems);
+    updateItemLocationResponse =
+        itemsRouteController.updateItemLocation(
+            testItem.getItemId().toString(), testItem.getLocation());
+    assertEquals(
+        "Item \""
+            + testItem.getItemName()
+            + "\" already has a location of: \""
+            + testItem.getLocation()
+            + "\"",
+        updateItemLocationResponse.getBody());
+    assertEquals(HttpStatus.CONFLICT, updateItemLocationResponse.getStatusCode());
+
+    // Test unsuccessful update
+    when(itemsTableSqlHelper.updateItemLocation(anyString(), anyString())).thenReturn(false);
+    updateItemLocationResponse =
+        itemsRouteController.updateItemLocation(testItem.getItemId().toString(), "newLocation");
+    assertEquals(
+        "Could not update location for item: \"" + testItem.getItemName() + "\"",
+        updateItemLocationResponse.getBody());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemLocationResponse.getStatusCode());
+
+    // Test successful update
+    when(itemsTableSqlHelper.updateItemLocation(anyString(), anyString())).thenReturn(true);
+    updateItemLocationResponse =
+        itemsRouteController.updateItemLocation(testItem.getItemId().toString(), "newLocation");
+    assertEquals(
+        "Item: "
+            + testItem.getItemId()
+            + "\nName: "
+            + testItem.getItemName()
+            + "\nLocation was successfully updated. \n\""
+            + testItem.getLocation()
+            + "\" --> \""
+            + "newLocation"
+            + "\"",
+        updateItemLocationResponse.getBody());
+    assertEquals(HttpStatus.OK, updateItemLocationResponse.getStatusCode());
+
+    // Test internal server error
+    when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
+    updateItemLocationResponse =
+        itemsRouteController.updateItemLocation(testItem.getItemId().toString(), "newLocation");
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateItemLocationResponse.getStatusCode());
   }
 }

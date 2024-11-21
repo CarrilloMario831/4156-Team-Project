@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import service.handler.InventoryItemsJunctionTableHelper;
 import service.handler.InventoryTableSqlHelper;
 import service.handler.ItemsTableSqlHelper;
 import service.models.Inventory;
@@ -26,8 +27,8 @@ public class InventoryRouteController {
 
   /** The Inventory table sql helper. */
   @Autowired public InventoryTableSqlHelper inventoryTableSqlHelper;
-
-  @Autowired private ItemsTableSqlHelper itemsTableSqlHelper;
+  
+  @Autowired private InventoryItemsJunctionTableHelper inventoryItemsJunctionTableHelper;
 
   /**
    * Allow for inventories to be created under a specific user's id. @param createInventoryRequest
@@ -48,7 +49,7 @@ public class InventoryRouteController {
               .inventoryId(UUID.randomUUID())
               .inventoryName(createInventoryRequest.getInventoryName())
               .build();
-      boolean isSuccessful = inventoryTableSqlHelper.insert(newInventory);
+      boolean isSuccessful = inventoryTableSqlHelper.insertInventory(newInventory);
       if (!isSuccessful) {
         return new ResponseEntity<>("Failed to create inventory", HttpStatus.INTERNAL_SERVER_ERROR);
       }
@@ -77,13 +78,17 @@ public class InventoryRouteController {
       return new ResponseEntity<>("inventoryId needed to get inventories.", HttpStatus.BAD_REQUEST);
     }
     try {
-      List<Inventory> inventoryList = inventoryTableSqlHelper.select(inventoryId);
-      if (inventoryList == null) {
+      Inventory inventory = inventoryTableSqlHelper.getInventoryWithInventoryId(inventoryId);
+      if (inventory == null) {
         return new ResponseEntity<>(
             "Inventory with inventoryId: " + inventoryId + " has not been found.",
             HttpStatus.NOT_FOUND);
       }
-      String inventoryName = inventoryList.get(0).getInventoryName();
+      String inventoryName = inventory.getInventoryName();
+      if (inventoryName.isEmpty()) {
+        return new ResponseEntity<>(
+            "Inventory with inventoryId: " + inventoryId + " has no name.", HttpStatus.NO_CONTENT);
+      }
       return new ResponseEntity<>(inventoryName, HttpStatus.OK);
     } catch (Exception e) {
       System.out.println(e.getMessage());
@@ -92,52 +97,63 @@ public class InventoryRouteController {
   }
 
   /**
-   * Returns a string representation of the requested inventory's items.
+   * Returns a list of strings representing the UUID of the items belonging to this inventory.
    *
    * @param inventoryId Unique identifier for the inventory the client would like to access.
-   * @return a string representation of the inventory's items
+   * @return a list of strings representing the UUID of the items belonging to this inventory.
    */
-  @GetMapping(value = "/getInventoryItems", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> getInventoryItems(
+  @GetMapping(value = "/getInventoryItemIds", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<String>> getInventoryItemIds(
       @RequestParam(value = "inventoryId") String inventoryId) {
 
-    // TODO: Use the junction table to make this request faster
-
     if (inventoryId == null || inventoryId.isEmpty()) {
-      return new ResponseEntity<>("inventoryId needed to get inventories.", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(List.of("inventoryId needed to get inventories."),
+          HttpStatus.BAD_REQUEST);
     }
     try {
-      List<Inventory> inventoryList = inventoryTableSqlHelper.select(inventoryId);
-      if (inventoryList == null) {
+      Inventory inventory = inventoryTableSqlHelper.getInventoryWithInventoryId(inventoryId);
+      if (inventory == null) {
         return new ResponseEntity<>(
-            "Inventory with inventoryId: " + inventoryId + " has not been found.",
+            List.of("Inventory with inventoryId: " + inventoryId + " has not been found."),
             HttpStatus.NOT_FOUND);
       }
-      List<Item> itemList = itemsTableSqlHelper.getAllItems();
-      String inventoryName = inventoryList.get(0).getInventoryName();
-      StringBuilder returnList = new StringBuilder();
-      if (itemList.isEmpty()) {
-        return new ResponseEntity<>(inventoryName + " is empty.", HttpStatus.OK);
-      } else {
-        returnList.append(inventoryName + " contains:\n");
+      List<String> itemIds = inventoryItemsJunctionTableHelper.getItemIdsByInventoryId(inventoryId);
 
-        for (Item item : itemList) {
-          if (item.getInventoryId() != null) {
-            String itemToInventoryReference = item.getInventoryId().toString();
-            if (itemToInventoryReference.equals(inventoryId)) {
-              returnList
-                  .append(item.getQuantity())
-                  .append(" ")
-                  .append(item.getItemName())
-                  .append("(s) \n");
-            }
-          }
-        }
-        return new ResponseEntity<>(returnList.toString(), HttpStatus.OK);
-      }
+      return new ResponseEntity<>(itemIds, HttpStatus.OK);
     } catch (Exception e) {
       System.out.println(e.getMessage());
-      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+      return new ResponseEntity<>(List.of(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+  
+  /**
+   * Returns a list of strings representing the names of the items belonging to this inventory.
+   *
+   * @param inventoryId Unique identifier for the inventory the client would like to access.
+   * @return a list of strings representing the UUID of the items belonging to this inventory.
+   */
+  @GetMapping(value = "/getInventoryItemNames", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<List<String>> getInventoryItemNames(
+      @RequestParam(value = "inventoryId") String inventoryId) {
+    
+    if (inventoryId == null || inventoryId.isEmpty()) {
+      return new ResponseEntity<>(List.of("inventoryId needed to get inventories."),
+          HttpStatus.BAD_REQUEST);
+    }
+    try {
+      Inventory inventory = inventoryTableSqlHelper.getInventoryWithInventoryId(inventoryId);
+      if (inventory == null) {
+        return new ResponseEntity<>(
+            List.of("Inventory with inventoryId: " + inventoryId + " has not been found."),
+            HttpStatus.NOT_FOUND);
+      }
+      List<String> itemNames =
+          inventoryItemsJunctionTableHelper.getItemNamesByInventoryId(inventoryId);
+      
+      return new ResponseEntity<>(itemNames, HttpStatus.OK);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(List.of(e.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
 

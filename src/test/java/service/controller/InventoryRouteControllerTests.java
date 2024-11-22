@@ -7,6 +7,8 @@ import static org.mockito.Mockito.when;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,6 +18,7 @@ import org.mockito.Mock;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import service.handler.InventoryItemsJunctionTableHelper;
 import service.handler.InventoryTableSqlHelper;
 import service.models.Inventory;
 import service.models.Item;
@@ -28,6 +31,8 @@ public class InventoryRouteControllerTests {
   @InjectMocks private InventoryRouteController inventoryRouteController;
 
   @Mock private InventoryTableSqlHelper inventoryTableSqlHelper;
+
+  @Mock private InventoryItemsJunctionTableHelper inventoryItemsJunctionTableHelper;
 
   private Inventory testInventory;
   private Item testItem;
@@ -140,50 +145,160 @@ public class InventoryRouteControllerTests {
     getInventoryNameResponse = inventoryRouteController.getInventoryName(inventoryId);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getInventoryNameResponse.getStatusCode());
   }
-  
-  /** Test accessing items belonging to a specific inventory. */
+
+  /** Test accessing items ids belonging to a specific inventory. */
   @Test
   public void testGetInventoryItemIds() {
-    
-//    String inventoryId = testInventory.getInventoryId().toString();
-//
-//    // Test successful get
-//    when(inventoryTableSqlHelper.getInventoryWithInventoryId(any())).thenReturn(testInventory);
-//    ResponseEntity<?> getInventoryItemsResponse =
-//        inventoryRouteController.getInventoryName(inventoryId);
-//    assertEquals(HttpStatus.OK, getInventoryItemsResponse.getStatusCode());
-//    assertEquals(testInventory.getInventoryName(), getInventoryItemsResponse.getBody());
-//
-//    // Test null inventoryId passed in
-//    getInventoryItemsResponse = inventoryRouteController.getInventoryName(null);
-//    assertEquals(HttpStatus.BAD_REQUEST, getInventoryItemsResponse.getStatusCode());
-//    assertEquals("inventoryId needed to get inventories.", getInventoryItemsResponse.getBody());
-//
-//    // Test empty inventoryId passed in
-//    getInventoryItemsResponse = inventoryRouteController.getInventoryName("");
-//    assertEquals(HttpStatus.BAD_REQUEST, getInventoryItemsResponse.getStatusCode());
-//    assertEquals("inventoryId needed to get inventories.", getInventoryItemsResponse.getBody());
-//
-//    // Test empty inventoryName
-//    testInventory.setInventoryName("");
-//    getInventoryItemsResponse = inventoryRouteController.getInventoryName(inventoryId);
-//    assertEquals(HttpStatus.NO_CONTENT, getInventoryItemsResponse.getStatusCode());
-//    assertEquals(
-//        "Inventory with inventoryId: " + inventoryId + " has no name.",
-//        getInventoryItemsResponse.getBody());
-//
-//    // Test inventory that couldn't be found
-//    when(inventoryTableSqlHelper.getInventoryWithInventoryId(any())).thenReturn(null);
-//    getInventoryItemsResponse = inventoryRouteController.getInventoryName(inventoryId);
-//    assertEquals(HttpStatus.NOT_FOUND, getInventoryItemsResponse.getStatusCode());
-//    assertEquals(
-//        "Inventory with inventoryId: " + inventoryId + " has not been found.",
-//        getInventoryItemsResponse.getBody());
-//
-//    // Test Internal Error caused by thrown exception.
-//    when(inventoryTableSqlHelper.getInventoryWithInventoryId(any()))
-//        .thenThrow(RuntimeException.class);
-//    getInventoryItemsResponse = inventoryRouteController.getInventoryName(inventoryId);
-//    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getInventoryItemsResponse.getStatusCode());
+
+    String inventoryId = testInventory.getInventoryId().toString();
+    List<String> itemIds = new ArrayList<>();
+    itemIds.add(testItem.getItemId().toString());
+
+    // Test successful get
+    when(inventoryTableSqlHelper.getInventoryWithInventoryId(any())).thenReturn(testInventory);
+    when(inventoryItemsJunctionTableHelper.getItemIdsByInventoryId(any())).thenReturn(itemIds);
+    ResponseEntity<?> getInventoryItemsResponse =
+        inventoryRouteController.getInventoryItemIds(inventoryId);
+    assertEquals(HttpStatus.OK, getInventoryItemsResponse.getStatusCode());
+    assertEquals(itemIds, getInventoryItemsResponse.getBody());
+
+    // Test empty inventory without items
+    when(inventoryItemsJunctionTableHelper.getItemIdsByInventoryId(any()))
+        .thenReturn(new ArrayList<>());
+    getInventoryItemsResponse = inventoryRouteController.getInventoryItemIds(inventoryId);
+    assertEquals(HttpStatus.NO_CONTENT, getInventoryItemsResponse.getStatusCode());
+    assertEquals(
+        List.of("No items found within inventory: " + inventoryId),
+        getInventoryItemsResponse.getBody());
+
+    // Test null inventoryId passed in
+    getInventoryItemsResponse = inventoryRouteController.getInventoryItemIds(null);
+    assertEquals(HttpStatus.BAD_REQUEST, getInventoryItemsResponse.getStatusCode());
+    assertEquals(
+        List.of("inventoryId needed to get inventories."), getInventoryItemsResponse.getBody());
+
+    // Test empty inventoryId passed in
+    getInventoryItemsResponse = inventoryRouteController.getInventoryItemIds("");
+    assertEquals(HttpStatus.BAD_REQUEST, getInventoryItemsResponse.getStatusCode());
+    assertEquals(
+        List.of("inventoryId needed to get inventories."), getInventoryItemsResponse.getBody());
+
+    // Test inventory that couldn't be found
+    when(inventoryTableSqlHelper.getInventoryWithInventoryId(any())).thenReturn(null);
+    getInventoryItemsResponse = inventoryRouteController.getInventoryItemIds(inventoryId);
+    assertEquals(HttpStatus.NOT_FOUND, getInventoryItemsResponse.getStatusCode());
+    assertEquals(
+        List.of("Inventory with inventoryId: " + inventoryId + " has not been found."),
+        getInventoryItemsResponse.getBody());
+
+    // Test Internal Error caused by thrown exception.
+    when(inventoryTableSqlHelper.getInventoryWithInventoryId(any()))
+        .thenThrow(RuntimeException.class);
+    getInventoryItemsResponse = inventoryRouteController.getInventoryItemIds(inventoryId);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getInventoryItemsResponse.getStatusCode());
+  }
+
+  /** Test accessing items names belonging to a specific inventory. */
+  @Test
+  public void testGetInventoryItemNames() {
+
+    String inventoryId = testInventory.getInventoryId().toString();
+    List<String> itemIds = new ArrayList<>();
+    itemIds.add(testItem.getItemName());
+
+    // Test successful get
+    when(inventoryTableSqlHelper.getInventoryWithInventoryId(any())).thenReturn(testInventory);
+    when(inventoryItemsJunctionTableHelper.getItemNamesByInventoryId(any())).thenReturn(itemIds);
+    ResponseEntity<?> getInventoryItemsResponse =
+        inventoryRouteController.getInventoryItemNames(inventoryId);
+    assertEquals(HttpStatus.OK, getInventoryItemsResponse.getStatusCode());
+    assertEquals(itemIds, getInventoryItemsResponse.getBody());
+
+    // Test empty inventory without items
+    when(inventoryItemsJunctionTableHelper.getItemNamesByInventoryId(any()))
+        .thenReturn(new ArrayList<>());
+    getInventoryItemsResponse = inventoryRouteController.getInventoryItemNames(inventoryId);
+    assertEquals(HttpStatus.NO_CONTENT, getInventoryItemsResponse.getStatusCode());
+    assertEquals(
+        List.of("No items found within inventory: " + inventoryId),
+        getInventoryItemsResponse.getBody());
+
+    // Test null inventoryId passed in
+    getInventoryItemsResponse = inventoryRouteController.getInventoryItemNames(null);
+    assertEquals(HttpStatus.BAD_REQUEST, getInventoryItemsResponse.getStatusCode());
+    assertEquals(
+        List.of("inventoryId needed to get inventories."), getInventoryItemsResponse.getBody());
+
+    // Test empty inventoryId passed in
+    getInventoryItemsResponse = inventoryRouteController.getInventoryItemNames("");
+    assertEquals(HttpStatus.BAD_REQUEST, getInventoryItemsResponse.getStatusCode());
+    assertEquals(
+        List.of("inventoryId needed to get inventories."), getInventoryItemsResponse.getBody());
+
+    // Test inventory that couldn't be found
+    when(inventoryTableSqlHelper.getInventoryWithInventoryId(any())).thenReturn(null);
+    getInventoryItemsResponse = inventoryRouteController.getInventoryItemNames(inventoryId);
+    assertEquals(HttpStatus.NOT_FOUND, getInventoryItemsResponse.getStatusCode());
+    assertEquals(
+        List.of("Inventory with inventoryId: " + inventoryId + " has not been found."),
+        getInventoryItemsResponse.getBody());
+
+    // Test Internal Error caused by thrown exception.
+    when(inventoryTableSqlHelper.getInventoryWithInventoryId(any()))
+        .thenThrow(RuntimeException.class);
+    getInventoryItemsResponse = inventoryRouteController.getInventoryItemNames(inventoryId);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getInventoryItemsResponse.getStatusCode());
+  }
+
+  /** Testing the update of an inventory's name. */
+  @Test
+  public void testUpdateInventoryName() {
+    String inventoryId = testInventory.getInventoryId().toString();
+    String newInventoryName = "Warehouse Inventory";
+
+    // Test successful update
+    when(inventoryTableSqlHelper.update(any(), any())).thenReturn(true);
+    ResponseEntity<?> updateInventoryNameResponse =
+        inventoryRouteController.updateInventoryName(newInventoryName, inventoryId);
+    assertEquals(HttpStatus.OK, updateInventoryNameResponse.getStatusCode());
+    assertEquals(
+        "Successfully changed the inventory's name.", updateInventoryNameResponse.getBody());
+
+    // Test unsuccessful update
+    when(inventoryTableSqlHelper.update(any(), any())).thenReturn(false);
+    updateInventoryNameResponse =
+        inventoryRouteController.updateInventoryName(newInventoryName, inventoryId);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateInventoryNameResponse.getStatusCode());
+    assertEquals("Unsuccessful inventory name change.", updateInventoryNameResponse.getBody());
+
+    // Test null inventoryId passed in and valid new inventory name
+    updateInventoryNameResponse =
+        inventoryRouteController.updateInventoryName(newInventoryName, null);
+    assertEquals(HttpStatus.BAD_REQUEST, updateInventoryNameResponse.getStatusCode());
+    assertEquals("inventoryId needed to get inventories.", updateInventoryNameResponse.getBody());
+
+    // Test valid inventoryId and null inventory name
+    updateInventoryNameResponse = inventoryRouteController.updateInventoryName(null, inventoryId);
+    assertEquals(HttpStatus.BAD_REQUEST, updateInventoryNameResponse.getStatusCode());
+    assertEquals(
+        "New inventory name is needed for the update.", updateInventoryNameResponse.getBody());
+
+    // Test empty inventoryId passed in and valid new inventory name
+    updateInventoryNameResponse =
+        inventoryRouteController.updateInventoryName(newInventoryName, "");
+    assertEquals(HttpStatus.BAD_REQUEST, updateInventoryNameResponse.getStatusCode());
+    assertEquals("inventoryId needed to get inventories.", updateInventoryNameResponse.getBody());
+
+    // Test valid inventoryId passed in and empty new inventory name
+    updateInventoryNameResponse = inventoryRouteController.updateInventoryName("", inventoryId);
+    assertEquals(HttpStatus.BAD_REQUEST, updateInventoryNameResponse.getStatusCode());
+    assertEquals(
+        "New inventory name is needed for the update.", updateInventoryNameResponse.getBody());
+
+    // Test Internal Error caused by thrown exception.
+    when(inventoryTableSqlHelper.update(any(), any())).thenThrow(RuntimeException.class);
+    updateInventoryNameResponse =
+        inventoryRouteController.updateInventoryName(inventoryId, newInventoryName);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateInventoryNameResponse.getStatusCode());
   }
 }

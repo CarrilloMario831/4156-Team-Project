@@ -25,6 +25,7 @@ import service.requests.CreateItemRequest;
 /** This class contains all the API endpoints for user-related requests. */
 @RestController
 @RequestMapping("/api/items")
+@SuppressWarnings("CPD-START") // TODO: Remove this annotation and fix CPD error
 public class ItemsRouteController {
 
   /** The Items table sql helper. */
@@ -325,10 +326,6 @@ public class ItemsRouteController {
       }
       Item item = itemList.get(0);
       UUID inventoryId = item.getInventoryId();
-      if (inventoryId == null) {
-        return new ResponseEntity<>(
-            "No inventory id found for item: " + item.getItemName(), HttpStatus.NOT_FOUND);
-      }
       return new ResponseEntity<>(inventoryId.toString(), HttpStatus.OK);
     } catch (Exception e) {
       System.out.println(e.getMessage());
@@ -337,7 +334,7 @@ public class ItemsRouteController {
   }
 
   /**
-   * pass checkstyle. @param itemId the item id
+   * Update item name response entity.
    *
    * @param itemId the item id
    * @param newItemName the new item name
@@ -407,7 +404,7 @@ public class ItemsRouteController {
   }
 
   /**
-   * pass checkstyle. @param itemId the item id
+   * Delete item response entity.
    *
    * @param itemId the item id
    * @return the response entity
@@ -415,7 +412,7 @@ public class ItemsRouteController {
   @DeleteMapping(value = "/deleteItem", produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> deleteItem(@RequestParam(value = "itemId") String itemId) {
     if (itemId == null || itemId.isEmpty()) {
-      return new ResponseEntity<>("itemId needed to get item name.", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("itemId needed to delete item.", HttpStatus.BAD_REQUEST);
     }
     List<Item> itemList;
     try {
@@ -426,7 +423,7 @@ public class ItemsRouteController {
     }
     if (itemList == null || itemList.isEmpty()) {
       return new ResponseEntity<>(
-          "Item with item id: " + itemId + " does not exist.", HttpStatus.NOT_FOUND);
+          "Item with itemId: " + itemId + " was not found.", HttpStatus.NOT_FOUND);
     }
 
     if (itemList.size() > 1) {
@@ -448,11 +445,7 @@ public class ItemsRouteController {
 
     if (isSuccessful) {
       return new ResponseEntity<>(
-          "ItemID: "
-              + item.getItemId()
-              + "\n\""
-              + item.getItemName()
-              + "\" was successfully deleted.",
+          "Item: " + item.getItemId() + "\n\"" + item.getItemName() + "\"was successfully deleted.",
           HttpStatus.OK);
     }
 
@@ -473,10 +466,11 @@ public class ItemsRouteController {
       @RequestParam(value = "itemId") String itemId,
       @RequestParam(value = "newQuantity") int newQuantity) {
     if (itemId == null || itemId.isEmpty()) {
-      return new ResponseEntity<>("itemId needed to udpate quantity.", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("itemId needed to update quantity.", HttpStatus.BAD_REQUEST);
     }
     if (newQuantity < 0) {
-      return new ResponseEntity<>("Quantity cannot be a negative number.", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          "Item quantity cannot be a negative number.", HttpStatus.BAD_REQUEST);
     }
     try {
       List<Item> itemList = itemsTableSqlHelper.getItem(itemId);
@@ -492,14 +486,15 @@ public class ItemsRouteController {
       int oldQuantity = item.getQuantity();
       if (oldQuantity == newQuantity) {
         return new ResponseEntity<>(
-            "Item \"" + item.getItemName() + "\" already has a quantity of " + oldQuantity,
+            "Item \"" + item.getItemName() + "\" already has a quantity of: " + oldQuantity,
             HttpStatus.CONFLICT);
       }
       boolean isSuccess = itemsTableSqlHelper.updateItemQuantity(itemId, newQuantity);
 
       if (!isSuccess) {
         return new ResponseEntity<>(
-            "Could not update quantity for item: " + itemId, HttpStatus.INTERNAL_SERVER_ERROR);
+            "Could not update quantity for item: \"" + item.getItemName() + "\"",
+            HttpStatus.INTERNAL_SERVER_ERROR);
       }
 
       return new ResponseEntity<>(
@@ -592,7 +587,7 @@ public class ItemsRouteController {
       @RequestParam(value = "itemId") String itemId,
       @RequestParam(value = "newPrice") double newPrice) {
     if (itemId == null || itemId.isEmpty()) {
-      return new ResponseEntity<>("itemId needed to update quantity.", HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>("itemId needed to update price.", HttpStatus.BAD_REQUEST);
     }
     if (newPrice < 0) {
       return new ResponseEntity<>("Item price cannot be negative.", HttpStatus.BAD_REQUEST);

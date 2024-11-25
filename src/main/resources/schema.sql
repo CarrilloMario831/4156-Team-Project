@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS Items (
     location VARCHAR(255) NULL,  -- Warehouse or location of the item
     price DECIMAL(10,2) NOT NULL,  -- Price of the item
     next_restock VARCHAR(255) NULL,  -- Next restock date and time
-    inventory_id CHAR(36) DEFAULT NULL, -- Points to the inventory the item belongs to
+    inventory_id CHAR(36) NOT NULL, -- Points to the inventory the item belongs to
     FOREIGN KEY (inventory_id) REFERENCES Inventories(inventory_id) ON DELETE CASCADE
 );
 -- Create Users Table
@@ -47,7 +47,9 @@ CREATE TABLE IF NOT EXISTS User_Inventories (
 -- Create Inventory Items Junction Table (for Inventory to Item relationship)
 CREATE TABLE IF NOT EXISTS Inventory_Items (
     inventory_id CHAR(36),  -- FK to Inventory
+    inventory_name VARCHAR(255) NOT NULL,  -- Name of the inventory
     item_id CHAR(36),  -- FK to Item
+    item_name VARCHAR(255) NOT NULL,  -- Name of the item
     PRIMARY KEY (inventory_id, item_id),
     FOREIGN KEY (inventory_id) REFERENCES Inventories(inventory_id) ON DELETE CASCADE,
     FOREIGN KEY (item_id) REFERENCES Items(item_id) ON DELETE CASCADE
@@ -70,3 +72,39 @@ BEGIN
     INSERT INTO User_Inventories (user_id, username, inventory_id, inventory_name)
     VALUES (NEW.user_id, NEW.username, new_inventory_id, new_inventory_name);
 END;
+
+CREATE TRIGGER add_new_item_to_junction_table
+    AFTER INSERT ON Items
+    FOR EACH ROW
+BEGIN
+    -- Link the new item to the inventory
+    INSERT INTO Inventory_Items (inventory_id, inventory_name , item_id, item_name)
+    VALUES (
+        NEW.inventory_id,
+        (SELECT inventory_name FROM Inventories WHERE inventory_id = NEW.inventory_id),
+        NEW.item_id,
+        NEW.item_name
+    );
+END;
+
+CREATE TRIGGER update_inventory_items_junction_when_inventory_id_changes
+    AFTER UPDATE ON Items
+    FOR EACH ROW
+BEGIN
+    -- Check if the inventory_id has changed
+    IF OLD.inventory_id != NEW.inventory_id THEN
+        -- Remove the old entry in Inventory_Items
+        DELETE FROM Inventory_Items
+        WHERE inventory_id = OLD.inventory_id AND item_id = OLD.item_id;
+
+        -- Add the new pair with the updated inventory_id and inventory_name
+        INSERT INTO Inventory_Items (inventory_id, inventory_name, item_id, item_name)
+        VALUES (
+                   NEW.inventory_id,
+                   (SELECT inventory_name FROM Inventories WHERE inventory_id = NEW.inventory_id),
+                   NEW.item_id,
+                   NEW.item_name
+               );
+    END IF;
+END;
+

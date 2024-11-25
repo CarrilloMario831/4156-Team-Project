@@ -47,6 +47,7 @@ public class ItemsTableSqlHelperTests {
             .reservationDurationInMillis(0)
             .price(19.99)
             .nextRestockDateTime(null)
+            .inventoryId(UUID.randomUUID())
             .build();
   }
 

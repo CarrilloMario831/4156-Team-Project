@@ -1,7 +1,7 @@
 package service.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
 
@@ -149,10 +149,10 @@ public class InventoryRouteControllerTests {
   /** Test accessing items ids belonging to a specific inventory. */
   @Test
   public void testGetInventoryItemIds() {
-
-    String inventoryId = testInventory.getInventoryId().toString();
+    
     List<String> itemIds = new ArrayList<>();
     itemIds.add(testItem.getItemId().toString());
+    String inventoryId = testInventory.getInventoryId().toString();
 
     // Test successful get
     when(inventoryTableSqlHelper.getInventoryWithInventoryId(any())).thenReturn(testInventory);
@@ -201,10 +201,10 @@ public class InventoryRouteControllerTests {
   /** Test accessing items names belonging to a specific inventory. */
   @Test
   public void testGetInventoryItemNames() {
-
-    String inventoryId = testInventory.getInventoryId().toString();
+    
     List<String> itemIds = new ArrayList<>();
     itemIds.add(testItem.getItemName());
+    String inventoryId = testInventory.getInventoryId().toString();
 
     // Test successful get
     when(inventoryTableSqlHelper.getInventoryWithInventoryId(any())).thenReturn(testInventory);

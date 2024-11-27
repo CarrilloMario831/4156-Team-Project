@@ -7,7 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import service.handler.InventoryItemsJunctionTableHelper;
 import service.handler.InventoryTableSqlHelper;
 import service.models.Inventory;
@@ -216,7 +223,7 @@ public class InventoryRouteController {
       boolean deleteSuccess = inventoryTableSqlHelper.delete(inventoryId);
       if (!deleteSuccess) {
         return new ResponseEntity<>(
-            "Unable to delete inventory with inventoryId: " + inventoryId, HttpStatus.FORBIDDEN);
+            "Unsuccessful inventory delete.", HttpStatus.INTERNAL_SERVER_ERROR);
       } else {
         return new ResponseEntity<>(
             "Successfully deleted inventory with inventoryId: " + inventoryId, HttpStatus.OK);

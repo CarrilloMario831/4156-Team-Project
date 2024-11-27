@@ -132,11 +132,12 @@ public class InventoryTableSqlHelperTests {
     result = inventoryTableSqlHelper.getInventoryWithInventoryId(inventoryId);
     assertNull(result, "Should return null if there's no inventory found with the given ID.");
 
-    // Test exception thrown
+    // Test exception thrown from more than one result returned by the query
+    inventories.add(testInventory);
     when(jdbcTemplate.query(contains("where inventory_id"), any(RowMapper.class)))
-        .thenThrow(RuntimeException.class);
+        .thenReturn(inventories);
     assertThrows(
-        RuntimeException.class,
+        IllegalStateException.class,
         () -> inventoryTableSqlHelper.getInventoryWithInventoryId(inventoryId),
         "Should propagate exceptions.");
   }

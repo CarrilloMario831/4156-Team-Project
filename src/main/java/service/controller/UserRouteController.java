@@ -9,7 +9,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import service.handler.UsersTableSqlHelper;
 import service.models.User;
 import service.util.UserRoles;
@@ -118,9 +124,15 @@ public class UserRouteController {
    * @return the response entity
    */
   @PostMapping(value = "/createUser", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> createUser(@RequestParam(value = "username") String username) {
+  public ResponseEntity<?> createUser(
+      @RequestParam(value = "username") String username,
+      @RequestParam(value = "password") String password) {
     if (username == null || username.isEmpty()) {
       return new ResponseEntity<>("Username needed to create user.", HttpStatus.BAD_REQUEST);
+    }
+
+    if (password == null || password.isEmpty()) {
+      return new ResponseEntity<>("Password needed to create user.", HttpStatus.BAD_REQUEST);
     }
     try {
       if (usersTableSqlHelper.getUserWithUsername(username) != null) {
@@ -132,6 +144,7 @@ public class UserRouteController {
           User.builder()
               .userId(UUID.randomUUID())
               .username(username)
+              .password(password)
               .role(UserRoles.USER)
               .lastAccess(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
               .build();

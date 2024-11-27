@@ -166,6 +166,7 @@ public class UsersTableSqlHelper {
         User.builder()
             .userId(UUID.fromString(rs.getString("user_id")))
             .username(rs.getString("username"))
+            .password(rs.getString("password"))
             .role(UserRoles.valueOf(rs.getString("role")))
             .lastAccess(LocalDateTime.parse(rs.getString("last_access"), FORMATTER))
             .build();

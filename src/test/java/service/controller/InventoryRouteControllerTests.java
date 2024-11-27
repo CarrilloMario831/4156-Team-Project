@@ -149,7 +149,7 @@ public class InventoryRouteControllerTests {
   /** Test accessing items ids belonging to a specific inventory. */
   @Test
   public void testGetInventoryItemIds() {
-    
+
     List<String> itemIds = new ArrayList<>();
     itemIds.add(testItem.getItemId().toString());
     String inventoryId = testInventory.getInventoryId().toString();
@@ -201,7 +201,7 @@ public class InventoryRouteControllerTests {
   /** Test accessing items names belonging to a specific inventory. */
   @Test
   public void testGetInventoryItemNames() {
-    
+
     List<String> itemIds = new ArrayList<>();
     itemIds.add(testItem.getItemName());
     String inventoryId = testInventory.getInventoryId().toString();

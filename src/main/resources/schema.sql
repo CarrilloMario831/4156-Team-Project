@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS Items (
 CREATE TABLE IF NOT EXISTS Users (
                                      user_id CHAR(36) PRIMARY KEY,  -- Unique user key (UUID)
                                      username VARCHAR(255) NOT NULL UNIQUE,  -- Name of the user
+                                     password VARCHAR(255) NOT NULL, -- Password for the user to log in with
                                      role ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER',  -- User roles
                                      last_access VARCHAR(255) NOT NULL  -- Time of last access
 );

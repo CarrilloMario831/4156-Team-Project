@@ -42,12 +42,15 @@ public class UsersTableSqlHelper {
    * @return the boolean
    */
   public boolean insertUser(User user) {
-    String sql = "insert into Users (user_id, username, role, last_access) values (?,?,?,?)";
+    String sql =
+        "insert into Users (user_id, username, password, role, last_access) values (?,?,"
+            + "?,?,?)";
     int rows =
         jdbcTemplate.update(
             sql,
             user.getUserId().toString(),
             user.getUsername(),
+            user.getPassword(),
             user.getRole().toString(),
             user.getLastAccess());
     System.out.println(rows + "row/s inserted.");
@@ -166,6 +169,7 @@ public class UsersTableSqlHelper {
         User.builder()
             .userId(UUID.fromString(rs.getString("user_id")))
             .username(rs.getString("username"))
+            .password(rs.getString("password"))
             .role(UserRoles.valueOf(rs.getString("role")))
             .lastAccess(LocalDateTime.parse(rs.getString("last_access"), FORMATTER))
             .build();

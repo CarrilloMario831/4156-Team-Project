@@ -1,8 +1,8 @@
 package service.handler;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -27,8 +27,13 @@ import service.models.Inventory;
 @SpringBootTest
 public class InventoryTableSqlHelperTests {
 
+  /**
+   * This variable is needed because it prevents the test queries from actually being executed on
+   * DB.
+   */
   @Mock private JdbcTemplate jdbcTemplate;
 
+  // Here we define that the previously mocked variable is to be utilized within the class instance.
   @InjectMocks private InventoryTableSqlHelper inventoryTableSqlHelper;
 
   private Inventory testInventory;
@@ -47,18 +52,33 @@ public class InventoryTableSqlHelperTests {
   /** Tests the insert method of InventoryTableSqlHelper. */
   @Test
   public void testInsert() {
-    // Test successful insert
+    // I think a better test would be to check the returned value from insert method call
+    // instead of checking if it threw an exception or not. Also, testing if the method
+    // returns 1 or 0 allows for full branch coverage.
+    //    // Test successful insert
+    //    when(jdbcTemplate.update(anyString(), anyString(), anyString())).thenReturn(1);
+    //    assertDoesNotThrow(
+    //        () -> inventoryTableSqlHelper.insert(testInventory),
+    //        "Insert should not throw an exception when successful.");
+
+    // Test successful insert return value of 1
     when(jdbcTemplate.update(anyString(), anyString(), anyString())).thenReturn(1);
-    assertDoesNotThrow(
-        () -> inventoryTableSqlHelper.insert(testInventory),
-        "Insert should not throw an exception when successful.");
+    assertTrue(
+        inventoryTableSqlHelper.insertInventory(testInventory),
+        "Insert should return true when successful.");
+
+    // Mocking update to return 0, simulating an insert that didn't add any rows aka it didn't work.
+    when(jdbcTemplate.update(anyString(), anyString(), anyString())).thenReturn(0);
+    assertFalse(
+        inventoryTableSqlHelper.insertInventory(testInventory),
+        "Insert should return false when unsuccessful.");
 
     // Test exception thrown
     when(jdbcTemplate.update(anyString(), anyString(), anyString()))
         .thenThrow(RuntimeException.class);
     assertThrows(
         RuntimeException.class,
-        () -> inventoryTableSqlHelper.insert(testInventory),
+        () -> inventoryTableSqlHelper.insertInventory(testInventory),
         "Insert should propagate exceptions.");
   }
 
@@ -73,19 +93,19 @@ public class InventoryTableSqlHelperTests {
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(inventories);
 
     // Call the method and assert the result
-    List<Inventory> result = inventoryTableSqlHelper.select();
+    List<Inventory> result = inventoryTableSqlHelper.getAllInventories();
     assertEquals(inventories, result, "Should return the list of all inventories.");
 
     // Test empty list
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenReturn(new ArrayList<>());
-    result = inventoryTableSqlHelper.select();
+    result = inventoryTableSqlHelper.getAllInventories();
     assertTrue(result.isEmpty(), "Should return an empty list when no inventories are found.");
 
     // Test exception thrown
     when(jdbcTemplate.query(anyString(), any(RowMapper.class))).thenThrow(RuntimeException.class);
     assertThrows(
         RuntimeException.class,
-        () -> inventoryTableSqlHelper.select(),
+        () -> inventoryTableSqlHelper.getAllInventories(),
         "Should propagate exceptions.");
   }
 
@@ -103,21 +123,22 @@ public class InventoryTableSqlHelperTests {
         .thenReturn(inventories);
 
     // Call the method and assert the result
-    List<Inventory> result = inventoryTableSqlHelper.select(inventoryId);
-    assertEquals(inventories, result, "Should return the list of inventories with the given ID.");
+    Inventory result = inventoryTableSqlHelper.getInventoryWithInventoryId(inventoryId);
+    assertEquals(inventories.get(0), result, "Should return the inventory with the given ID.");
 
     // Test inventory not found
     when(jdbcTemplate.query(contains("where inventory_id"), any(RowMapper.class)))
         .thenReturn(new ArrayList<>());
-    result = inventoryTableSqlHelper.select(inventoryId);
-    assertTrue(result.isEmpty(), "Should return an empty list when inventory is not found.");
+    result = inventoryTableSqlHelper.getInventoryWithInventoryId(inventoryId);
+    assertNull(result, "Should return null if there's no inventory found with the given ID.");
 
-    // Test exception thrown
+    // Test exception thrown from more than one result returned by the query
+    inventories.add(testInventory);
     when(jdbcTemplate.query(contains("where inventory_id"), any(RowMapper.class)))
-        .thenThrow(RuntimeException.class);
+        .thenReturn(inventories);
     assertThrows(
-        RuntimeException.class,
-        () -> inventoryTableSqlHelper.select(inventoryId),
+        IllegalStateException.class,
+        () -> inventoryTableSqlHelper.getInventoryWithInventoryId(inventoryId),
         "Should propagate exceptions.");
   }
 

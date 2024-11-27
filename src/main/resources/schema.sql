@@ -5,8 +5,8 @@ USE `reservation_management`;
 
 -- Create Inventory Table
 CREATE TABLE IF NOT EXISTS Inventories (
-    inventory_id CHAR(36) PRIMARY KEY,  -- UUID for the inventory
-    inventory_name VARCHAR(255) NOT NULL  -- Name of the inventory
+                                           inventory_id CHAR(36) PRIMARY KEY,  -- UUID for the inventory
+                                           inventory_name VARCHAR(255) NOT NULL  -- Name of the inventory
 );
 
 -- Create Item Table
@@ -27,21 +27,22 @@ CREATE TABLE IF NOT EXISTS Items (
 );
 -- Create Users Table
 CREATE TABLE IF NOT EXISTS Users (
-     user_id CHAR(36) PRIMARY KEY,  -- Unique user key (UUID)
-     username VARCHAR(255) NOT NULL UNIQUE,  -- Name of the user
-     role ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER',  -- User roles
-     last_access VARCHAR(255) NOT NULL  -- Time of last access
+                                     user_id CHAR(36) PRIMARY KEY,  -- Unique user key (UUID)
+                                     username VARCHAR(255) NOT NULL UNIQUE,  -- Name of the user
+                                     password VARCHAR(255) NOT NULL, -- Password for the user to log in with
+                                     role ENUM('ADMIN', 'USER') NOT NULL DEFAULT 'USER',  -- User roles
+                                     last_access VARCHAR(255) NOT NULL  -- Time of last access
 );
 
 -- Junction Table to Link Users and Inventories (Many-to-Many)
 CREATE TABLE IF NOT EXISTS User_Inventories (
-    user_id CHAR(36),  -- FK to Users
-    username VARCHAR(255) NOT NULL,  -- Name of the user
-    inventory_id CHAR(36),  -- FK to Inventories
-    inventory_name VARCHAR(255) NOT NULL,  -- Name of the inventory
-    PRIMARY KEY (user_id, inventory_id),
-    FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
-    FOREIGN KEY (inventory_id) REFERENCES Inventories(inventory_id) ON DELETE CASCADE
+                                                user_id CHAR(36),  -- FK to Users
+                                                username VARCHAR(255) NOT NULL,  -- Name of the user
+                                                inventory_id CHAR(36),  -- FK to Inventories
+                                                inventory_name VARCHAR(255) NOT NULL,  -- Name of the inventory
+                                                PRIMARY KEY (user_id, inventory_id),
+                                                FOREIGN KEY (user_id) REFERENCES Users(user_id) ON DELETE CASCADE,
+                                                FOREIGN KEY (inventory_id) REFERENCES Inventories(inventory_id) ON DELETE CASCADE
 );
 
 -- Create Inventory Items Junction Table (for Inventory to Item relationship)
@@ -106,5 +107,19 @@ BEGIN
                    NEW.item_name
                );
     END IF;
+END;
+
+CREATE TRIGGER delete_default_inventory
+    AFTER DELETE ON Users
+    FOR EACH ROW
+BEGIN
+    DECLARE inventory_name_to_delete VARCHAR(255);
+
+    -- Construct the name of the inventory to delete
+    SET inventory_name_to_delete = CONCAT(OLD.username, "'s Default Inventory");
+
+    -- Delete the inventory with the constructed name
+    DELETE FROM Inventories
+    WHERE inventory_name = inventory_name_to_delete;
 END;
 

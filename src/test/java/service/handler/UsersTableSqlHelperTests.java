@@ -50,18 +50,19 @@ public class UsersTableSqlHelperTests {
   @Test
   public void testInsertUser() {
     // Test successful insert
-    when(jdbcTemplate.update(any(), any(), any(), any(), any())).thenReturn(1);
+    when(jdbcTemplate.update(any(), any(), any(), any(), any(), any())).thenReturn(1);
     assertTrue(
         usersTableSqlHelper.insertUser(testUser), "Insert should return true when successful.");
 
     // Test unsuccessful insert
-    when(jdbcTemplate.update(any(), any(), any(), any(), any())).thenReturn(0);
+    when(jdbcTemplate.update(any(), any(), any(), any(), any(), any())).thenReturn(0);
     assertFalse(
         usersTableSqlHelper.insertUser(testUser),
         "Insert should return false when no rows are affected.");
 
     // Test exception thrown
-    when(jdbcTemplate.update(any(), any(), any(), any(), any())).thenThrow(RuntimeException.class);
+    when(jdbcTemplate.update(any(), any(), any(), any(), any(), any()))
+        .thenThrow(RuntimeException.class);
     assertThrows(
         RuntimeException.class,
         () -> usersTableSqlHelper.insertUser(testUser),

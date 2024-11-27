@@ -5,6 +5,7 @@ import java.util.UUID;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import service.models.Inventory;
 
@@ -25,7 +26,7 @@ public class InventoryTableSqlHelper {
    * @param inventory Inventory object that you'd like to store within DB.
    * @return the boolean
    */
-  public boolean insert(Inventory inventory) {
+  public boolean insertInventory(Inventory inventory) {
     String sql = "insert into Inventories (inventory_id, inventory_name) values (?,?)";
     int rows =
         jdbcTemplate.update(
@@ -40,15 +41,9 @@ public class InventoryTableSqlHelper {
    *
    * @return the list
    */
-  public List<Inventory> select() {
+  public List<Inventory> getAllInventories() {
     String sql = "select * from Inventories";
-    return jdbcTemplate.query(
-        sql,
-        (rs, rowNum) ->
-            Inventory.builder()
-                .inventoryId(UUID.fromString(rs.getString("inventory_id")))
-                .inventoryName(rs.getString("inventory_name"))
-                .build());
+    return jdbcTemplate.query(sql, getRowMapper());
   }
 
   /**
@@ -58,15 +53,17 @@ public class InventoryTableSqlHelper {
    * @param inventoryId Unique identifier for the inventory you'd like to search for in the DB.
    * @return the list
    */
-  public List<Inventory> select(String inventoryId) {
+  public Inventory getInventoryWithInventoryId(String inventoryId) {
     String sql = "select * from Inventories where inventory_id = " + "'" + inventoryId + "'";
-    return jdbcTemplate.query(
-        sql,
-        (rs, rowNum) ->
-            Inventory.builder()
-                .inventoryId(UUID.fromString(rs.getString("inventory_id")))
-                .inventoryName(rs.getString("inventory_name"))
-                .build());
+    List<Inventory> results = jdbcTemplate.query(sql, getRowMapper());
+    if (results.isEmpty()) {
+      return null;
+    } else if (results.size() > 1) {
+      throw new IllegalStateException(
+          "More than one inventory found for inventory id: " + inventoryId);
+    } else {
+      return results.get(0);
+    }
   }
 
   /**
@@ -95,5 +92,13 @@ public class InventoryTableSqlHelper {
     int rows = jdbcTemplate.update(sql, inventoryId);
     System.out.println(rows + " row/s deleted");
     return rows > 0;
+  }
+
+  private RowMapper<Inventory> getRowMapper() {
+    return (rs, rowNum) ->
+        Inventory.builder()
+            .inventoryId(UUID.fromString(rs.getString("inventory_id")))
+            .inventoryName(rs.getString("inventory_name"))
+            .build();
   }
 }

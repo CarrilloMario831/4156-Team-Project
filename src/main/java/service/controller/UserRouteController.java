@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -123,9 +124,15 @@ public class UserRouteController {
    * @return the response entity
    */
   @PostMapping(value = "/createUser", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> createUser(@RequestParam(value = "username") String username) {
+  public ResponseEntity<?> createUser(
+      @RequestParam(value = "username") String username,
+      @RequestParam(value = "password") String password) {
     if (username == null || username.isEmpty()) {
       return new ResponseEntity<>("Username needed to create user.", HttpStatus.BAD_REQUEST);
+    }
+
+    if (password == null || password.isEmpty()) {
+      return new ResponseEntity<>("Password needed to create user.", HttpStatus.BAD_REQUEST);
     }
     try {
       if (usersTableSqlHelper.getUserWithUsername(username) != null) {
@@ -137,12 +144,39 @@ public class UserRouteController {
           User.builder()
               .userId(UUID.randomUUID())
               .username(username)
+              .password(password)
               .role(UserRoles.USER)
               .lastAccess(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
               .build();
       usersTableSqlHelper.insertUser(newUser);
       return new ResponseEntity<>(
           username + " was successfully created. \n UserID: " + newUser.getUserId(), HttpStatus.OK);
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  /**
+   * Delete an administrator's chosen user within the database.
+   *
+   * @param userId the unique identifier of the user about to be deleted
+   * @return the response entity
+   */
+  @DeleteMapping(value = "/deleteUser", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> deleteUser(@RequestParam(value = "userId") String userId) {
+    if (userId == null || userId.isEmpty()) {
+      return new ResponseEntity<>("userId needed to delete a user.", HttpStatus.BAD_REQUEST);
+    }
+    try {
+      boolean deleteSuccess = usersTableSqlHelper.delete(userId);
+      if (!deleteSuccess) {
+        return new ResponseEntity<>(
+            "Unable to delete user with userId: " + userId, HttpStatus.FORBIDDEN);
+      } else {
+        return new ResponseEntity<>(
+            "Successfully deleted user with userId: " + userId, HttpStatus.OK);
+      }
     } catch (Exception e) {
       System.out.println(e.getMessage());
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);

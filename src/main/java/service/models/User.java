@@ -18,6 +18,7 @@ import service.util.UserRoles;
 public class User {
   private final UUID userId;
   private String username;
+  private String password;
   private UserRoles role;
   private LocalDateTime lastAccess;
 

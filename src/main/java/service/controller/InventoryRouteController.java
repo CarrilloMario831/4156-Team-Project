@@ -196,7 +196,7 @@ public class InventoryRouteController {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  
+
   /**
    * Delete an adminstrator's chosen inventory from the DB.
    *
@@ -204,28 +204,27 @@ public class InventoryRouteController {
    * @return response entity
    */
   @DeleteMapping(value = "/deleteInventory", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<?> deleteInventory(@RequestParam(value = "inventoryId") String inventoryId) {
-    
+  public ResponseEntity<?> deleteInventory(
+      @RequestParam(value = "inventoryId") String inventoryId) {
+
     if (inventoryId == null || inventoryId.isEmpty()) {
-      return new ResponseEntity<>("inventoryId needed to delete inventories.",
-          HttpStatus.BAD_REQUEST);
+      return new ResponseEntity<>(
+          "inventoryId needed to delete inventories.", HttpStatus.BAD_REQUEST);
     }
-    
-    try{
+
+    try {
       boolean deleteSuccess = inventoryTableSqlHelper.delete(inventoryId);
       if (!deleteSuccess) {
         return new ResponseEntity<>(
-            "Unable to delete inventory with inventoryId: " + inventoryId,
-            HttpStatus.FORBIDDEN);
+            "Unable to delete inventory with inventoryId: " + inventoryId, HttpStatus.FORBIDDEN);
       } else {
         return new ResponseEntity<>(
             "Successfully deleted inventory with inventoryId: " + inventoryId, HttpStatus.OK);
       }
-      
+
     } catch (Exception e) {
       System.out.println(e.getMessage());
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
-    
   }
 }

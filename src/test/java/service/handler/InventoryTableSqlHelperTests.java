@@ -127,7 +127,8 @@ public class InventoryTableSqlHelperTests {
     assertEquals(inventories.get(0), result, "Should return the inventory with the given ID.");
 
     // Test inventory not found
-    when(jdbcTemplate.query(contains("where inventory_id"), any(RowMapper.class))).thenReturn(null);
+    when(jdbcTemplate.query(contains("where inventory_id"), any(RowMapper.class)))
+        .thenReturn(new ArrayList<>());
     result = inventoryTableSqlHelper.getInventoryWithInventoryId(inventoryId);
     assertNull(result, "Should return null if there's no inventory found with the given ID.");
 

@@ -143,7 +143,7 @@ public class UserRouteController {
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
   }
-  
+
   /**
    * Delete an administrator's chosen user within the database.
    *
@@ -159,8 +159,7 @@ public class UserRouteController {
       boolean deleteSuccess = usersTableSqlHelper.delete(userId);
       if (!deleteSuccess) {
         return new ResponseEntity<>(
-            "Unable to delete user with userId: " + userId,
-            HttpStatus.FORBIDDEN);
+            "Unable to delete user with userId: " + userId, HttpStatus.FORBIDDEN);
       } else {
         return new ResponseEntity<>(
             "Successfully deleted user with userId: " + userId, HttpStatus.OK);

@@ -7,13 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import service.handler.InventoryItemsJunctionTableHelper;
 import service.handler.InventoryTableSqlHelper;
 import service.models.Inventory;
@@ -201,5 +195,37 @@ public class InventoryRouteController {
       System.out.println(e.getMessage());
       return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
+  }
+  
+  /**
+   * Delete an adminstrator's chosen inventory from the DB.
+   *
+   * @param inventoryId unique identifier for an inventory within the DB.
+   * @return response entity
+   */
+  @DeleteMapping(value = "/deleteInventory", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<?> deleteInventory(@RequestParam(value = "inventoryId") String inventoryId) {
+    
+    if (inventoryId == null || inventoryId.isEmpty()) {
+      return new ResponseEntity<>("inventoryId needed to delete inventories.",
+          HttpStatus.BAD_REQUEST);
+    }
+    
+    try{
+      boolean deleteSuccess = inventoryTableSqlHelper.delete(inventoryId);
+      if (!deleteSuccess) {
+        return new ResponseEntity<>(
+            "Unable to delete inventory with inventoryId: " + inventoryId,
+            HttpStatus.FORBIDDEN);
+      } else {
+        return new ResponseEntity<>(
+            "Successfully deleted inventory with inventoryId: " + inventoryId, HttpStatus.OK);
+      }
+      
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+      return new ResponseEntity<>(e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    
   }
 }

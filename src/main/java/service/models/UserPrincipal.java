@@ -17,18 +17,18 @@ public class UserPrincipal implements UserDetails {
   }
 
   /**
-   * TODO: Handle how to actually get a user's role.
+   * This stores the role of the user for the authorization processes to work properly for the
+   * UserDetailsService class.
    *
    * @return Collection representing the authority of the user.
    */
   @Override
   public Collection<? extends GrantedAuthority> getAuthorities() {
-    return Collections.singleton(new SimpleGrantedAuthority(user.getRole().toString()));
+    return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + user.getRole().toString()));
   }
 
   /**
-   * TODO: Setup password capabilities within DB. Grab the password of the user object passed into
-   * the constructor.
+   * This stores the password grabbed from the DB.
    *
    * @return String representing the password of the user.
    */

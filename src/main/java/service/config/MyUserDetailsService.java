@@ -13,7 +13,7 @@ import service.models.UserPrincipal;
 @Service
 public class MyUserDetailsService implements UserDetailsService {
 
-  @Autowired public UsersTableSqlHelper usersTableSqlHelper;
+  @Autowired private UsersTableSqlHelper usersTableSqlHelper;
 
   /** Describe how the user login will interact with DB. */
   @Override
@@ -25,7 +25,7 @@ public class MyUserDetailsService implements UserDetailsService {
       System.out.println("User Not Found");
       throw new UsernameNotFoundException("user not found");
     }
-    
+
     // System.out.println("User was found: " + user.getUsername() + " " + user.getPassword());
     return new UserPrincipal(user);
   }

@@ -44,6 +44,10 @@ public class SecurityConfig {
         .authorizeHttpRequests(
             auth ->
                 auth
+                    // Allow unauthenticated access to the createUser POST route
+                    .requestMatchers(HttpMethod.POST, "/api/users/createUser")
+                    .permitAll()
+
                     // Restrict DELETE routes to ADMIN only
                     .requestMatchers(HttpMethod.DELETE, "/**")
                     .hasRole("ADMIN")

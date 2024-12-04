@@ -149,7 +149,7 @@ public class InventoryRouteControllerTests {
   /** Test accessing items ids belonging to a specific inventory. */
   @Test
   public void testGetInventoryItemIds() {
-    
+
     List<String> itemIds = new ArrayList<>();
     itemIds.add(testItem.getItemId().toString());
     String inventoryId = testInventory.getInventoryId().toString();
@@ -201,7 +201,7 @@ public class InventoryRouteControllerTests {
   /** Test accessing items names belonging to a specific inventory. */
   @Test
   public void testGetInventoryItemNames() {
-    
+
     List<String> itemIds = new ArrayList<>();
     itemIds.add(testItem.getItemName());
     String inventoryId = testInventory.getInventoryId().toString();
@@ -300,5 +300,41 @@ public class InventoryRouteControllerTests {
     updateInventoryNameResponse =
         inventoryRouteController.updateInventoryName(inventoryId, newInventoryName);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateInventoryNameResponse.getStatusCode());
+  }
+
+  /** Testing the deletion of an inventory. */
+  @Test
+  public void testDeleteInventory() {
+    String inventoryId = testInventory.getInventoryId().toString();
+
+    // Test successful deletion
+    when(inventoryTableSqlHelper.delete(any())).thenReturn(true);
+    ResponseEntity<?> deleteInventoryResponse =
+        inventoryRouteController.deleteInventory(inventoryId);
+    assertEquals(HttpStatus.OK, deleteInventoryResponse.getStatusCode());
+    assertEquals(
+        "Successfully deleted inventory with inventoryId: " + inventoryId,
+        deleteInventoryResponse.getBody());
+
+    // Test unsuccessful deletion
+    when(inventoryTableSqlHelper.delete(any())).thenReturn(false);
+    deleteInventoryResponse = inventoryRouteController.deleteInventory(inventoryId);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, deleteInventoryResponse.getStatusCode());
+    assertEquals("Unsuccessful inventory delete.", deleteInventoryResponse.getBody());
+
+    // Test null inventoryId passed in
+    deleteInventoryResponse = inventoryRouteController.deleteInventory(null);
+    assertEquals(HttpStatus.BAD_REQUEST, deleteInventoryResponse.getStatusCode());
+    assertEquals("inventoryId needed to delete inventories.", deleteInventoryResponse.getBody());
+
+    // Test empty inventoryId passed in
+    deleteInventoryResponse = inventoryRouteController.deleteInventory("");
+    assertEquals(HttpStatus.BAD_REQUEST, deleteInventoryResponse.getStatusCode());
+    assertEquals("inventoryId needed to delete inventories.", deleteInventoryResponse.getBody());
+
+    // Test Internal Error caused by thrown exception
+    doThrow(new RuntimeException()).when(inventoryTableSqlHelper).delete(any());
+    deleteInventoryResponse = inventoryRouteController.deleteInventory(inventoryId);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, deleteInventoryResponse.getStatusCode());
   }
 }

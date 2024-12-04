@@ -56,7 +56,7 @@ public class InventoryTableSqlHelper {
   public Inventory getInventoryWithInventoryId(String inventoryId) {
     String sql = "select * from Inventories where inventory_id = " + "'" + inventoryId + "'";
     List<Inventory> results = jdbcTemplate.query(sql, getRowMapper());
-    if (results == null || results.isEmpty()) {
+    if (results.isEmpty()) {
       return null;
     } else if (results.size() > 1) {
       throw new IllegalStateException(

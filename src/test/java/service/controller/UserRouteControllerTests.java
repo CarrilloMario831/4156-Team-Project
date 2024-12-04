@@ -187,26 +187,28 @@ public class UserRouteControllerTests {
   @Test
   public void testCreateUser() {
     String testUsername = "user1";
+    String testPassword = "password";
 
     // Test Success
     when(usersTableSqlHelper.getUserWithUsername(any())).thenReturn(null);
     when(usersTableSqlHelper.insertUser(any())).thenReturn(true);
-    ResponseEntity<?> createUserResponse = userRouteController.createUser(testUsername);
+    ResponseEntity<?> createUserResponse =
+        userRouteController.createUser(testUsername, testPassword);
     assertEquals(HttpStatus.OK, createUserResponse.getStatusCode());
 
     // Test null username
-    createUserResponse = userRouteController.createUser(null);
+    createUserResponse = userRouteController.createUser(null, null);
     assertEquals("Username needed to create user.", createUserResponse.getBody());
     assertEquals(HttpStatus.BAD_REQUEST, createUserResponse.getStatusCode());
 
     // Test empty username
-    createUserResponse = userRouteController.createUser("");
+    createUserResponse = userRouteController.createUser("", "");
     assertEquals("Username needed to create user.", createUserResponse.getBody());
     assertEquals(HttpStatus.BAD_REQUEST, createUserResponse.getStatusCode());
 
     // Test taken username
     when(usersTableSqlHelper.getUserWithUsername(any())).thenReturn(testUser);
-    createUserResponse = userRouteController.createUser(testUsername);
+    createUserResponse = userRouteController.createUser(testUsername, testPassword);
     assertEquals(
         "Username user1 already taken. Try a different username.", createUserResponse.getBody());
     assertEquals(HttpStatus.CONFLICT, createUserResponse.getStatusCode());
@@ -214,7 +216,7 @@ public class UserRouteControllerTests {
     // Test Internal Error
     when(usersTableSqlHelper.getUserWithUsername(any())).thenReturn(null);
     doThrow(new RuntimeException()).when(usersTableSqlHelper).insertUser(any());
-    createUserResponse = userRouteController.createUser(testUsername);
+    createUserResponse = userRouteController.createUser(testUsername, testPassword);
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, createUserResponse.getStatusCode());
   }
 
@@ -405,5 +407,40 @@ public class UserRouteControllerTests {
     updateRoleResponse =
         userRouteController.updateRole(String.valueOf(testUser.getUserId()), "ADMIN");
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, updateRoleResponse.getStatusCode());
+  }
+
+  /** Test delete user. */
+  @Test
+  public void testDeleteUser() {
+    String userId = testUser.getUserId().toString();
+
+    // Test success
+    when(usersTableSqlHelper.delete(userId)).thenReturn(true);
+    ResponseEntity<?> deleteUserResponse = userRouteController.deleteUser(userId);
+    assertEquals("Successfully deleted user with userId: " + userId, deleteUserResponse.getBody());
+    assertEquals(HttpStatus.OK, deleteUserResponse.getStatusCode());
+
+    // Test invalid (null) userId
+    deleteUserResponse = userRouteController.deleteUser(null);
+    assertEquals("userId needed to delete a user.", deleteUserResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, deleteUserResponse.getStatusCode());
+
+    // Test invalid (empty) userId
+    deleteUserResponse = userRouteController.deleteUser("");
+    assertEquals("userId needed to delete a user.", deleteUserResponse.getBody());
+    assertEquals(HttpStatus.BAD_REQUEST, deleteUserResponse.getStatusCode());
+
+    // Test deletion failure
+    when(usersTableSqlHelper.delete(userId)).thenReturn(false);
+    deleteUserResponse = userRouteController.deleteUser(userId);
+    assertEquals("Unable to delete user with userId: " + userId, deleteUserResponse.getBody());
+    assertEquals(HttpStatus.FORBIDDEN, deleteUserResponse.getStatusCode());
+
+    // Test internal server error
+    doThrow(new RuntimeException("Database connection error"))
+        .when(usersTableSqlHelper)
+        .delete(anyString());
+    deleteUserResponse = userRouteController.deleteUser(userId);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, deleteUserResponse.getStatusCode());
   }
 }

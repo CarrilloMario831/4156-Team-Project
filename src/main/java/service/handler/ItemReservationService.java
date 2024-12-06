@@ -116,7 +116,7 @@ public class ItemReservationService {
       throw new ReservationException("Item is not currently reserved");
     }
 
-    item.setQuantity(item.getQuantity() + quantity);
+    item.setQuantity(item.getQuantity());
 
     boolean quantityUpdated = itemsTableSqlHelper.updateItemQuantity(itemId, item.getQuantity());
     if (!quantityUpdated) {

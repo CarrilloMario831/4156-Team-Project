@@ -10,9 +10,7 @@ import org.springframework.stereotype.Service;
 import service.exceptions.ReservationException;
 import service.models.Item;
 
-/**
- * The type Item reservation service.
- */
+/** The type Item reservation service. */
 @Service
 @Getter
 public class ItemReservationService {

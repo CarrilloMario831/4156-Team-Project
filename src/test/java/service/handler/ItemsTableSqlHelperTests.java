@@ -296,4 +296,81 @@ public class ItemsTableSqlHelperTests {
         () -> itemsTableSqlHelper.updateItemName(itemId, newItemName),
         "Should propagate exceptions.");
   }
+
+  /** Test update item reservation. */
+  @Test
+  public void testUpdateItemReservation() {
+    String itemId = testItem.getItemId().toString();
+    long reservationDuration = 1000L;
+
+    // Test successful update
+    when(jdbcTemplate.update(anyString(), eq(reservationDuration), eq(itemId))).thenReturn(1);
+    assertTrue(
+        itemsTableSqlHelper.updateItemReservation(itemId, reservationDuration),
+        "Update should return true when one row is affected.");
+
+    // Test unsuccessful update
+    when(jdbcTemplate.update(anyString(), eq(reservationDuration), eq(itemId))).thenReturn(0);
+    assertFalse(
+        itemsTableSqlHelper.updateItemReservation(itemId, reservationDuration),
+        "Update should return false when no rows are affected.");
+
+    // Test exception thrown
+    when(jdbcTemplate.update(anyString(), eq(reservationDuration), eq(itemId)))
+        .thenThrow(RuntimeException.class);
+    assertThrows(
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.updateItemReservation(itemId, reservationDuration),
+        "Should propagate exceptions.");
+  }
+
+  @Test
+  public void testUpdateInventoryId() {
+    String itemId = testItem.getItemId().toString();
+    String inventoryId = testItem.getInventoryId().toString();
+
+    // Test successful update
+    when(jdbcTemplate.update(anyString(), eq(inventoryId), eq(itemId))).thenReturn(1);
+    assertTrue(
+        itemsTableSqlHelper.updateInventoryId(itemId, inventoryId),
+        "Update should return true when one row is affected.");
+
+    // Test unsuccessful update
+    when(jdbcTemplate.update(anyString(), eq(inventoryId), eq(itemId))).thenReturn(0);
+    assertFalse(
+        itemsTableSqlHelper.updateInventoryId(itemId, inventoryId),
+        "Update should return false when no rows are affected.");
+
+    // Test exception thrown
+    when(jdbcTemplate.update(anyString(), eq(inventoryId), eq(itemId)))
+        .thenThrow(RuntimeException.class);
+    assertThrows(
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.updateInventoryId(itemId, inventoryId),
+        "Should propagate exceptions.");
+  }
+
+  @Test
+  public void testCancelItemReservation() {
+    String itemId = testItem.getItemId().toString();
+
+    // Test successful update
+    when(jdbcTemplate.update(anyString(), eq(itemId))).thenReturn(1);
+    assertTrue(
+        itemsTableSqlHelper.cancelItemReservation(itemId),
+        "Update should return true when one row is affected.");
+
+    // Test unsuccessful update
+    when(jdbcTemplate.update(anyString(), eq(itemId))).thenReturn(0);
+    assertFalse(
+        itemsTableSqlHelper.cancelItemReservation(itemId),
+        "Update should return false when no rows are affected.");
+
+    // Test exception thrown
+    when(jdbcTemplate.update(anyString(), eq(itemId))).thenThrow(RuntimeException.class);
+    assertThrows(
+        RuntimeException.class,
+        () -> itemsTableSqlHelper.cancelItemReservation(itemId),
+        "Should propagate exceptions.");
+  }
 }

@@ -13,6 +13,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 /** Defining our own configurations for security. */
 @Configuration
@@ -52,9 +54,10 @@ public class SecurityConfig {
                     .requestMatchers(HttpMethod.DELETE, "/**")
                     .hasRole("ADMIN")
 
-                    // Allow moderators to access everything else
+                    // Allow users and admins to access everything else
                     .anyRequest()
                     .hasAnyRole("USER", "ADMIN"))
+        .cors(Customizer.withDefaults())
         .build();
   }
 
@@ -72,5 +75,22 @@ public class SecurityConfig {
 
     // define our own userdetailsservice
     return provider;
+  }
+
+  /** CORS configuration to allow requests from specific origins. */
+  @Bean
+  public WebMvcConfigurer corsConfigurer() {
+    return new WebMvcConfigurer() {
+      @Override
+      public void addCorsMappings(CorsRegistry registry) {
+        registry
+            .addMapping("/**") // Apply CORS to all endpoints
+            .allowedOrigins("http://localhost:3000") // Replace with your frontend URL
+            .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH") // Allowed HTTP methods
+            .allowedHeaders("*") // Allow all headers
+            .allowCredentials(true) // Allow credentials (cookies or authorization headers)
+            .maxAge(3600); // Cache preflight responses for 1 hour (3600 seconds)
+      }
+    };
   }
 }

@@ -1,11 +1,14 @@
 package service.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyDouble;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
+import static service.util.DateTimeUtils.FORMATTER;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -21,6 +24,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import service.handler.ItemsTableSqlHelper;
 import service.models.Item;
+import service.requests.CreateItemRequest;
 
 /** Unit tests for the ItemsRouteController class. */
 @SpringBootTest
@@ -51,6 +55,385 @@ public class ItemsRouteControllerTests {
             .reservationTime(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
             .reservationDurationInMillis(1000 * 60 * 60 * 24)
             .build();
+  }
+
+  /** Test creating a new item. */
+  @Test
+  public void testCreateItem() {
+
+    // populate the itemRequest object to be passed into the controller
+    CreateItemRequest testItemRequest =
+        CreateItemRequest.builder()
+            .itemName(testItem.getItemName())
+            .location(testItem.getLocation())
+            .inventoryId(testItem.getInventoryId())
+            .quantity(testItem.getQuantity())
+            .reservationStatus(testItem.isReservationStatus())
+            .reservationDurationInMillis(testItem.getReservationDurationInMillis())
+            .reservationTime(testItem.getReservationTime())
+            .price(testItem.getPrice())
+            .nextRestockDateTime(testItem.getNextRestockDateTime())
+            .build();
+
+    // Test successful creation.
+    when(itemsTableSqlHelper.insertItem(any())).thenReturn(true);
+    ResponseEntity<?> createItemResponse = itemsRouteController.createItem(testItemRequest);
+    assertEquals(HttpStatus.CREATED, createItemResponse.getStatusCode());
+
+    // Test null passed in for createItemRequest
+    createItemResponse = itemsRouteController.createItem(null);
+    assertEquals(HttpStatus.BAD_REQUEST, createItemResponse.getStatusCode());
+    assertEquals("Empty request", createItemResponse.getBody());
+
+    // Test unsuccessful creation.
+    when(itemsTableSqlHelper.insertItem(any())).thenReturn(false);
+    createItemResponse = itemsRouteController.createItem(testItemRequest);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, createItemResponse.getStatusCode());
+    assertEquals("Failed to create item", createItemResponse.getBody());
+
+    // Test Internal error caused by thrown exception.
+    doThrow(new RuntimeException()).when(itemsTableSqlHelper).insertItem(any());
+    createItemResponse = itemsRouteController.createItem(testItemRequest);
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, createItemResponse.getStatusCode());
+  }
+
+  /** Test get the next restock time for an item. */
+  @Test
+  public void testGetNextRestockTime() {
+    List<Item> testItemList = new ArrayList<>();
+    testItemList.add(testItem);
+
+    // Test successful GET.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(testItemList);
+    ResponseEntity<?> getItemResponse =
+        itemsRouteController.getNextRestockTime(testItem.getItemId().toString());
+    assertEquals(HttpStatus.OK, getItemResponse.getStatusCode());
+    assertEquals(testItem.getNextRestockDateTime().format(FORMATTER), getItemResponse.getBody());
+
+    // Test null passed into controller
+    getItemResponse = itemsRouteController.getNextRestockTime(null);
+    assertEquals(HttpStatus.BAD_REQUEST, getItemResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getItemResponse.getBody());
+
+    // Test empty string passed into controller
+    getItemResponse = itemsRouteController.getNextRestockTime("");
+    assertEquals(HttpStatus.BAD_REQUEST, getItemResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getItemResponse.getBody());
+
+    // Test unsuccessful GET with a null fetched from mocked DB.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(null);
+    getItemResponse = itemsRouteController.getNextRestockTime(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getItemResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found", getItemResponse.getBody());
+
+    // Test unsuccessful GET with an empty list returned.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(new ArrayList<>());
+    getItemResponse = itemsRouteController.getNextRestockTime(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getItemResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found", getItemResponse.getBody());
+
+    // Test when there is no available next restock date
+    testItemList.remove(0);
+    testItem.setNextRestockDateTime(null);
+    testItemList.add(testItem);
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(testItemList);
+    getItemResponse = itemsRouteController.getNextRestockTime(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NO_CONTENT, getItemResponse.getStatusCode());
+    assertEquals(
+        "No restock time available for item: " + testItem.getItemName(), getItemResponse.getBody());
+
+    // Test thrown exception.
+    doThrow(new RuntimeException()).when(itemsTableSqlHelper).getItem(any());
+    getItemResponse = itemsRouteController.getNextRestockTime(testItem.getItemId().toString());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getItemResponse.getStatusCode());
+  }
+
+  /** Test getting the item's inventory utilizing the itemId. */
+  @Test
+  public void testGetInventoryIdFromItemId() {
+    List<Item> testItemList = new ArrayList<>();
+    testItemList.add(testItem);
+
+    // Test successful GET.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(testItemList);
+    ResponseEntity<?> getItemInventoryResponse =
+        itemsRouteController.getInventoryIdFromItemId(testItem.getItemId().toString());
+    assertEquals(HttpStatus.OK, getItemInventoryResponse.getStatusCode());
+    assertEquals(testItem.getInventoryId().toString(), getItemInventoryResponse.getBody());
+
+    // Test null passed into controller
+    getItemInventoryResponse = itemsRouteController.getInventoryIdFromItemId(null);
+    assertEquals(HttpStatus.BAD_REQUEST, getItemInventoryResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getItemInventoryResponse.getBody());
+
+    // Test empty string passed into controller
+    getItemInventoryResponse = itemsRouteController.getInventoryIdFromItemId("");
+    assertEquals(HttpStatus.BAD_REQUEST, getItemInventoryResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getItemInventoryResponse.getBody());
+
+    // Test unsuccessful GET with a null fetched from mocked DB.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(null);
+    getItemInventoryResponse =
+        itemsRouteController.getInventoryIdFromItemId(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getItemInventoryResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        getItemInventoryResponse.getBody());
+
+    // Test unsuccessful GET with an empty list returned.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(new ArrayList<>());
+    getItemInventoryResponse =
+        itemsRouteController.getInventoryIdFromItemId(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getItemInventoryResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        getItemInventoryResponse.getBody());
+
+    // Test thrown exception.
+    doThrow(new RuntimeException()).when(itemsTableSqlHelper).getItem(any());
+    getItemInventoryResponse =
+        itemsRouteController.getInventoryIdFromItemId(testItem.getItemId().toString());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getItemInventoryResponse.getStatusCode());
+  }
+
+  /** Test getting an Item's location. */
+  @Test
+  public void testGetItemLocation() {
+    List<Item> testItemList = new ArrayList<>();
+    testItemList.add(testItem);
+
+    // Test successful GET.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(testItemList);
+    ResponseEntity<?> getItemLocationResponse =
+        itemsRouteController.getItemLocation(testItem.getItemId().toString());
+    assertEquals(HttpStatus.OK, getItemLocationResponse.getStatusCode());
+    assertEquals(testItem.getLocation(), getItemLocationResponse.getBody());
+
+    // Test null passed into controller
+    getItemLocationResponse = itemsRouteController.getItemLocation(null);
+    assertEquals(HttpStatus.BAD_REQUEST, getItemLocationResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getItemLocationResponse.getBody());
+
+    // Test empty string passed into controller
+    getItemLocationResponse = itemsRouteController.getItemLocation("");
+    assertEquals(HttpStatus.BAD_REQUEST, getItemLocationResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getItemLocationResponse.getBody());
+
+    // Test unsuccessful GET with a null fetched from mocked DB.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(null);
+    getItemLocationResponse = itemsRouteController.getItemLocation(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getItemLocationResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        getItemLocationResponse.getBody());
+
+    // Test unsuccessful GET with an empty list returned.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(new ArrayList<>());
+    getItemLocationResponse = itemsRouteController.getItemLocation(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getItemLocationResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        getItemLocationResponse.getBody());
+
+    // Test thrown exception.
+    doThrow(new RuntimeException()).when(itemsTableSqlHelper).getItem(any());
+    getItemLocationResponse = itemsRouteController.getItemLocation(testItem.getItemId().toString());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getItemLocationResponse.getStatusCode());
+  }
+
+  /** Test getting an Item's reservation time. */
+  @Test
+  public void testGetItemReservationTime() {
+    List<Item> testItemList = new ArrayList<>();
+    testItemList.add(testItem);
+
+    // Test successful GET.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(testItemList);
+    ResponseEntity<?> getItemReservationTimeResponse =
+        itemsRouteController.getItemReservationTime(testItem.getItemId().toString());
+    assertEquals(HttpStatus.OK, getItemReservationTimeResponse.getStatusCode());
+    assertEquals(
+        testItem.getReservationTime().format(FORMATTER), getItemReservationTimeResponse.getBody());
+
+    // Test null passed into controller
+    getItemReservationTimeResponse = itemsRouteController.getItemReservationTime(null);
+    assertEquals(HttpStatus.BAD_REQUEST, getItemReservationTimeResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getItemReservationTimeResponse.getBody());
+
+    // Test empty string passed into controller
+    getItemReservationTimeResponse = itemsRouteController.getItemReservationTime("");
+    assertEquals(HttpStatus.BAD_REQUEST, getItemReservationTimeResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getItemReservationTimeResponse.getBody());
+
+    // Test unsuccessful GET with a null fetched from mocked DB.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(null);
+    getItemReservationTimeResponse =
+        itemsRouteController.getItemReservationTime(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getItemReservationTimeResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        getItemReservationTimeResponse.getBody());
+
+    // Test unsuccessful GET with an empty list returned.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(new ArrayList<>());
+    getItemReservationTimeResponse =
+        itemsRouteController.getItemReservationTime(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getItemReservationTimeResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        getItemReservationTimeResponse.getBody());
+
+    // Test thrown exception.
+    doThrow(new RuntimeException()).when(itemsTableSqlHelper).getItem(any());
+    getItemReservationTimeResponse =
+        itemsRouteController.getItemReservationTime(testItem.getItemId().toString());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getItemReservationTimeResponse.getStatusCode());
+  }
+
+  /** Test getting an Item's reservation duration. */
+  @Test
+  public void testGetItemReservationDuration() {
+    List<Item> testItemList = new ArrayList<>();
+    testItemList.add(testItem);
+
+    // Test successful GET.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(testItemList);
+    ResponseEntity<?> getItemReservationDurationResponse =
+        itemsRouteController.getItemReservationDuration(testItem.getItemId().toString());
+    assertEquals(HttpStatus.OK, getItemReservationDurationResponse.getStatusCode());
+    assertEquals(
+        testItem.getReservationDurationInMillis(), getItemReservationDurationResponse.getBody());
+
+    // Test null passed into controller
+    getItemReservationDurationResponse = itemsRouteController.getItemReservationDuration(null);
+    assertEquals(HttpStatus.BAD_REQUEST, getItemReservationDurationResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getItemReservationDurationResponse.getBody());
+
+    // Test empty string passed into controller
+    getItemReservationDurationResponse = itemsRouteController.getItemReservationDuration("");
+    assertEquals(HttpStatus.BAD_REQUEST, getItemReservationDurationResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getItemReservationDurationResponse.getBody());
+
+    // Test unsuccessful GET with a null fetched from mocked DB.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(null);
+    getItemReservationDurationResponse =
+        itemsRouteController.getItemReservationDuration(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getItemReservationDurationResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        getItemReservationDurationResponse.getBody());
+
+    // Test unsuccessful GET with an empty list returned.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(new ArrayList<>());
+    getItemReservationDurationResponse =
+        itemsRouteController.getItemReservationDuration(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getItemReservationDurationResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        getItemReservationDurationResponse.getBody());
+
+    // Test thrown exception.
+    doThrow(new RuntimeException()).when(itemsTableSqlHelper).getItem(any());
+    getItemReservationDurationResponse =
+        itemsRouteController.getItemReservationDuration(testItem.getItemId().toString());
+    assertEquals(
+        HttpStatus.INTERNAL_SERVER_ERROR, getItemReservationDurationResponse.getStatusCode());
+  }
+
+  /** Test getting an Item's reservation status. */
+  @Test
+  public void testIsItemReserved() {
+    List<Item> testItemList = new ArrayList<>();
+    testItemList.add(testItem);
+
+    // Test successful GET.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(testItemList);
+    ResponseEntity<?> isItemReservedResponse =
+        itemsRouteController.isItemReserved(testItem.getItemId().toString());
+    assertEquals(HttpStatus.OK, isItemReservedResponse.getStatusCode());
+    assertEquals(testItem.isReservationStatus(), isItemReservedResponse.getBody());
+
+    // Test null passed into controller
+    isItemReservedResponse = itemsRouteController.isItemReserved(null);
+    assertEquals(HttpStatus.BAD_REQUEST, isItemReservedResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", isItemReservedResponse.getBody());
+
+    // Test empty string passed into controller
+    isItemReservedResponse = itemsRouteController.isItemReserved("");
+    assertEquals(HttpStatus.BAD_REQUEST, isItemReservedResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", isItemReservedResponse.getBody());
+
+    // Test unsuccessful GET with a null fetched from mocked DB.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(null);
+    isItemReservedResponse = itemsRouteController.isItemReserved(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, isItemReservedResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        isItemReservedResponse.getBody());
+
+    // Test unsuccessful GET with an empty list returned.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(new ArrayList<>());
+    isItemReservedResponse = itemsRouteController.isItemReserved(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, isItemReservedResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        isItemReservedResponse.getBody());
+
+    // Test thrown exception.
+    doThrow(new RuntimeException()).when(itemsTableSqlHelper).getItem(any());
+    isItemReservedResponse = itemsRouteController.isItemReserved(testItem.getItemId().toString());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, isItemReservedResponse.getStatusCode());
+  }
+
+  /** Test getting an Item's time of addition. */
+  @Test
+  public void testGetTimeItemOfAddition() {
+    List<Item> testItemList = new ArrayList<>();
+    testItemList.add(testItem);
+
+    // Test successful GET.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(testItemList);
+    ResponseEntity<?> getTimeOfAdditionResponse =
+        itemsRouteController.getItemTimeOfAddition(testItem.getItemId().toString());
+    assertEquals(HttpStatus.OK, getTimeOfAdditionResponse.getStatusCode());
+    assertEquals(
+        testItem.getTimeOfAddition().format(FORMATTER), getTimeOfAdditionResponse.getBody());
+
+    // Test null passed into controller
+    getTimeOfAdditionResponse = itemsRouteController.getItemTimeOfAddition(null);
+    assertEquals(HttpStatus.BAD_REQUEST, getTimeOfAdditionResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getTimeOfAdditionResponse.getBody());
+
+    // Test empty string passed into controller
+    getTimeOfAdditionResponse = itemsRouteController.getItemTimeOfAddition("");
+    assertEquals(HttpStatus.BAD_REQUEST, getTimeOfAdditionResponse.getStatusCode());
+    assertEquals("itemId needed to get item name.", getTimeOfAdditionResponse.getBody());
+
+    // Test unsuccessful GET with a null fetched from mocked DB.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(null);
+    getTimeOfAdditionResponse =
+        itemsRouteController.getItemTimeOfAddition(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getTimeOfAdditionResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        getTimeOfAdditionResponse.getBody());
+
+    // Test unsuccessful GET with an empty list returned.
+    when(itemsTableSqlHelper.getItem(any())).thenReturn(new ArrayList<>());
+    getTimeOfAdditionResponse =
+        itemsRouteController.getItemTimeOfAddition(testItem.getItemId().toString());
+    assertEquals(HttpStatus.NOT_FOUND, getTimeOfAdditionResponse.getStatusCode());
+    assertEquals(
+        "Item with itemId: " + testItem.getItemId() + " was not found",
+        getTimeOfAdditionResponse.getBody());
+
+    // Test thrown exception.
+    doThrow(new RuntimeException()).when(itemsTableSqlHelper).getItem(any());
+    getTimeOfAdditionResponse =
+        itemsRouteController.getItemTimeOfAddition(testItem.getItemId().toString());
+    assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, getTimeOfAdditionResponse.getStatusCode());
   }
 
   /** Test get item name. */
@@ -199,6 +582,12 @@ public class ItemsRouteControllerTests {
     assertEquals("Item with itemId: " + testItemId + " was not found", response.getBody());
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
 
+    // Test when item is not found and empty list returned
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(new ArrayList<>());
+    response = itemsRouteController.getItemQuantity(testItemId);
+    assertEquals("Item with itemId: " + testItemId + " was not found", response.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
     // Test successful response
     List<Item> testItems = new ArrayList<>();
     testItems.add(testItem);
@@ -229,6 +618,12 @@ public class ItemsRouteControllerTests {
     // Test when item is not found
     String testItemId = String.valueOf(testItem.getItemId());
     when(itemsTableSqlHelper.getItem(anyString())).thenReturn(null);
+    response = itemsRouteController.getItemPrice(testItemId);
+    assertEquals("Item with itemId: " + testItemId + " was not found", response.getBody());
+    assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
+
+    // Test when empty list returned
+    when(itemsTableSqlHelper.getItem(anyString())).thenReturn(new ArrayList<>());
     response = itemsRouteController.getItemPrice(testItemId);
     assertEquals("Item with itemId: " + testItemId + " was not found", response.getBody());
     assertEquals(HttpStatus.NOT_FOUND, response.getStatusCode());
@@ -684,7 +1079,7 @@ public class ItemsRouteControllerTests {
     assertEquals(HttpStatus.OK, deleteItemResponse.getStatusCode());
 
     // Test internal server error
-    when(itemsTableSqlHelper.getItem(anyString())).thenThrow(RuntimeException.class);
+    doThrow(new RuntimeException()).when(itemsTableSqlHelper).deleteItem(any());
     deleteItemResponse = itemsRouteController.deleteItem(testItem.getItemId().toString());
     assertEquals(HttpStatus.INTERNAL_SERVER_ERROR, deleteItemResponse.getStatusCode());
   }

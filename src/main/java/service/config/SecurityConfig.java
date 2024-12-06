@@ -85,7 +85,7 @@ public class SecurityConfig {
       public void addCorsMappings(CorsRegistry registry) {
         registry
             .addMapping("/**") // Apply CORS to all endpoints
-            .allowedOrigins("http://localhost:3000") // Replace with your frontend URL
+            .allowedOrigins("http://localhost:3000", "https://team-project-client.ue.r.appspot.com/") // Replace with your frontend URL
             .allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH") // Allowed HTTP methods
             .allowedHeaders("*") // Allow all headers
             .allowCredentials(true) // Allow credentials (cookies or authorization headers)
